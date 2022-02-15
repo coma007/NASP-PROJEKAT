@@ -1,8 +1,30 @@
 package main
 
-import(
+import (
 	"math/rand"
 )
+
+// SkipListNode
+
+type SkipListNode struct {
+	key       string
+	value     []byte
+	next      []*SkipListNode
+}
+
+func (skiplist *SkipListNode) Key() string {
+	return skiplist.key
+}
+
+func (skiplist *SkipListNode) Value() []byte {
+	return skiplist.value
+}
+
+////////////////////////////////////////////
+
+
+// SkipList
+
 
 type SkipList struct {
 	maxHeight int
@@ -11,19 +33,10 @@ type SkipList struct {
 	head      *SkipListNode
 }
 
-type SkipListNode struct {
-	key       string
-	value     []byte
-	next      []*SkipListNode
-}
-
-
-func (skiplist *SkipListNode) Key() string {
-	return skiplist.key
-}
-
-func (skiplist *SkipListNode) Value() []byte {
-	return skiplist.value
+func  CreateSkipList(maxHeight int) *SkipList {
+	root := SkipListNode{"head", nil, make([]*SkipListNode, maxHeight+1)}
+	skiplist := SkipList{maxHeight, 1, 1, &root}
+	return &skiplist
 }
 
 func (skiplist *SkipList) roll() int {
@@ -43,7 +56,7 @@ func (skiplist *SkipList) roll() int {
 	return level
 }
 
-func (skiplist *SkipList) Add(key string, value []byte)  {
+func (skiplist *SkipList) Add(key string, value []byte) *SkipListNode{
 
 	level := skiplist.roll()
 	node := &SkipListNode{key, value,  make([]*SkipListNode, level+1)}
@@ -51,24 +64,76 @@ func (skiplist *SkipList) Add(key string, value []byte)  {
 	current := skiplist.head
 	for i := skiplist.height-1; i >= 0; i-- {
 		next := current.next[i]
-		for ; next != nil; current = next {
+		for next != nil {
+			current = next
 			next = current.next[i]
-			if next.key > key {
+			if next == nil || next.key > key {
 				break
 			}
 		}
 		if i <= level {
+			skiplist.size++
 			node.next[i] = next
 			current.next[i] = node
-			skiplist.size++
 		}
 	}
+	return node
+}
+
+func (skiplist *SkipList) Find(key string) *SkipListNode {
+
+	current := skiplist.head
+	for i := skiplist.height-1; i >= 0; i-- {
+		next := current.next[i]
+		for next != nil {
+			current = next
+			next = current.next[i]
+			if next == nil || current.key > key {
+				break
+			}
+			if current.key == key {
+				return current
+			}
+		}
+	}
+
+	return nil
+}
+
+func (skiplist *SkipList) Remove(key string) *SkipListNode {
+
+	current := skiplist.head
+	for i := skiplist.height-1; i >= 0; i-- {
+		next := current.next[i]
+		for next != nil {
+			current = next
+			next = current.next[i]
+			if next == nil || current.key > key {
+				break
+			}
+			if current.key == key {
+				// kod memetablea promijeniti tombstone ?
+				// TODO dodati tombstone i time
+				skiplist.size--
+				tmp := current
+				current = current.next[i]
+				return tmp
+			}
+		}
+	}
+
+	return nil
+
 
 }
 
 func main() {
 
-		root := SkipListNode{"start", nil, make([]*SkipListNode, 2)}
-		sl := SkipList{25, 1, 1, &root}
+
+		sl := CreateSkipList(25)
 		sl.Add("aca", []byte("123"))
+		sl.Add("djura", []byte("kas"))
+		ga := sl.Find("aca")
+		sl.Remove(ga.Key())
+		sl.roll()
 }

@@ -10,12 +10,8 @@ import (
 	"time"
 )
 
-type BloomFilter interface {
-	Add()
-	Query()
-}
 
-type BloomF struct {
+type BloomFilter struct {
 	M     uint          // Velicina Set-a
 	K     uint          // Broj hash funkcija
 	P     float64       // False-positive vjerovatnoca
@@ -24,16 +20,16 @@ type BloomF struct {
 	TimeConst uint
 }
 
-func Create(n uint, p float64) *BloomF {
+func CreateBloomFilter(n uint, p float64) *BloomFilter {
 	m := CalculateM(int(n), p)
 	k := CalculateK(int(n), m)
 	hashs, tc := CreateHashFunctions(k)
-	bf := BloomF{m, k, p, make([]byte, m), hashs, tc}
+	bf := BloomFilter{m, k, p, make([]byte, m), hashs, tc}
 	fmt.Printf("Created Bloom Filter with M = %d, K = %d\n", m, k)
 	return &bf
 }
 
-func (bf *BloomF) Add(elem string) {
+func (bf *BloomFilter) Add(elem string) {
 	for _, hashF := range bf.hashs {
 		i := HashIt(hashF, elem, bf.M)
 		bf.Set[i] = 1
@@ -41,7 +37,7 @@ func (bf *BloomF) Add(elem string) {
 	fmt.Printf("Element %s added !\n", elem)
 }
 
-func (bf *BloomF) Query(elem string) bool {
+func (bf *BloomFilter) Query(elem string) bool {
 	for _, hashF := range bf.hashs {
 		i := HashIt(hashF, elem, bf.M)
 		if bf.Set[i] != 1 {
@@ -88,7 +84,7 @@ func CopyHashFunctions(k uint, tc uint) ([]hash.Hash32) {
 
 func main() {
 
-	bf := Create(30, 2)
+	bf := CreateBloomFilter(30, 2)
 	bf.Add("Bojan")
 	bf.Add("Mićo")
 	bf.Add("Katarina")
@@ -124,7 +120,7 @@ func main() {
 	}
 
 	decoder := gob.NewDecoder(file)
-	var srs = new(BloomF)
+	var srs = new(BloomFilter)
 	file.Seek(0, 0)
 	for {
 		err = decoder.Decode(srs)
