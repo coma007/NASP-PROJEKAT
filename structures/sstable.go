@@ -13,7 +13,7 @@ type Table interface {
 	Write()
 }
 
-func CreateSStable(data SkipList, filename string)  (keys []string, offset []uint){
+func CreateSStable(data MemTable, filename string)  (keys []string, offset []uint){
 	keys = make([]string, 0)
 	offset = make([]uint, 0)
 	currentOffset := uint(0)
@@ -27,7 +27,7 @@ func CreateSStable(data SkipList, filename string)  (keys []string, offset []uin
 
 	// file length
 	bytesLen := make([]byte, 8)
-	binary.LittleEndian.PutUint64(bytesLen, uint64(data.Length()))
+	binary.LittleEndian.PutUint64(bytesLen, uint64(data.Size()))
 	bytesWritten, err := writer.Write(bytesLen)
 	currentOffset += uint(bytesWritten)
 	if err != nil {
@@ -40,7 +40,7 @@ func CreateSStable(data SkipList, filename string)  (keys []string, offset []uin
 	}
 
 	// We need to check if data is sorted
-	for node := data.head.next[0]; node != nil; node = node.next[0]{
+	for node := data.data.head.next[0]; node != nil; node = node.next[0]{
 		key := node.key
 		value := node.value
 		keys = append(keys, key)
@@ -205,15 +205,16 @@ func SStableFind(filename string, key string)  (ok bool, value []byte){
 
 func main() {
 
-	sl := CreateSkipList(25)
-	sl.Add("kopitaneskita", []byte("123"))
-	sl.Add("joca", []byte("123"))
-	sl.Add("mica", []byte("123"))
-	sl.Add("maca", []byte("123"))
-	sl.Add("zeljko", []byte("123"))
-	sl.Add("zdravomir", []byte("123"))
-	keys, offsets := CreateSStable(*sl, "sstable.db")
-	println(SStableFind("sstable.db", "maca"))
+	mt := CreateMemTable(25)
+	mt.Add("kopitaneskita", []byte("123"))
+	mt.Add("joca", []byte("123"))
+	mt.Add("mica", []byte("123"))
+	mt.Add("maca", []byte("123"))
+	mt.Add("zeljko", []byte("123"))
+	mt.Add("zdravomir", []byte("123"))
+	mt.Change("zeljko", []byte("234"))
+	keys, offsets := CreateSStable(*mt, "sstable.db")
+	println(SStableFind("sstable.db", "zeljko"))
 	index := Create(keys, offsets, "index.db")
 	keys, offsets = index.Write()
 	WriteSummary(keys, offsets, "summary.db")

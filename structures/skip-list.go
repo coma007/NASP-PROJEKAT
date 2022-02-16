@@ -119,10 +119,13 @@ func (skiplist *SkipList) Remove(key string) *SkipListNode {
 			if current.key == key {
 				// kod memetablea promijeniti tombstone ?
 				// TODO dodati tombstone i time
-				skiplist.size--
-				tmp := current
-				current = current.next[i]
-				return tmp
+				current.tombstone = true
+
+
+				//skiplist.size--
+				//tmp := current
+				//current = current.next[i]
+				//return tmp
 			}
 		}
 	}
@@ -132,13 +135,13 @@ func (skiplist *SkipList) Remove(key string) *SkipListNode {
 
 }
 
-func (sl *SkipList) Length() (length uint){
-	length = 0
-	for node := sl.head.next[0]; node != nil; node = node.next[0]{
-		length++
-	}
-	return
-}
+//func (sl *SkipList) Length() (length uint){
+//	length = 0
+//	for node := sl.head.next[0]; node != nil; node = node.next[0]{
+//		length++
+//	}
+//	return
+//}
 
 
 
