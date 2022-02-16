@@ -1,1 +1,8 @@
-package Key_Value_Engine
+package main
+
+import (
+	_ "Key-Value-Engine/structures"
+)
+
+func main() {
+}
