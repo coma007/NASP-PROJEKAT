@@ -62,6 +62,8 @@ func (c *Cache) Add(n *Node) {
 	if ok == true {
 		current := l.head
 		if current.key == n.key {  // ako pretrazujemo posljednji dodani
+			delete(c.mapOfData, n.key)
+			c.mapOfData[n.key] = n.value
 			return
 		}
 		for current.next.key != n.key {  // ide do elementa koji je prije onog koji se trazi
@@ -137,23 +139,23 @@ func (c *Cache) Print() {
 }
 
 
-func main()  {
-	fmt.Println("Pocetak...")
-
-	cache := CreateCache(4)
-
-	node := CreateNode("Katarina", []byte("necega"))
-	cache.Add(node)
-	node = CreateNode("Milica", []byte("nesto"))
-	cache.Add(node)
-	node = CreateNode("Bojan", []byte("blabla"))
-	cache.Add(node)
-	node = CreateNode("Sara", []byte("nesto"))
-	cache.Add(node)
-	node = CreateNode("Bojan", []byte("0"))
-	cache.Add(node)
-	node = CreateNode("Mico", []byte("necega"))
-	cache.Add(node)
-
-	cache.Print()
-}
+//func main()  {
+//	fmt.Println("Pocetak...")
+//
+//	cache := CreateCache(4)
+//
+//	node := CreateNode("Katarina", []byte("necega"))
+//	cache.Add(node)
+//	node = CreateNode("Milica", []byte("nesto"))
+//	cache.Add(node)
+//	node = CreateNode("Bojan", []byte("blabla"))
+//	cache.Add(node)
+//	node = CreateNode("Sara", []byte("nesto"))
+//	cache.Add(node)
+//	node = CreateNode("Sara" , []byte("0"))
+//	cache.Add(node)
+//	node = CreateNode("Mico", []byte("necega"))
+//	cache.Add(node)
+//
+//	cache.Print()
+//}
