@@ -16,7 +16,7 @@ type BloomFilter struct {
 	TimeConst uint
 }
 
-func Create(n uint, p float64) *BloomFilter {
+func CreateBloomFilter(n uint, p float64) *BloomFilter {
 	m := CalculateM(int(n), p)
 	k := CalculateK(int(n), m)
 	hashs, tc := CreateHashFunctions(k)
@@ -24,9 +24,9 @@ func Create(n uint, p float64) *BloomFilter {
 	return &bf
 }
 
-func (bf *BloomFilter) Add(elem string) {
+func (bf *BloomFilter) Add(elem Element) {
 	for _, hashF := range bf.hashs {
-	i := HashIt(hashF, elem, bf.M)
+	i := HashIt(hashF, elem.key, bf.M)
 	bf.Set[i] = 1
 	}
 }
