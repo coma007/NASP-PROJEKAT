@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-// SkipListNode
+// Element
 
 type Element struct {
 	key       string
@@ -138,12 +138,12 @@ func (skiplist *SkipList) Remove(key string) *Element {
 
 
 }
-
-func main() {
-		sl := CreateSkipList(25)
-		sl.Add("aca", []byte("123"))
-		sl.Add("djura", []byte("kas"))
-		ga := sl.Find("aca")
-		sl.Remove(ga.Key())
-		sl.roll()
-}
+//
+//func main() {
+//		sl := CreateSkipList(25)
+//		sl.Add("aca", []byte("123"))
+//		sl.Add("djura", []byte("kas"))
+//		ga := sl.Find("aca")
+//		sl.Remove(ga.Key())
+//		sl.roll()
+//}
