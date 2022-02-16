@@ -4,6 +4,8 @@ import (
 	"crypto/sha1"
 	"encoding/hex"
 	"fmt"
+	"log"
+	"os"
 )
 
 type MerkleRoot struct {
@@ -30,7 +32,8 @@ func Hash(data []byte) [20]byte {
 
 // ...
 
-func StringsToBytes(strings []string) [][] byte{
+// StringsToBytes - treba u slucaju da se posalje array stringova
+func StringsToBytes(strings []string) [][] byte {
 	data := [][] byte {}
 	for i:= 0; i < len(strings); i++ {
 		key_byte := []byte(strings[i])
@@ -40,41 +43,45 @@ func StringsToBytes(strings []string) [][] byte{
 }
 
 // CreateMerkleTree - funkcija od koje krece kriranje stabla
-func CreateMerkleTree(keys []string) MerkleRoot{
+func CreateMerkleTree(keys [][]byte) MerkleRoot {
+	//                keys []string
 
 	// string to byte
-	data := StringsToBytes(keys)
+	//data := StringsToBytes(keys)
 
-	leafs := Leafs(data)
-	all_nodes := CreateAllNodes(leafs)
+	// ako je proslijedjen array bajtova
+	data := keys
+
+	leaves := Leaves(data)
+	all_nodes := CreateAllNodes(leaves)
 
 	root := MerkleRoot{all_nodes[len(all_nodes) - 1][0]}
 	return root
 
 }
 
-// Leafs - formira listove stabla
-func Leafs(data [][]byte) []*Node{
-	leafs := []*Node{}
+// Leaves - formira listove stabla
+func Leaves(data [][]byte) []*Node {
+	leaves := []*Node{}
 
 	for i:= 0; i < len(data); i++ {
 		node := Node{Hash(data[i]), nil, nil}
-		leafs = append(leafs, &node)
+		leaves = append(leaves, &node)
 	}
 
-	return leafs
+	return leaves
 }
 
 // CreateAllNodes - kreira sve nivoe stabla od listova ka korijenu
-func CreateAllNodes(leafs []*Node) [][]*Node{
+func CreateAllNodes(leaves []*Node) [][]*Node {
 	// all_levels - lista nivoa (svaki nivo je lista cvorova)
 	all_levels := [][]*Node {}
-	all_levels = append(all_levels, leafs)
+	all_levels = append(all_levels, leaves)
 
 	// svi cvorovi jednog nivoa
 	level := []*Node {}
 
-	nodes := leafs
+	nodes := leaves
 
 	for len(nodes) > 1 {
 		for i := 0; i < len(nodes); i += 2 {
@@ -86,7 +93,7 @@ func CreateAllNodes(leafs []*Node) [][]*Node{
 				new_node_bytes := append(node1_data, node2_data...)
 				new_node := Node{Hash(new_node_bytes), node1, node2}
 				level = append(level, &new_node)
-			} else {  // ako nam fali cvor odgovarajuci cvor
+			} else {  // ako nam fali odgovarajuci cvor
 				node1 := nodes[i]
 				node2 := Node{data: [20]byte{}, left: nil, right: nil}
 				node1_data := node1.data[:]
@@ -120,17 +127,43 @@ func PrintTree(root *Node) {
 			queue = append(queue, e.right)
 		}
 	}
+}
 
+func WriteInFile(root *Node) {
+	file, err := os.OpenFile("data/metadata/metadata.txt", os.O_WRONLY, 0444)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	queue := make([] *Node, 0)
+	queue = append(queue, root)
+
+	for len(queue) != 0 {
+		e := queue[0]
+		queue = queue[1:]
+		bytes := e.data[:]
+		_, _ = file.Write(bytes)
+
+		if e.left != nil {
+			queue = append(queue, e.left)
+		}
+		if e.right != nil {
+			queue = append(queue, e.right)
+		}
+	}
 }
 
 func main(){
 	fmt.Println("Pocetak...")
 
 	stringovi := []string{"kljuc1", "key2", "kljuc3", "key", "kljuc5"}
-	root := CreateMerkleTree(stringovi)
+	bajtovi := StringsToBytes(stringovi)
+	root := CreateMerkleTree(bajtovi)
 	current := root.root
 
 	PrintTree(current)
+
+	WriteInFile(current)
 
 	fmt.Println("Kraj...")
 }
