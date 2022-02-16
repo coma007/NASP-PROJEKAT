@@ -75,11 +75,10 @@ func CopyHashFunctions(k uint, tc uint) ([]hash.Hash32) {
 	}
 	return h
 }
-
 //
 //func main() {
 //
-//	bf := Create(30, 2)
+//	bf := CreateBloomFilter(30, 2)
 //	bf.Add("Bojan")
 //	bf.Add("Mićo")
 //	bf.Add("Katarina")
