@@ -1,12 +1,12 @@
 package main
 
 import (
-	"encoding/gob"
+	//"encoding/gob"
 	"fmt"
 	"github.com/spaolacci/murmur3"
 	"hash"
 	"math"
-	"os"
+	//"os"
 	"time"
 )
 
@@ -82,55 +82,55 @@ func CopyHashFunctions(k uint, tc uint) ([]hash.Hash32) {
 	return h
 }
 
-func main() {
-
-	bf := CreateBloomFilter(30, 2)
-	bf.Add("Bojan")
-	bf.Add("Mićo")
-	bf.Add("Katarina")
-	bf.Add("Milica")
-	bf.Add("Miloš")
-	fmt.Println("\nNemanja ? ", bf.Query("Nemanja"))
-	fmt.Println("Katarina ? ", bf.Query("Katarina"))
-	bf.Add("Branko")
-	bf.Add("Gaga")
-	bf.Add("Djuro")
-	bf.Add("Suncica")
-	bf.Add("Ljupka")
-	bf.Add("Krinka")
-	bf.Add("Djole")
-	bf.Add("Mirjana")
-	bf.Add("Jovo")
-	bf.Add("Dado")
-	bf.Add("Mira")
-	fmt.Println("\nNemanja ? ", bf.Query("Nemanja"))
-	fmt.Println("Jovo ? ", bf.Query("Katarina"))
-
-	fmt.Println("\nSerialization in progress ...")
-
-	nwf, _ := os.Create("bf.gob")
-	nwf.Close()
-
-	file, _ := os.OpenFile("bf.gob", os.O_RDWR, 0666)
-	defer file.Close()
-	encoder := gob.NewEncoder(file)
-	err := encoder.Encode(bf)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	decoder := gob.NewDecoder(file)
-	var srs = new(BloomFilter)
-	file.Seek(0, 0)
-	for {
-		err = decoder.Decode(srs)
-		if err != nil {
-			fmt.Println(err)
-			break
-		}
-		fmt.Println(*srs)
-	}
-	srs.hashs = CopyHashFunctions(srs.K, srs.TimeConst)
-	fmt.Println("\nNemanja ? ", srs.Query("Nemanja"))
-	fmt.Println("Jovo ? ", srs.Query("Katarina"))
-}
+//func main() {
+//
+//	bf := CreateBloomFilter(30, 2)
+//	bf.Add("Bojan")
+//	bf.Add("Mićo")
+//	bf.Add("Katarina")
+//	bf.Add("Milica")
+//	bf.Add("Miloš")
+//	fmt.Println("\nNemanja ? ", bf.Query("Nemanja"))
+//	fmt.Println("Katarina ? ", bf.Query("Katarina"))
+//	bf.Add("Branko")
+//	bf.Add("Gaga")
+//	bf.Add("Djuro")
+//	bf.Add("Suncica")
+//	bf.Add("Ljupka")
+//	bf.Add("Krinka")
+//	bf.Add("Djole")
+//	bf.Add("Mirjana")
+//	bf.Add("Jovo")
+//	bf.Add("Dado")
+//	bf.Add("Mira")
+//	fmt.Println("\nNemanja ? ", bf.Query("Nemanja"))
+//	fmt.Println("Jovo ? ", bf.Query("Katarina"))
+//
+//	fmt.Println("\nSerialization in progress ...")
+//
+//	nwf, _ := os.Create("bf.gob")
+//	nwf.Close()
+//
+//	file, _ := os.OpenFile("bf.gob", os.O_RDWR, 0666)
+//	defer file.Close()
+//	encoder := gob.NewEncoder(file)
+//	err := encoder.Encode(bf)
+//	if err != nil {
+//		fmt.Println(err)
+//	}
+//
+//	decoder := gob.NewDecoder(file)
+//	var srs = new(BloomFilter)
+//	file.Seek(0, 0)
+//	for {
+//		err = decoder.Decode(srs)
+//		if err != nil {
+//			fmt.Println(err)
+//			break
+//		}
+//		fmt.Println(*srs)
+//	}
+//	srs.hashs = CopyHashFunctions(srs.K, srs.TimeConst)
+//	fmt.Println("\nNemanja ? ", srs.Query("Nemanja"))
+//	fmt.Println("Jovo ? ", srs.Query("Katarina"))
+//}

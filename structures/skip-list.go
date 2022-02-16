@@ -9,6 +9,7 @@ import (
 type SkipListNode struct {
 	key       string
 	value     []byte
+	tombstone bool
 	next      []*SkipListNode
 }
 
@@ -18,6 +19,10 @@ func (skiplist *SkipListNode) Key() string {
 
 func (skiplist *SkipListNode) Value() []byte {
 	return skiplist.value
+}
+
+func (skiplist *SkipListNode) Tombstone() bool {
+	return skiplist.tombstone
 }
 
 ////////////////////////////////////////////
@@ -34,7 +39,7 @@ type SkipList struct {
 }
 
 func  CreateSkipList(maxHeight int) *SkipList {
-	root := SkipListNode{"head", nil, make([]*SkipListNode, maxHeight+1)}
+	root := SkipListNode{"head", nil, false, make([]*SkipListNode, maxHeight+1)}
 	skiplist := SkipList{maxHeight, 1, 1, &root}
 	return &skiplist
 }
@@ -59,7 +64,7 @@ func (skiplist *SkipList) roll() int {
 func (skiplist *SkipList) Add(key string, value []byte) *SkipListNode{
 
 	level := skiplist.roll()
-	node := &SkipListNode{key, value,  make([]*SkipListNode, level+1)}
+	node := &SkipListNode{key, value,  false, make([]*SkipListNode, level+1)}
 
 	current := skiplist.head
 	for i := skiplist.height-1; i >= 0; i-- {
@@ -127,13 +132,23 @@ func (skiplist *SkipList) Remove(key string) *SkipListNode {
 
 }
 
-func main() {
-
-
-		sl := CreateSkipList(25)
-		sl.Add("aca", []byte("123"))
-		sl.Add("djura", []byte("kas"))
-		ga := sl.Find("aca")
-		sl.Remove(ga.Key())
-		sl.roll()
+func (sl *SkipList) Length() (length uint){
+	length = 0
+	for node := sl.head.next[0]; node != nil; node = node.next[0]{
+		length++
+	}
+	return
 }
+
+
+
+//func main() {
+//
+//
+//		sl := CreateSkipList(25)
+//		sl.Add("aca", []byte("123"))
+//		sl.Add("djura", []byte("kas"))
+//		ga := sl.Find("aca")
+//		sl.Remove(ga.Key())
+//		sl.roll()
+//}
