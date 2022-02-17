@@ -5,7 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="017f7892-6fed-4b64-9fc2-7301452aa76b" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/bf.gob" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/NASP-PROJEKAT.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/NASP-PROJEKAT.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/structures/cms.go" beforeDir="false" afterPath="$PROJECT_DIR$/structures/cms.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,6 +53,16 @@
       <package value="NASP-PROJEKAT" />
       <directory value="$PROJECT_DIR$" />
       <filePath value="|$PROJECT_DIR$/structures/merkle-tree.go" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="GoTestRunConfiguration" factoryName="Go Test">
+      <module name="NASP-PROJEKAT" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="DIRECTORY" />
+      <package value="Key-Value-Engine" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <framework value="gotest" />
       <method v="2" />
     </configuration>
     <recent_temporary>
