@@ -100,11 +100,11 @@ func (skiplist *SkipList) Find(key string) *Element {
 		for next != nil {
 			current = next
 			next = current.next[i]
-			if next == nil || current.key > key {
-				break
-			}
 			if current.key == key {
 				return current
+			}
+			if next == nil || current.key > key {
+				break
 			}
 		}
 	}
