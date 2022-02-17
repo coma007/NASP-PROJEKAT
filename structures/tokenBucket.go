@@ -1,12 +1,15 @@
 package main
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 type TokenBucket struct {
 	maxToken int          // maksimalan broj tokena koji staje u baket
 	currentToken int      // preostali broj tokena
-	rate int64            // vreme poslednjeg resetovanja  (sekunde)
-	lastTimestamp int64   // vreme poslednjeg punjenja baketa  (sekunde)
+	rate int64            // vreme koje je potrebno da se baket napuni (sekunde)
+	lastTimestamp int64   // vreme poslednjeg punjenja (sekunde)
 }
 
 func NewTokenBucket(rate int64, maximumTokens int) *TokenBucket {
@@ -22,13 +25,13 @@ func (tb *TokenBucket) CheckRequest() bool{
 	if time.Now().Unix()-tb.lastTimestamp > tb.rate {
 		tb.lastTimestamp = time.Now().Unix()
 		tb.currentToken = tb.maxToken
-		return true
 	}
 
-	if tb.currentToken > 0 {
-		tb.currentToken--
-		return true
+	if tb.currentToken <= 0 {
+		fmt.Println("Žao nam je ali vaš zahtev je odbijen :(")
+		return false
 	}
 	
-	return false
+	tb.currentToken--
+	return true
 }
