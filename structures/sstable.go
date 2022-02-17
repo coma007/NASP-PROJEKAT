@@ -24,7 +24,7 @@ type SSTable struct {
 func CreateSStable(data MemTable, filename string)  (table *SSTable){
 	generalFilename := "usertable-data-ic-" + filename + "-"
 	table = &SSTable{generalFilename, generalFilename + "Data.db", generalFilename + "Index.db",
-		generalFilename + "Summary.db", generalFilename + "Filter.db"}
+		generalFilename + "Summary.db", generalFilename + "Filter.gob"}
 
 
 	filter := CreateBloomFilter(data.Size(), 2)
@@ -140,10 +140,11 @@ func CreateSStable(data MemTable, filename string)  (table *SSTable){
 	index := Create(keys, offset, table.indexFilename)
 	keys, offsets := index.Write()
 	WriteSummary(keys, offsets, table.summaryFilename)
+	table.WriteTOC()
 	return
 }
 
-func (st *SSTable) SStableFind(filename string, key string)  (ok bool, value []byte){
+func (st *SSTable) SStableFind(key string)  (ok bool, value []byte){
 	ok = false
 
 	file, err := os.Open(st.SSTableFilename)
@@ -238,6 +239,67 @@ func (st *SSTable) SStableFind(filename string, key string)  (ok bool, value []b
 	return ok, value
 }
 
+func (st *SSTable) WriteTOC() {
+	filename := st.generalFilename + "TOC.txt"
+	file, err := os.Create(filename)
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	writer := bufio.NewWriter(file)
+
+	_, err = writer.WriteString(st.generalFilename + "\n")
+	if err != nil {
+		return
+	}
+	_, err = writer.WriteString(st.SSTableFilename + "\n")
+	if err != nil {
+		return
+	}
+	_, err = writer.WriteString(st.indexFilename + "\n")
+	if err != nil {
+		return
+	}
+	_, err = writer.WriteString(st.summaryFilename + "\n")
+	if err != nil {
+		return
+	}
+	_, err = writer.WriteString(st.filterFilename)
+	if err != nil {
+		return
+	}
+
+	err = writer.Flush()
+	if err != nil {
+		return
+	}
+}
+
+func readSSTable(filename string) (table *SSTable) {
+	filename = "usertable-data-ic-" + filename + "-TOC.txt"
+
+	file, err := os.Open(filename)
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	reader := bufio.NewReader(file)
+
+	generalFilename, _:= reader.ReadString('\n')
+	SSTableFilename, _:= reader.ReadString('\n')
+	indexFilename, _:= reader.ReadString('\n')
+	summaryFilename, _:= reader.ReadString('\n')
+	filterFilename, _:= reader.ReadString('\n')
+
+
+	table = &SSTable{generalFilename: generalFilename[:len(generalFilename)-1],
+		SSTableFilename: SSTableFilename[:len(SSTableFilename)-1], indexFilename: indexFilename[:len(indexFilename)-1],
+		summaryFilename: summaryFilename[:len(summaryFilename)-1], filterFilename: filterFilename[:len(filterFilename)-1]}
+	return
+}
+
 func main() {
 
 	mt := CreateMemTable(25)
@@ -249,7 +311,14 @@ func main() {
 	mt.Add("zdravomir", []byte("123"))
 	mt.Change("zeljko", []byte("234"))
 	table := CreateSStable(*mt, "1")
-	println(table.SStableFind("1", "zeljko"))
+	table = readSSTable("1")
+	ok, offset := FindSummary("zeljko", table.summaryFilename)
+	if ok {
+		ok, offset = FindIndex("zeljko", offset, table.indexFilename)
+		if ok {
+			println(table.SStableFind("zeljko"))
+		}
+	}
 
 
 

@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"encoding/binary"
 	"log"
+	"math/rand"
 	"os"
 )
 
@@ -36,11 +37,11 @@ func (index *SSIndex) Add(key string, offset uint) {
 	index.DataOffset = append(index.DataOffset, offset)
 }
 
-func (index *SSIndex) Find(key string) (ok bool, offset uint) {
+func FindIndex(key string, offset int64, filename string) (ok bool, dataOffset int64) {
 	ok = false
-	offset = 0
+	dataOffset = 0
 
-	file, err := os.Open(index.filename)
+	file, err := os.Open(filename)
 	if err != nil {
 		panic(err)
 	}
@@ -54,6 +55,11 @@ func (index *SSIndex) Find(key string) (ok bool, offset uint) {
 	}
 	fileLen := binary.LittleEndian.Uint64(bytes)
 	//println(fileLen)
+
+	_, err = file.Seek(offset, 0)
+	if err != nil {
+		return false, 0
+	}
 
 	var i uint64
 	for i = 0; i < fileLen; i++ {
@@ -86,7 +92,7 @@ func (index *SSIndex) Find(key string) (ok bool, offset uint) {
 		//println(newOffset)
 
 		if ok {
-			offset = uint(newOffset)
+			dataOffset = int64(newOffset)
 			break
 		}
 	}
@@ -118,12 +124,19 @@ func (index *SSIndex) Write() (keys []string, offsets []uint){
 		return
 	}
 
+	rangeKeys := make([]string, 0)
+	rangeOffsets := make([]uint, 0)
+	sampleKeys := make([]string, 0)
+	sampleOffsets := make([]uint, 0)
 	for i := range index.DataKeys {
 		key := index.DataKeys[i]
 		offset := index.DataOffset[i]
 		if i == 0 || i == (len(index.DataKeys) - 1) {
-			keys = append(keys, key)
-			offsets = append(offsets, currentOffset)
+			rangeKeys = append(rangeKeys, key)
+			rangeOffsets = append(rangeOffsets, currentOffset)
+		} else if rand.Intn(100) > 50 {
+			sampleKeys = append(sampleKeys, key)
+			sampleOffsets = append(sampleOffsets, currentOffset)
 		}
 		//log.Printf("Key: %d\n", key)
 		bytes := []byte(key)
@@ -160,6 +173,8 @@ func (index *SSIndex) Write() (keys []string, offsets []uint){
 		return
 	}
 
+	keys = append(rangeKeys, sampleKeys...)
+	offsets = append(rangeOffsets, sampleOffsets...)
 	return
 	//err = file.Close()
 	//if err != nil {
