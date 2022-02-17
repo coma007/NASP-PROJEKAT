@@ -1,9 +1,12 @@
 package main
 
 import (
+	//"encoding/gob"
+	"fmt"
 	"github.com/spaolacci/murmur3"
 	"hash"
 	"math"
+	//"os"
 	"time"
 )
 
@@ -75,7 +78,7 @@ func CopyHashFunctions(k uint, tc uint) ([]hash.Hash32) {
 	}
 	return h
 }
-//
+
 //func main() {
 //
 //	bf := CreateBloomFilter(30, 2)
