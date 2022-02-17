@@ -13,11 +13,25 @@ type Table interface {
 	Write()
 }
 
-func CreateSStable(data MemTable, filename string)  (keys []string, offset []uint){
-	keys = make([]string, 0)
-	offset = make([]uint, 0)
+type SSTable struct {
+	generalFilename	string
+	SSTableFilename	string
+	indexFilename	string
+	summaryFilename	string
+	filterFilename	string
+}
+
+func CreateSStable(data MemTable, filename string)  (table *SSTable){
+	generalFilename := "usertable-data-ic-" + filename + "-"
+	table = &SSTable{generalFilename, generalFilename + "Data.db", generalFilename + "Index.db",
+		generalFilename + "Summary.db", generalFilename + "Filter.db"}
+
+
+	filter := CreateBloomFilter(data.Size(), 2)
+	keys := make([]string, 0)
+	offset := make([]uint, 0)
 	currentOffset := uint(0)
-	file, err := os.Create(filename)
+	file, err := os.Create(table.SSTableFilename)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -46,6 +60,7 @@ func CreateSStable(data MemTable, filename string)  (keys []string, offset []uin
 		keys = append(keys, key)
 		offset = append(offset, currentOffset)
 
+		filter.Add(key)
 		//crc
 		crc := CRC32(value)
 		crcBytes := make([]byte, 4)
@@ -58,9 +73,18 @@ func CreateSStable(data MemTable, filename string)  (keys []string, offset []uin
 
 		//timestamp
 		//??
+		timestamp := node.timestamp
+		timestampBytes := make([]byte, 16)
+		copy(timestampBytes, timestamp)
+		//println(timestampBytes)
+		bytesWritten, err = writer.Write(timestampBytes)
+		if err != nil {
+			log.Fatal(err)
+		}
+		currentOffset += uint(bytesWritten)
 
 		//tombstone
-		tombstone := node.Tombstone()
+		tombstone := node.tombstone
 		tombstoneInt := uint8(0)
 		if tombstone {
 			tombstoneInt = 1
@@ -112,13 +136,17 @@ func CreateSStable(data MemTable, filename string)  (keys []string, offset []uin
 			return
 		}
 	}
+
+	index := Create(keys, offset, table.indexFilename)
+	keys, offsets := index.Write()
+	WriteSummary(keys, offsets, table.summaryFilename)
 	return
 }
 
-func SStableFind(filename string, key string)  (ok bool, value []byte){
+func (st *SSTable) SStableFind(filename string, key string)  (ok bool, value []byte){
 	ok = false
 
-	file, err := os.Open(filename)
+	file, err := os.Open(st.SSTableFilename)
 	if err != nil {
 		panic(err)
 	}
@@ -146,6 +174,13 @@ func SStableFind(filename string, key string)  (ok bool, value []byte){
 
 		// timestamp
 		// ??
+		timestampBytes := make([]byte, 16)
+		_, err = reader.Read(timestampBytes)
+		if err != nil {
+			panic(err)
+		}
+		timestamp := string(timestampBytes[:])
+		println(timestamp)
 
 		//tombstone
 
@@ -213,12 +248,9 @@ func main() {
 	mt.Add("zeljko", []byte("123"))
 	mt.Add("zdravomir", []byte("123"))
 	mt.Change("zeljko", []byte("234"))
-	keys, offsets := CreateSStable(*mt, "sstable.db")
-	println(SStableFind("sstable.db", "zeljko"))
-	index := Create(keys, offsets, "index.db")
-	keys, offsets = index.Write()
-	WriteSummary(keys, offsets, "summary.db")
-	FindSummary("maca", "summary.db")
+	table := CreateSStable(*mt, "1")
+	println(table.SStableFind("1", "zeljko"))
+
 
 
 	//println(index)

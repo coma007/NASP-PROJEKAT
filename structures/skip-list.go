@@ -1,28 +1,28 @@
 package main
 
 import (
+	"crypto/sha1"
 	"math/rand"
+	"time"
 )
 
-// SkipListNode
+// Element
 
-type SkipListNode struct {
+type Element struct {
 	key       string
 	value     []byte
+	next      []*Element
+	timestamp string
 	tombstone bool
-	next      []*SkipListNode
+	checksum  []byte
 }
 
-func (skiplist *SkipListNode) Key() string {
+func (skiplist *Element) Key() string {
 	return skiplist.key
 }
 
-func (skiplist *SkipListNode) Value() []byte {
+func (skiplist *Element) Value() []byte {
 	return skiplist.value
-}
-
-func (skiplist *SkipListNode) Tombstone() bool {
-	return skiplist.tombstone
 }
 
 ////////////////////////////////////////////
@@ -35,11 +35,15 @@ type SkipList struct {
 	maxHeight int
 	height    int
 	size      int
-	head      *SkipListNode
+	head      *Element
 }
 
 func  CreateSkipList(maxHeight int) *SkipList {
-	root := SkipListNode{"head", nil, false, make([]*SkipListNode, maxHeight+1)}
+	bytes := []byte("head")
+	crc_ := sha1.Sum(bytes)
+	crc := crc_[:]
+	root := Element{"head", nil, make([]*Element, maxHeight+1), time.Time{}.String(),
+		false, crc}
 	skiplist := SkipList{maxHeight, 1, 1, &root}
 	return &skiplist
 }
@@ -61,11 +65,14 @@ func (skiplist *SkipList) roll() int {
 	return level
 }
 
-func (skiplist *SkipList) Add(key string, value []byte) *SkipListNode{
+func (skiplist *SkipList) Add(key string, value []byte) *Element{
 
 	level := skiplist.roll()
-	node := &SkipListNode{key, value,  false, make([]*SkipListNode, level+1)}
-
+	bytes := []byte("head")
+	crc_ := sha1.Sum(bytes)
+	crc := crc_[:]
+	node := &Element{key, value,  make([]*Element, level+1), time.Time{}.String(),
+		false, crc}
 	current := skiplist.head
 	for i := skiplist.height-1; i >= 0; i-- {
 		next := current.next[i]
@@ -85,7 +92,7 @@ func (skiplist *SkipList) Add(key string, value []byte) *SkipListNode{
 	return node
 }
 
-func (skiplist *SkipList) Find(key string) *SkipListNode {
+func (skiplist *SkipList) Find(key string) *Element {
 
 	current := skiplist.head
 	for i := skiplist.height-1; i >= 0; i-- {
@@ -105,7 +112,7 @@ func (skiplist *SkipList) Find(key string) *SkipListNode {
 	return nil
 }
 
-func (skiplist *SkipList) Remove(key string) *SkipListNode {
+func (skiplist *SkipList) Remove(key string) *Element {
 
 	current := skiplist.head
 	for i := skiplist.height-1; i >= 0; i-- {
@@ -119,13 +126,10 @@ func (skiplist *SkipList) Remove(key string) *SkipListNode {
 			if current.key == key {
 				// kod memetablea promijeniti tombstone ?
 				// TODO dodati tombstone i time
-				current.tombstone = true
-
-
-				//skiplist.size--
-				//tmp := current
-				//current = current.next[i]
-				//return tmp
+				skiplist.size--
+				tmp := current
+				current = current.next[i]
+				return tmp
 			}
 		}
 	}
@@ -134,20 +138,8 @@ func (skiplist *SkipList) Remove(key string) *SkipListNode {
 
 
 }
-
-//func (sl *SkipList) Length() (length uint){
-//	length = 0
-//	for node := sl.head.next[0]; node != nil; node = node.next[0]{
-//		length++
-//	}
-//	return
-//}
-
-
-
+//
 //func main() {
-//
-//
 //		sl := CreateSkipList(25)
 //		sl.Add("aca", []byte("123"))
 //		sl.Add("djura", []byte("kas"))
