@@ -5,8 +5,11 @@ import (
 	"encoding/gob"
 	"fmt"
 	"hash/crc32"
+	"io"
+	"io/ioutil"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 	"unsafe"
 )
@@ -63,13 +66,23 @@ func (s *Segment) Dump(walPath string) {
 
 	path := walPath + "wal" + strconv.FormatUint(s.index, 10) + ".gob"
 	nwf, _ := os.Create(path)
-	nwf.Close()
+	err := nwf.Close()
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	file, _ := os.OpenFile(path, os.O_RDWR, 0666)
-	defer file.Close()
+	defer func(file *os.File) {
+		err = file.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(file)
+
+
 	encoder := gob.NewEncoder(file)
 	fmt.Println(s.data)
-	err := encoder.Encode(s.data)
+	err = encoder.Encode(s.data)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -138,6 +151,7 @@ func (w *Wal) NewSegment() {
    Timestamp = Timestamp of the operation in seconds
 */
 
+
 func (w  *Wal) Put(elem *Element) {
 
 	crc := elem.checksum
@@ -180,19 +194,95 @@ func (w  *Wal) Put(elem *Element) {
 
 }
 
-// TODO recover from wal dir
-// TODO remove segments from 0 to lowWaterMark
 
+func Recover(path string) *Wal{
+	wal := CreateWal(path)
 
-func main() {
-	w:= CreateWal(WAL_PATH)
-	w.Put(&Element{
-		key:       "keke",
-		value:     []byte("asdd"),
-		next:      nil,
-		timestamp: "",
-		tombstone: false,
-		checksum:  nil,
-	})
+	// citanje fajlova iz direktorijuma wal
+	files, err := ioutil.ReadDir(WAL_PATH[:len(WAL_PATH) - 1])  // skidanje "/" sa kraja
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	// vracanje posljednjeg segmenta u memoriju
+	current := files[len(files) - 1].Name()
+
+	// pronalazak indeksa posljednjeg dodanog segmenta
+	index_str := strings.Split(current, "wal")[1]
+	index_str = strings.Split(index_str, ".gob")[0]
+	index, err := strconv.ParseUint(index_str, 10, 64)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	// citanje posljednjeg dodanog fajla
+	file, err := os.Open(path + current)
+	if err != nil {
+		fmt.Println(err)
+	}
+	data, err := io.ReadAll(file)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	current_segment := Segment{
+		index:    index,
+		data:     nil,
+		size:     0,
+		capacity: SEGMENT_CAPACITY,
+	}
+
+	// upis podataka u memoriju
+	current_segment.addData(data)
+
+	wal.currentSegment = &current_segment
+
+	err = file.Close()
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	return wal
 }
+
+
+func (w *Wal) RemoveSegments() {
+
+	files, err := ioutil.ReadDir(WAL_PATH[:len(WAL_PATH) - 1])  // skidanje "/" sa kraja
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	for _, file := range files {
+		index_str := strings.Split(file.Name(), "wal")[1]
+		index_str = strings.Split(index_str, ".gob")[0]
+		index, err := strconv.ParseUint(index_str, 10, 64)
+		if err != nil {
+			fmt.Println(err)
+		}
+		index2 := uint(index)
+		if index2 <= w.lowWaterMark {
+			err = os.Remove(WAL_PATH + file.Name())
+			if err != nil {
+				fmt.Println(err)
+			}
+		}
+	}
+}
+
+
+//func main() {
+//	w:= CreateWal(WAL_PATH)
+//	w.Put(&Element{
+//		key:       "keke",
+//		value:     []byte("asdd"),
+//		next:      nil,
+//		timestamp: "",
+//		tombstone: false,
+//		checksum:  nil,
+//	})
+//
+//	//Recover(WAL_PATH)
+//	//w.RemoveSegments()
+//}
 
