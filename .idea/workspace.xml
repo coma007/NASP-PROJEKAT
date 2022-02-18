@@ -6,8 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="017f7892-6fed-4b64-9fc2-7301452aa76b" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/structures/bloom-filter.go" beforeDir="false" afterPath="$PROJECT_DIR$/structures/bloom-filter.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/structures/cache.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/structures/index.go" beforeDir="false" afterPath="$PROJECT_DIR$/structures/index.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/structures/merkle-tree.go" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/structures/sstable.go" beforeDir="false" afterPath="$PROJECT_DIR$/structures/sstable.go" afterDir="false" />
     </list>
@@ -96,7 +96,7 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="DlvLineBreakpoint">
           <url>file://$PROJECT_DIR$/structures/sstable.go</url>
-          <line>365</line>
+          <line>325</line>
           <option name="timeStamp" value="17" />
         </line-breakpoint>
       </breakpoints>

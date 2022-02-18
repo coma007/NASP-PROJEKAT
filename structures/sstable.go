@@ -285,46 +285,6 @@ func (st *SSTable) WriteTOC() {
 	}
 }
 
-func writeBloomFilter(filename string, bf *BloomFilter) {
-	file, err := os.Create(filename)
-	if err != nil {
-		panic(err)
-	}
-	defer file.Close()
-
-	encoder := gob.NewEncoder(file)
-	err = encoder.Encode(bf)
-	if err != nil {
-		panic(err)
-	}
-}
-
-func readBloomFilter(filename string) (bf *BloomFilter) {
-	file, err := os.Open(filename)
-	if err != nil {
-		return nil
-	}
-	defer file.Close()
-
-	decoder := gob.NewDecoder(file)
-	bf = new(BloomFilter)
-	_, err = file.Seek(0, 0)
-	if err != nil {
-		return nil
-	}
-
-	for {
-		err = decoder.Decode(bf)
-		if err != nil {
-			fmt.Println(err)
-			break
-		}
-		fmt.Println(*bf)
-	}
-	bf.hashs = CopyHashFunctions(bf.K, bf.TimeConst)
-	return
-}
-
 func readSSTable(filename string) (table *SSTable) {
 	filename = "data/sstable/usertable-data-ic-" + filename + "-lev1-TOC.txt"
 
