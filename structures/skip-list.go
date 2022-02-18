@@ -6,30 +6,6 @@ import (
 	"time"
 )
 
-// Element
-
-type Element struct {
-	key       string
-	value     []byte
-	next      []*Element
-	timestamp string
-	tombstone bool
-	checksum  []byte
-}
-
-func (skiplist *Element) Key() string {
-	return skiplist.key
-}
-
-func (skiplist *Element) Value() []byte {
-	return skiplist.value
-}
-
-////////////////////////////////////////////
-
-
-// SkipList
-
 
 type SkipList struct {
 	maxHeight int
@@ -71,7 +47,7 @@ func (skiplist *SkipList) Add(key string, value []byte) *Element{
 	bytes := []byte("head")
 	crc_ := sha1.Sum(bytes)
 	crc := crc_[:]
-	node := &Element{key, value,  make([]*Element, level+1), time.Time{}.String(),
+	node := &Element{key, value,  make([]*Element, level+1), time.Now().String(),
 		       false, crc}
 	current := skiplist.head
 	for i := skiplist.height-1; i >= 0; i-- {
