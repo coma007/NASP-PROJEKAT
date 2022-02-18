@@ -2,7 +2,6 @@ package main
 
 import (
 	//"encoding/gob"
-	//"fmt"
 	"github.com/spaolacci/murmur3"
 	"hash"
 	"math"
