@@ -1,12 +1,13 @@
 package main
 
 import (
+	"bufio"
 	"encoding/binary"
-	"encoding/gob"
 	"fmt"
 	"hash/crc32"
 	"io"
 	"io/ioutil"
+	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -53,7 +54,7 @@ func (s *Segment) Data() []byte {
 
 func (s *Segment) addData(elemData []byte) int {
 	for i := 0; i < len(elemData); i++ {
-		if s.size > s.capacity {
+		if s.size >= s.capacity {
 			return i
 		}
 		s.data = append(s.data, elemData[i])
@@ -64,28 +65,35 @@ func (s *Segment) addData(elemData []byte) int {
 
 func (s *Segment) Dump(walPath string) {
 
-	path := walPath + "wal" + strconv.FormatUint(s.index, 10) + ".gob"
+	path := walPath + "wal" + strconv.FormatUint(s.index, 10) + ".log"
 	nwf, _ := os.Create(path)
 	err := nwf.Close()
 	if err != nil {
 		fmt.Println(err)
 	}
+	fmt.Println("cur", s.data)
 
-	file, _ := os.OpenFile(path, os.O_RDWR, 0666)
-	defer func(file *os.File) {
-		err = file.Close()
-		if err != nil {
-			fmt.Println(err)
-		}
-	}(file)
-
-
-	encoder := gob.NewEncoder(file)
-	fmt.Println(s.data)
-	err = encoder.Encode(s.data)
+	file, err := os.OpenFile(path, os.O_WRONLY, 0666)
 	if err != nil {
-		fmt.Println(err)
+		log.Fatal(err)
 	}
+	defer file.Close()
+	bufferedWriter := bufio.NewWriter(file)
+	err = bufferedWriter.Flush()
+	if err != nil {
+		return
+	}
+	bs, err := bufferedWriter.Write(s.data)
+	err = bufferedWriter.Flush()
+	if err != nil {
+		return
+	}
+	//fmt.Println(s.data)
+	fmt.Println("bytes", bs)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 
 }
 
@@ -121,6 +129,8 @@ func CreateWal(path string) *Wal{
 }
 
 func (w *Wal) Dump() {
+
+	fmt.Println("data", w.currentSegment.data)
 	w.currentSegment.Dump(w.path)
 }
 
@@ -183,9 +193,9 @@ func (w  *Wal) Put(elem *Element) {
 	elemData = append(elemData, key...)
 	elemData = append(elemData, value...)
 
-	fmt.Println(len(elemData))
 	start := 0
 	for start >= 0 {
+		//fmt.Println(elemData[start:])
 		start = w.CurrentSegment().addData(elemData[start:])
 		if start != -1 {
 			w.NewSegment()
@@ -209,7 +219,7 @@ func Recover(path string) *Wal{
 
 	// pronalazak indeksa posljednjeg dodanog segmenta
 	index_str := strings.Split(current, "wal")[1]
-	index_str = strings.Split(index_str, ".gob")[0]
+	index_str = strings.Split(index_str, ".log")[0]
 	index, err := strconv.ParseUint(index_str, 10, 64)
 	if err != nil {
 		fmt.Println(err)
@@ -224,6 +234,7 @@ func Recover(path string) *Wal{
 	if err != nil {
 		fmt.Println(err)
 	}
+
 
 	currentSegment := Segment{
 		index:    index,
@@ -243,6 +254,8 @@ func Recover(path string) *Wal{
 		fmt.Println(err)
 	}
 
+	fmt.Println(wal.currentSegment.size)
+	fmt.Println(wal.currentSegment.data)
 	return wal
 }
 
@@ -256,7 +269,7 @@ func (w *Wal) RemoveSegments() {
 
 	for _, file := range files {
 		index_str := strings.Split(file.Name(), "wal")[1]
-		index_str = strings.Split(index_str, ".gob")[0]
+		index_str = strings.Split(index_str, ".log")[0]
 		index, err := strconv.ParseUint(index_str, 10, 64)
 		if err != nil {
 			fmt.Println(err)
@@ -283,22 +296,24 @@ func (w *Wal) RemoveSegments() {
 // moze npr da se segment strpa u memoriju, i kad se izvrsi provjera, pravi se novi segment i
 // u njega se stavlja samo 4. element jer on nije na disku, a stari segment se brise
 // ovo moze da se koristi kad se u sred put-a prekine program, a mem table nije pun
+// TODO moramo posljednji segment dumpovati na kraju !!!
 
 
 
+func main() {
+	w:= CreateWal(WAL_PATH)
+	w.Put(&Element{
+		key:       "keke",
+		value:     []byte("asdd"),
+		next:      nil,
+		timestamp: "",
+		tombstone: false,
+		checksum:  nil,
+	})
 
-//func main() {
-//	w:= CreateWal(WAL_PATH)
-//	w.Put(&Element{
-//		key:       "keke",
-//		value:     []byte("asdd"),
-//		next:      nil,
-//		timestamp: "",
-//		tombstone: false,
-//		checksum:  nil,
-//	})
-//
-//	//Recover(WAL_PATH)
-//	//w.RemoveSegments()
-//}
+	//Recover(WAL_PATH)
+	//w.RemoveSegments()
+
+	//w.Dump()
+}
 
