@@ -225,7 +225,7 @@ func Recover(path string) *Wal{
 		fmt.Println(err)
 	}
 
-	current_segment := Segment{
+	currentSegment := Segment{
 		index:    index,
 		data:     nil,
 		size:     0,
@@ -233,9 +233,10 @@ func Recover(path string) *Wal{
 	}
 
 	// upis podataka u memoriju
-	current_segment.addData(data)
+	currentSegment.addData(data)
 
-	wal.currentSegment = &current_segment
+	wal.currentSegment = &currentSegment
+	wal.segments = append(wal.segments, &currentSegment)
 
 	err = file.Close()
 	if err != nil {
