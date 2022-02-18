@@ -137,7 +137,7 @@ func CreateSStable(data MemTable, filename string)  (table *SSTable){
 		}
 	}
 
-	index := Create(keys, offset, table.indexFilename)
+	index := CreateIndex(keys, offset, table.indexFilename)
 	keys, offsets := index.Write()
 	WriteSummary(keys, offsets, table.summaryFilename)
 	table.WriteTOC()
@@ -300,38 +300,23 @@ func readSSTable(filename string) (table *SSTable) {
 	return
 }
 
-func main() {
-
-	mt := CreateMemTable(25)
-	mt.Add("kopitaneskita", []byte("123"))
-	mt.Add("joca", []byte("123"))
-	mt.Add("mica", []byte("123"))
-	mt.Add("maca", []byte("123"))
-	mt.Add("zeljko", []byte("123"))
-	mt.Add("zdravomir", []byte("123"))
-	mt.Change("zeljko", []byte("234"))
-	table := CreateSStable(*mt, "1")
-	table = readSSTable("1")
-	ok, offset := FindSummary("zeljko", table.summaryFilename)
-	if ok {
-		ok, offset = FindIndex("zeljko", offset, table.indexFilename)
-		if ok {
-			println(table.SStableFind("zeljko"))
-		}
-	}
-
-
-
-	//println(index)
-	//index := SSIndex{OffsetSize: 8, KeySizeNumber: 2, filename: "index.db"}
-	//index.Add("Marko", 0)
-	//index.Add("Zivodrag", 10)
-	//index.Add("Jovan", 20)
-	//index.Add("Mirko", 30)
-	//index.Add("Petar", 40)
-	//
-	//
-	//index.Write()
-	//
-	//fmt.Println(index.Find("Zivodrag"))
-}
+//func main() {
+//
+//	mt := CreateMemTable(25)
+//	mt.Add("kopitaneskita", []byte("123"))
+//	mt.Add("joca", []byte("123"))
+//	mt.Add("mica", []byte("123"))
+//	mt.Add("maca", []byte("123"))
+//	mt.Add("zeljko", []byte("123"))
+//	mt.Add("zdravomir", []byte("123"))
+//	mt.Change("zeljko", []byte("234"))
+//	table := CreateSStable(*mt, "1")
+//	table = readSSTable("1")
+//	ok, offset := FindSummary("zeljko", table.summaryFilename)
+//	if ok {
+//		ok, offset = FindIndex("zeljko", offset, table.indexFilename)
+//		if ok {
+//			println(table.SStableFind("zeljko"))
+//		}
+//	}
+//}

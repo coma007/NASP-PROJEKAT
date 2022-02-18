@@ -23,7 +23,7 @@ type SSIndex struct {
 	filename	string
 }
 
-func Create(keys []string, offset []uint, filename string) *SSIndex {
+func CreateIndex(keys []string, offset []uint, filename string) *SSIndex {
 	// We need to check if data is sorted
 	index := SSIndex{filename: filename}
 	for i, key := range keys{
