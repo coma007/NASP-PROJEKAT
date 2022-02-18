@@ -3,6 +3,8 @@ package main
 import (
 	"bufio"
 	"encoding/binary"
+	"encoding/gob"
+	"fmt"
 	"log"
 	"os"
 )
@@ -22,7 +24,7 @@ type SSTable struct {
 }
 
 func CreateSStable(data MemTable, filename string)  (table *SSTable){
-	generalFilename := "usertable-data-ic-" + filename + "-"
+	generalFilename := "data/sstable/usertable-data-ic-" + filename + "-lev1-"
 	table = &SSTable{generalFilename, generalFilename + "Data.db", generalFilename + "Index.db",
 		generalFilename + "Summary.db", generalFilename + "Filter.gob"}
 
@@ -60,7 +62,7 @@ func CreateSStable(data MemTable, filename string)  (table *SSTable){
 		keys = append(keys, key)
 		offset = append(offset, currentOffset)
 
-		filter.Add(key)
+		filter.Add(*node)
 		//crc
 		crc := CRC32(value)
 		crcBytes := make([]byte, 4)
@@ -144,7 +146,7 @@ func CreateSStable(data MemTable, filename string)  (table *SSTable){
 	return
 }
 
-func (st *SSTable) SStableFind(key string)  (ok bool, value []byte){
+func (st *SSTable) SStableFind(key string, offset int64)  (ok bool, value []byte){
 	ok = false
 
 	file, err := os.Open(st.SSTableFilename)
@@ -162,9 +164,16 @@ func (st *SSTable) SStableFind(key string)  (ok bool, value []byte){
 	fileLen := binary.LittleEndian.Uint64(bytes)
 	println(fileLen)
 
+	_, err = file.Seek(offset, 0)
+	if err != nil {
+		return false, nil
+	}
+	reader = bufio.NewReader(file)
+
 	var i uint64
 	for i = 0; i < fileLen; i++ {
 		deleted := false
+
 		// crc
 		crcBytes := make([]byte, 4)
 		_, err = reader.Read(crcBytes)
@@ -277,7 +286,7 @@ func (st *SSTable) WriteTOC() {
 }
 
 func readSSTable(filename string) (table *SSTable) {
-	filename = "usertable-data-ic-" + filename + "-TOC.txt"
+	filename = "data/sstable/usertable-data-ic-" + filename + "-lev1-TOC.txt"
 
 	file, err := os.Open(filename)
 	if err != nil {
@@ -300,23 +309,23 @@ func readSSTable(filename string) (table *SSTable) {
 	return
 }
 
-//func main() {
-//
-//	mt := CreateMemTable(25)
-//	mt.Add("kopitaneskita", []byte("123"))
-//	mt.Add("joca", []byte("123"))
-//	mt.Add("mica", []byte("123"))
-//	mt.Add("maca", []byte("123"))
-//	mt.Add("zeljko", []byte("123"))
-//	mt.Add("zdravomir", []byte("123"))
-//	mt.Change("zeljko", []byte("234"))
-//	table := CreateSStable(*mt, "1")
-//	table = readSSTable("1")
-//	ok, offset := FindSummary("zeljko", table.summaryFilename)
-//	if ok {
-//		ok, offset = FindIndex("zeljko", offset, table.indexFilename)
-//		if ok {
-//			println(table.SStableFind("zeljko"))
-//		}
-//	}
-//}
+func main() {
+
+	mt := CreateMemTable(25)
+	mt.Add("kopitaneskita", []byte("123"))
+	mt.Add("joca", []byte("123"))
+	mt.Add("mica", []byte("123"))
+	mt.Add("maca", []byte("123"))
+	mt.Add("zeljko", []byte("123"))
+	mt.Add("zdravomir", []byte("123"))
+	mt.Change("zeljko", []byte("234"))
+	table := CreateSStable(*mt, "1")
+	table = readSSTable("1")
+	ok, offset := FindSummary("zeljko", table.summaryFilename)
+	if ok {
+		ok, offset = FindIndex("zeljko", offset, table.indexFilename)
+		if ok {
+			println(table.SStableFind("zeljko", offset))
+		}
+	}
+}

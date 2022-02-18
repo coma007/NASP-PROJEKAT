@@ -61,6 +61,8 @@ func FindIndex(key string, offset int64, filename string) (ok bool, dataOffset i
 		return false, 0
 	}
 
+	reader = bufio.NewReader(file)
+
 	var i uint64
 	for i = 0; i < fileLen; i++ {
 		bytes := make([]byte, 8)
@@ -81,6 +83,8 @@ func FindIndex(key string, offset int64, filename string) (ok bool, dataOffset i
 
 		if nodeKey == key {
 			ok = true
+		} else if nodeKey > key {
+			return false, 0
 		}
 
 		bytes = make([]byte, 8)
