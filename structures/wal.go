@@ -271,6 +271,21 @@ func (w *Wal) RemoveSegments() {
 	}
 }
 
+// TODO uklanjanje kose
+// TODO prodiskutovati recovery i remove segments
+// TODO wal_index.log
+// TODO recovery/scan -> struktura index: putanja
+
+// TODO recovery -> sta je rekao na predavanjima:
+// npr. upisuju se 3 podatka u wal, zatim 4. i svi su u istom segmentu,
+// ova prva tri su stigla da se upisu na disk a 4. nije
+// prilikom recovery-a se uzimaju podaci iz tekuceg segmenta, provjerava se da li su na disku
+// moze npr da se segment strpa u memoriju, i kad se izvrsi provjera, pravi se novi segment i
+// u njega se stavlja samo 4. element jer on nije na disku, a stari segment se brise
+// ovo moze da se koristi kad se u sred put-a prekine program, a mem table nije pun
+
+
+
 
 //func main() {
 //	w:= CreateWal(WAL_PATH)

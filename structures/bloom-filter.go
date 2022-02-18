@@ -1,9 +1,15 @@
 package main
 
 import (
+	"encoding/gob"
+	"fmt"
+	"os"
+
+	//"encoding/gob"
 	"github.com/spaolacci/murmur3"
 	"hash"
 	"math"
+	//"os"
 	"time"
 )
 
@@ -75,7 +81,47 @@ func CopyHashFunctions(k uint, tc uint) ([]hash.Hash32) {
 	}
 	return h
 }
-//
+
+func writeBloomFilter(filename string, bf *BloomFilter) {
+	file, err := os.Create(filename)
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	encoder := gob.NewEncoder(file)
+	err = encoder.Encode(bf)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func readBloomFilter(filename string) (bf *BloomFilter) {
+	file, err := os.Open(filename)
+	if err != nil {
+		return nil
+	}
+	defer file.Close()
+
+	decoder := gob.NewDecoder(file)
+	bf = new(BloomFilter)
+	_, err = file.Seek(0, 0)
+	if err != nil {
+		return nil
+	}
+
+	for {
+		err = decoder.Decode(bf)
+		if err != nil {
+			fmt.Println(err)
+			break
+		}
+		fmt.Println(*bf)
+	}
+	bf.hashs = CopyHashFunctions(bf.K, bf.TimeConst)
+	return
+}
+
 //func main() {
 //
 //	bf := CreateBloomFilter(30, 2)
