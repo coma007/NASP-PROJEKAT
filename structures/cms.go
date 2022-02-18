@@ -18,7 +18,7 @@ type CountMS struct {
 	TimeConst uint
 }
 
-func Create(p float64, d float64) *CountMS {
+func CreateCMS(p float64, d float64) *CountMS {
 	m := findM(p)
 	k := findK(d)
 	hashs, tc := createHashFunctions(k)
@@ -83,7 +83,7 @@ func createHashFunctions(k uint) ([]hash.Hash32, uint) {
 //
 //func main() {
 //
-//	bf := Create(0.1, 0.01)
+//	bf := CreateCMS(0.1, 0.01)
 //	bf.Add("Bojan")
 //	bf.Add("Mićo")
 //	bf.Add("Nemanja")
