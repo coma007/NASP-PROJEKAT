@@ -153,17 +153,17 @@ func WriteInFile(root *Node) {
 	}
 }
 
-func main(){
-	fmt.Println("Pocetak...")
-
-	stringovi := []string{"kljuc1", "key2", "kljuc3", "key", "kljuc5"}
-	bajtovi := StringsToBytes(stringovi)
-	root := CreateMerkleTree(bajtovi)
-	current := root.root
-
-	PrintTree(current)
-
-	WriteInFile(current)
-
-	fmt.Println("Kraj...")
-}
+//func main(){
+//	fmt.Println("Pocetak...")
+//
+//	stringovi := []string{"kljuc1", "key2", "kljuc3", "key", "kljuc5"}
+//	bajtovi := StringsToBytes(stringovi)
+//	root := CreateMerkleTree(bajtovi)
+//	current := root.root
+//
+//	PrintTree(current)
+//
+//	WriteInFile(current)
+//
+//	fmt.Println("Kraj...")
+//}
