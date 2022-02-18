@@ -1,15 +1,13 @@
 package main
 
 import (
-	"encoding/gob"
-	"fmt"
+	//"encoding/gob"
 	"github.com/spaolacci/murmur3"
 	"hash"
 	"math"
-	"os"
+	//"os"
 	"time"
 )
-
 
 type BloomFilter struct {
 	M     uint          // Velicina Set-a
@@ -25,16 +23,14 @@ func CreateBloomFilter(n uint, p float64) *BloomFilter {
 	k := CalculateK(int(n), m)
 	hashs, tc := CreateHashFunctions(k)
 	bf := BloomFilter{m, k, p, make([]byte, m), hashs, tc}
-	fmt.Printf("Created Bloom Filter with M = %d, K = %d\n", m, k)
 	return &bf
 }
 
-func (bf *BloomFilter) Add(elem string) {
+func (bf *BloomFilter) Add(elem Element) {
 	for _, hashF := range bf.hashs {
-		i := HashIt(hashF, elem, bf.M)
-		bf.Set[i] = 1
+	i := HashIt(hashF, elem.key, bf.M)
+	bf.Set[i] = 1
 	}
-	fmt.Printf("Element %s added !\n", elem)
 }
 
 func (bf *BloomFilter) Query(elem string) bool {
@@ -82,55 +78,55 @@ func CopyHashFunctions(k uint, tc uint) ([]hash.Hash32) {
 	return h
 }
 
-func main() {
-
-	bf := CreateBloomFilter(30, 2)
-	bf.Add("Bojan")
-	bf.Add("Mićo")
-	bf.Add("Katarina")
-	bf.Add("Milica")
-	bf.Add("Miloš")
-	fmt.Println("\nNemanja ? ", bf.Query("Nemanja"))
-	fmt.Println("Katarina ? ", bf.Query("Katarina"))
-	bf.Add("Branko")
-	bf.Add("Gaga")
-	bf.Add("Djuro")
-	bf.Add("Suncica")
-	bf.Add("Ljupka")
-	bf.Add("Krinka")
-	bf.Add("Djole")
-	bf.Add("Mirjana")
-	bf.Add("Jovo")
-	bf.Add("Dado")
-	bf.Add("Mira")
-	fmt.Println("\nNemanja ? ", bf.Query("Nemanja"))
-	fmt.Println("Jovo ? ", bf.Query("Katarina"))
-
-	fmt.Println("\nSerialization in progress ...")
-
-	nwf, _ := os.Create("bf.gob")
-	nwf.Close()
-
-	file, _ := os.OpenFile("bf.gob", os.O_RDWR, 0666)
-	defer file.Close()
-	encoder := gob.NewEncoder(file)
-	err := encoder.Encode(bf)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	decoder := gob.NewDecoder(file)
-	var srs = new(BloomFilter)
-	file.Seek(0, 0)
-	for {
-		err = decoder.Decode(srs)
-		if err != nil {
-			fmt.Println(err)
-			break
-		}
-		fmt.Println(*srs)
-	}
-	srs.hashs = CopyHashFunctions(srs.K, srs.TimeConst)
-	fmt.Println("\nNemanja ? ", srs.Query("Nemanja"))
-	fmt.Println("Jovo ? ", srs.Query("Katarina"))
-}
+//func main() {
+//
+//	bf := CreateBloomFilter(30, 2)
+//	bf.Add("Bojan")
+//	bf.Add("Mićo")
+//	bf.Add("Katarina")
+//	bf.Add("Milica")
+//	bf.Add("Miloš")
+//	fmt.Println("\nNemanja ? ", bf.Query("Nemanja"))
+//	fmt.Println("Katarina ? ", bf.Query("Katarina"))
+//	bf.Add("Branko")
+//	bf.Add("Gaga")
+//	bf.Add("Djuro")
+//	bf.Add("Suncica")
+//	bf.Add("Ljupka")
+//	bf.Add("Krinka")
+//	bf.Add("Djole")
+//	bf.Add("Mirjana")
+//	bf.Add("Jovo")
+//	bf.Add("Dado")
+//	bf.Add("Mira")
+//	fmt.Println("\nNemanja ? ", bf.Query("Nemanja"))
+//	fmt.Println("Jovo ? ", bf.Query("Katarina"))
+//
+//	fmt.Println("\nSerialization in progress ...")
+//
+//	nwf, _ := os.Create("bf.gob")
+//	nwf.Close()
+//
+//	file, _ := os.OpenFile("bf.gob", os.O_RDWR, 0666)
+//	defer file.Close()
+//	encoder := gob.NewEncoder(file)
+//	err := encoder.Encode(bf)
+//	if err != nil {
+//		fmt.Println(err)
+//	}
+//
+//	decoder := gob.NewDecoder(file)
+//	var srs = new(BloomFilter)
+//	file.Seek(0, 0)
+//	for {
+//		err = decoder.Decode(srs)
+//		if err != nil {
+//			fmt.Println(err)
+//			break
+//		}
+//		fmt.Println(*srs)
+//	}
+//	srs.hashs = CopyHashFunctions(srs.K, srs.TimeConst)
+//	fmt.Println("\nNemanja ? ", srs.Query("Nemanja"))
+//	fmt.Println("Jovo ? ", srs.Query("Katarina"))
+//}
