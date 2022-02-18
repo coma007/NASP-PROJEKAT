@@ -9,20 +9,20 @@ import (
 )
 
 type MerkleRoot struct {
-	root *Node
+	root *MerkleNode
 }
 
 func (mr *MerkleRoot) String() string{
 	return mr.root.String()
 }
 
-type Node struct {
+type MerkleNode struct {
 	data [20]byte
-	left *Node
-	right *Node
+	left *MerkleNode
+	right *MerkleNode
 }
 
-func (n *Node) String() string {
+func (n *MerkleNode) String() string {
 	return hex.EncodeToString(n.data[:])
 }
 
@@ -61,11 +61,11 @@ func CreateMerkleTree(keys [][]byte) MerkleRoot {
 }
 
 // Leaves - formira listove stabla
-func Leaves(data [][]byte) []*Node {
-	leaves := []*Node{}
+func Leaves(data [][]byte) []*MerkleNode {
+	leaves := []*MerkleNode{}
 
 	for i:= 0; i < len(data); i++ {
-		node := Node{Hash(data[i]), nil, nil}
+		node := MerkleNode{Hash(data[i]), nil, nil}
 		leaves = append(leaves, &node)
 	}
 
@@ -73,13 +73,13 @@ func Leaves(data [][]byte) []*Node {
 }
 
 // CreateAllNodes - kreira sve nivoe stabla od listova ka korijenu
-func CreateAllNodes(leaves []*Node) [][]*Node {
+func CreateAllNodes(leaves []*MerkleNode) [][]*MerkleNode {
 	// all_levels - lista nivoa (svaki nivo je lista cvorova)
-	all_levels := [][]*Node {}
+	all_levels := [][]*MerkleNode{}
 	all_levels = append(all_levels, leaves)
 
 	// svi cvorovi jednog nivoa
-	level := []*Node {}
+	level := []*MerkleNode{}
 
 	nodes := leaves
 
@@ -91,28 +91,28 @@ func CreateAllNodes(leaves []*Node) [][]*Node {
 				node1_data := node1.data[:]
 				node2_data := node2.data[:]
 				new_node_bytes := append(node1_data, node2_data...)
-				new_node := Node{Hash(new_node_bytes), node1, node2}
+				new_node := MerkleNode{Hash(new_node_bytes), node1, node2}
 				level = append(level, &new_node)
 			} else {  // ako nam fali odgovarajuci cvor
 				node1 := nodes[i]
-				node2 := Node{data: [20]byte{}, left: nil, right: nil}
+				node2 := MerkleNode{data: [20]byte{}, left: nil, right: nil}
 				node1_data := node1.data[:]
 				node2_data := node2.data[:]
 				new_node_bytes := append(node1_data, node2_data...)
-				new_node := Node{Hash(new_node_bytes), node1, &node2}
+				new_node := MerkleNode{Hash(new_node_bytes), node1, &node2}
 				level = append(level, &new_node)
 			}
 		}
 		all_levels = append(all_levels, level)
 		nodes = level
-		level = []*Node {}  // prelazak na novi nivo
+		level = []*MerkleNode{} // prelazak na novi nivo
 	}
 	return all_levels
 }
 
 // PrintTree - print stablo po sirini
-func PrintTree(root *Node) {
-	queue := make([] *Node, 0)
+func PrintTree(root *MerkleNode) {
+	queue := make([] *MerkleNode, 0)
 	queue = append(queue, root)
 
 	for len(queue) != 0 {
@@ -129,13 +129,13 @@ func PrintTree(root *Node) {
 	}
 }
 
-func WriteInFile(root *Node) {
+func WriteInFile(root *MerkleNode) {
 	file, err := os.OpenFile("data/metadata/metadata.txt", os.O_WRONLY, 0444)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	queue := make([] *Node, 0)
+	queue := make([] *MerkleNode, 0)
 	queue = append(queue, root)
 
 	for len(queue) != 0 {
