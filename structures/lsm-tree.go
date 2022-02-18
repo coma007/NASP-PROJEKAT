@@ -51,19 +51,27 @@ func (lsm LSM) DoCompaction(dir string, level int) {
 		sIndexFile := indexFiles[i+1]
 		sSummaryFile := summaryFiles[i+1]
 		Merge(dir, fDataFile, fIndexFile, fSummaryFile, sDataFile, sIndexFile, sSummaryFile, level)
+		lsm.helper[level]-- // broj elemenata na prosledjenom nivou se smanjuje za 2
+		lsm.helper[level]-- // jer smo spojili 2 sstabele
+		lsm.helper[level+1]++
 		i = i + 2
 	}
 
-	lsm.DoCompaction(dir, level+1)
+	lsm.DoCompaction(dir, level+1) // provera da li je na narednom nivou potrebna kompakcija
 }
 
 func Merge(dir, fDFile, fIFile, fSFile, sDFile, sIFile, sSFile string, level int) {
 	strLevel := strconv.Itoa(level + 1)
 
 	// kreiranje nove sstabele
-	newData, _ := os.Create(dir + fDFile + sDFile + "lev" + strLevel + "-Data.bin")
-	newIndex, _ := os.Create(dir + fIFile + sIFile + "lev" + strLevel + "-Index.bin")
-	newSummary, _ := os.Create(dir + fSFile + sSFile + "lev" + strLevel + "-Summary.bin")
+	newData, _ := os.Create(dir + fDFile + sDFile + "lev" + strLevel + "-Data.db")
+	// novi indeks i summary fajl pravimo preko data fajla
+	//newIndex, _ := os.Create(dir + fIFile + sIFile + "lev" + strLevel + "-Index.db")
+	//newSummary, _ := os.Create(dir + fSFile + sSFile + "lev" + strLevel + "-Summary.db")
+	
+	keys := make([]string, 0)
+	offset := make([]uint, 0)
+	currentOffset := uint(0)
 
 	fDataFile, err := os.Open(dir + fDFile) // otvoren prvi data fajl
 	if err != nil {
@@ -74,7 +82,13 @@ func Merge(dir, fDFile, fIFile, fSFile, sDFile, sIFile, sSFile string, level int
 	sDataFile, _ := os.Open(dir + sDFile) // otvoren drugi data fajl
 	defer sDataFile.Close()
 
-	// TODO poredjenje podataka i upis podataka u newData, newIndex, newSummary
+	f1, _ := fDataFile.Stat()
+	size1 := uint(f1.Size())
+	f2, _ := sDataFile.Stat()
+	size2 := uint(f2.Size())
+	CreateBloomFilter(size1+size2, 2)
+
+	// TODO redosledno ciranje datoteka
 
 	// brisanje starih sstabela
 	os.Remove(dir + fDFile)
