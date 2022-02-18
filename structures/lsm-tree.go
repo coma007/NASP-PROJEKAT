@@ -74,6 +74,8 @@ func Merge(dir, fDFile, fIFile, fSFile, sDFile, sIFile, sSFile string, level int
 	sDataFile, _ := os.Open(dir + sDFile) // otvoren drugi data fajl
 	defer sDataFile.Close()
 
+	// TODO poredjenje podataka i upis podataka u newData, newIndex, newSummary
+
 	// brisanje starih sstabela
 	os.Remove(dir + fDFile)
 	os.Remove(dir + fIFile)
