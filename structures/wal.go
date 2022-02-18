@@ -184,14 +184,14 @@ func (w  *Wal) Put(elem *Element) {
 // TODO remove segments from 0 to lowWaterMark
 
 
-func main() {
-	w:= CreateWal(WAL_PATH)
-	w.Put(&Element{
-		key:       "keke",
-		value:     []byte("asdd"),
-		next:      nil,
-		timestamp: "",
-		tombstone: false,
-		checksum:  nil,
-	})
-}
+//func main() {
+//	w:= CreateWal(WAL_PATH)
+//	w.Put(&Element{
+//		key:       "keke",
+//		value:     []byte("asdd"),
+//		next:      nil,
+//		timestamp: "",
+//		tombstone: false,
+//		checksum:  nil,
+//	})
+//}
