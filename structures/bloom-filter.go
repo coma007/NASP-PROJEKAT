@@ -2,14 +2,11 @@ package main
 
 import (
 	"encoding/gob"
-	"fmt"
-	"os"
-
-	//"encoding/gob"
+	//"fmt"
 	"github.com/spaolacci/murmur3"
 	"hash"
 	"math"
-	//"os"
+	"os"
 	"time"
 )
 
@@ -99,7 +96,7 @@ func writeBloomFilter(filename string, bf *BloomFilter) {
 func readBloomFilter(filename string) (bf *BloomFilter) {
 	file, err := os.Open(filename)
 	if err != nil {
-		return nil
+		panic(err)
 	}
 	defer file.Close()
 
@@ -113,10 +110,10 @@ func readBloomFilter(filename string) (bf *BloomFilter) {
 	for {
 		err = decoder.Decode(bf)
 		if err != nil {
-			fmt.Println(err)
+			//fmt.Println(err)
 			break
 		}
-		fmt.Println(*bf)
+		//fmt.Println(*bf)
 	}
 	bf.hashs = CopyHashFunctions(bf.K, bf.TimeConst)
 	return
