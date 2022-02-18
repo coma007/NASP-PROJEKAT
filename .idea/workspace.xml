@@ -5,13 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="017f7892-6fed-4b64-9fc2-7301452aa76b" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/structures/bloom-filter.go" beforeDir="false" afterPath="$PROJECT_DIR$/structures/bloom-filter.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/structures/crc.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/structures/index.go" beforeDir="false" afterPath="$PROJECT_DIR$/structures/index.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/structures/merkle-tree.go" beforeDir="false" afterPath="$PROJECT_DIR$/structures/merkle-tree.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/structures/cache.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/structures/merkle-tree.go" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/structures/sstable.go" beforeDir="false" afterPath="$PROJECT_DIR$/structures/sstable.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/structures/wal.go" beforeDir="false" afterPath="$PROJECT_DIR$/structures/wal.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/structures/summary.go" beforeDir="false" afterPath="$PROJECT_DIR$/structures/summary.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -93,5 +90,16 @@
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/structures/sstable.go</url>
+          <line>316</line>
+          <option name="timeStamp" value="17" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

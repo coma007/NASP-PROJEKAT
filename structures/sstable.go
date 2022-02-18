@@ -60,7 +60,7 @@ func CreateSStable(data MemTable, filename string)  (table *SSTable){
 		keys = append(keys, key)
 		offset = append(offset, currentOffset)
 
-		filter.Add(key)
+		filter.Add(*node)
 		//crc
 		crc := CRC32(value)
 		crcBytes := make([]byte, 4)
@@ -300,23 +300,23 @@ func readSSTable(filename string) (table *SSTable) {
 	return
 }
 
-//func main() {
-//
-//	mt := CreateMemTable(25)
-//	mt.Add("kopitaneskita", []byte("123"))
-//	mt.Add("joca", []byte("123"))
-//	mt.Add("mica", []byte("123"))
-//	mt.Add("maca", []byte("123"))
-//	mt.Add("zeljko", []byte("123"))
-//	mt.Add("zdravomir", []byte("123"))
-//	mt.Change("zeljko", []byte("234"))
-//	table := CreateSStable(*mt, "1")
-//	table = readSSTable("1")
-//	ok, offset := FindSummary("zeljko", table.summaryFilename)
-//	if ok {
-//		ok, offset = FindIndex("zeljko", offset, table.indexFilename)
-//		if ok {
-//			println(table.SStableFind("zeljko"))
-//		}
-//	}
-//}
+func main() {
+
+	mt := CreateMemTable(25)
+	mt.Add("kopitaneskita", []byte("123"))
+	mt.Add("joca", []byte("123"))
+	mt.Add("mica", []byte("123"))
+	mt.Add("maca", []byte("123"))
+	mt.Add("zeljko", []byte("123"))
+	mt.Add("zdravomir", []byte("123"))
+	mt.Change("zeljko", []byte("234"))
+	table := CreateSStable(*mt, "1")
+	table = readSSTable("1")
+	ok, offset := FindSummary("zeljko", table.summaryFilename)
+	if ok {
+		ok, offset = FindIndex("zeljko", offset, table.indexFilename)
+		if ok {
+			println(table.SStableFind("zeljko"))
+		}
+	}
+}

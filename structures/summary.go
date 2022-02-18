@@ -142,7 +142,7 @@ func WriteSummary(keys []string, offsets []uint, filename string) {
 			log.Fatal(err)
 		}
 
-		if i < 2 {
+		if i >= 2 {
 			bytes = make([]byte, 8)
 			binary.LittleEndian.PutUint64(bytes, uint64(offset))
 			_, err = writer.Write(bytes)
