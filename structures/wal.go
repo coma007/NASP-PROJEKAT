@@ -201,7 +201,7 @@ func Recover(path string) *Wal{
 	wal := CreateWal(path)
 
 	// citanje fajlova iz direktorijuma wal
-	files, err := ioutil.ReadDir(WAL_PATH[:len(WAL_PATH) - 1])  // skidanje "/" sa kraja
+	files, err := ioutil.ReadDir(WAL_PATH)  // skidanje "/" sa kraja
 	if err != nil {
 		fmt.Println(err)
 	}

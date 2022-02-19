@@ -4,21 +4,8 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-<<<<<<< HEAD
-    <list default="true" id="4e62a05b-25b5-48dc-a7ef-d33b516f0c22" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/NASP-PROJEKAT.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/wal/wal0.gob" beforeDir="false" afterPath="$PROJECT_DIR$/data/wal/wal0.gob" afterDir="false" />
-=======
-    <list default="true" id="c9ffeb1a-210a-4c2b-bf43-19670d938fca" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/Key-Value-Engine.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/NASP-PROJEKAT.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+    <list default="true" id="536872e3-73bd-46d0-93ef-2d5e299b8086" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
->>>>>>> 12549514824959ab207eb65fab4b77b549a120a8
       <change beforePath="$PROJECT_DIR$/structures/wal.go" beforeDir="false" afterPath="$PROJECT_DIR$/structures/wal.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -26,18 +13,14 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="GOROOT" url="file://$PROJECT_DIR$/../../../../../../../../Program Files/Go" />
+  <component name="GOROOT" url="file://$USER_HOME$/sdk/go1.17.2" />
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GoLibraries">
     <option name="indexEntireGoPath" value="false" />
   </component>
-<<<<<<< HEAD
-  <component name="ProjectId" id="25G10OVwaV2TYyhdCOr1YIIrsZg" />
-=======
-  <component name="ProjectId" id="25FfJrFoWHPvzabSJdKvyoY04DC" />
->>>>>>> 12549514824959ab207eb65fab4b77b549a120a8
+  <component name="ProjectId" id="25HM6vpH42RdGVC4ZgNqzf9gDJB" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -49,7 +32,37 @@
     <property name="go.formatter.settings.were.checked" value="true" />
     <property name="go.import.settings.migrated" value="true" />
     <property name="go.modules.go.list.on.any.changes.was.set" value="true" />
-    <property name="last_opened_file_path" value="$USER_HOME$" />
+    <property name="go.sdk.automatically.set" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/structures/wal.go" />
+  </component>
+  <component name="RunManager" selected="Go Build.go build wal.go">
+    <configuration name="go build merkle-tree.go" type="GoApplicationRunConfiguration" factoryName="Go Application">
+      <module name="Key-Value-Engine" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="FILE" />
+      <package value="Key-Value-Engine" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$/structures/merkle-tree.go" />
+      <method v="2" />
+    </configuration>
+    <configuration name="go build wal.go" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+      <module name="Key-Value-Engine" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="FILE" />
+      <package value="Key-Value-Engine/structures" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$/structures/wal.go" />
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Go Build.go build merkle-tree.go" />
+      <item itemvalue="Go Build.go build wal.go" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Go Build.go build wal.go" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TypeScriptGeneratedFilesManager">
