@@ -3,8 +3,11 @@ package main
 import (
 	"bufio"
 	"encoding/binary"
+	"errors"
+	"fmt"
 	"log"
 	"os"
+	"strconv"
 )
 
 type Table interface {
@@ -140,6 +143,7 @@ func CreateSStable(data MemTable, filename string)  (table *SSTable){
 	index := CreateIndex(keys, offset, table.indexFilename)
 	keys, offsets := index.Write()
 	WriteSummary(keys, offsets, table.summaryFilename)
+	writeBloomFilter(table.filterFilename, filter)
 	table.WriteTOC()
 	return
 }
@@ -160,7 +164,7 @@ func (st *SSTable) SStableFind(key string, offset int64)  (ok bool, value []byte
 		panic(err)
 	}
 	fileLen := binary.LittleEndian.Uint64(bytes)
-	println(fileLen)
+	//println(fileLen)
 
 	_, err = file.Seek(offset, 0)
 	if err != nil {
@@ -187,8 +191,8 @@ func (st *SSTable) SStableFind(key string, offset int64)  (ok bool, value []byte
 		if err != nil {
 			panic(err)
 		}
-		timestamp := string(timestampBytes[:])
-		println(timestamp)
+		_ = string(timestampBytes[:])
+		//println(timestamp)
 
 		//tombstone
 
@@ -209,7 +213,7 @@ func (st *SSTable) SStableFind(key string, offset int64)  (ok bool, value []byte
 			panic(err)
 		}
 		keyLen := binary.LittleEndian.Uint64(keyLenBytes)
-		println(keyLen)
+		//println(keyLen)
 
 		valueLenBytes := make([]byte, 8)
 		_, err = reader.Read(valueLenBytes)
@@ -225,7 +229,7 @@ func (st *SSTable) SStableFind(key string, offset int64)  (ok bool, value []byte
 			panic(err)
 		}
 		nodeKey := string(keyBytes[:])
-		println(nodeKey)
+		//println(nodeKey)
 
 		if nodeKey == key {
 			ok = true
@@ -283,8 +287,8 @@ func (st *SSTable) WriteTOC() {
 	}
 }
 
-func readSSTable(filename string) (table *SSTable) {
-	filename = "data/sstable/usertable-data-ic-" + filename + "-lev1-TOC.txt"
+func readSSTable(filename, level string) (table *SSTable) {
+	filename = "data/sstable/usertable-data-ic-" + filename + "-lev" + level + "-TOC.txt"
 
 	file, err := os.Open(filename)
 	if err != nil {
@@ -303,7 +307,61 @@ func readSSTable(filename string) (table *SSTable) {
 
 	table = &SSTable{generalFilename: generalFilename[:len(generalFilename)-1],
 		SSTableFilename: SSTableFilename[:len(SSTableFilename)-1], indexFilename: indexFilename[:len(indexFilename)-1],
-		summaryFilename: summaryFilename[:len(summaryFilename)-1], filterFilename: filterFilename[:len(filterFilename)-1]}
+		summaryFilename: summaryFilename[:len(summaryFilename)-1], filterFilename: filterFilename}
+	return
+}
+
+func (st *SSTable) SSTableQuery(key string) (ok bool, value []byte){
+	ok = false
+	value = nil
+	bf := readBloomFilter(st.filterFilename)
+	ok = bf.Query(key)
+	if ok {
+		ok, offset := FindSummary(key, st.summaryFilename)
+		if ok {
+			ok, offset = FindIndex(key, offset, st.indexFilename)
+			if ok {
+				ok, value = st.SStableFind(key, offset)
+			}
+		}
+	}
+	return
+}
+
+func findSSTableFilename(level string) (filename string){
+	filenameNum := 1
+	filename = strconv.Itoa(filenameNum)
+	possibleFilename := "data/sstable/usertable-data-ic-" + filename + "-lev" + level + "-TOC.txt"
+
+	for {
+		_, err := os.Stat(possibleFilename)
+		if err == nil {
+			filenameNum += 1
+			filename = strconv.Itoa(filenameNum)
+		} else if errors.Is(err, os.ErrNotExist) {
+			return
+		}
+		possibleFilename = "data/sstable/usertable-data-ic-" + filename + "-lev" + level + "-TOC.txt"
+	}
+
+}
+
+func SearchThroughSSTables(key string) (ok bool, value []byte){
+	levelNum := 1
+	filenameNum := 1
+	filename := strconv.Itoa(filenameNum)
+	level := strconv.Itoa(levelNum)
+	maxFilename := findSSTableFilename(level)
+	maxFilenameNum, _ := strconv.Atoi(maxFilename)
+	for ; levelNum >= 1 ;levelNum-- {
+		for ; filenameNum < maxFilenameNum; filenameNum++ {
+			table := readSSTable(filename, level)
+			ok, value = table.SSTableQuery(key)
+			if ok {
+				return
+			}
+		}
+	}
 	return
 }
 
@@ -317,13 +375,21 @@ func main() {
 	mt.Add("zeljko", []byte("123"))
 	mt.Add("zdravomir", []byte("123"))
 	mt.Change("zeljko", []byte("234"))
-	table := CreateSStable(*mt, "1")
-	table = readSSTable("1")
-	ok, offset := FindSummary("zeljko", table.summaryFilename)
-	if ok {
-		ok, offset = FindIndex("zeljko", offset, table.indexFilename)
-		if ok {
-			println(table.SStableFind("zeljko", offset))
-		}
-	}
+	filename := findSSTableFilename("1")
+	_ = CreateSStable(*mt, filename)
+	//table = readSSTable("1", "1")
+	//ok, value := table.SSTableQuery("zeljko")
+	ok, value := SearchThroughSSTables("zeljko")
+	fmt.Println(ok, value)
+	//bf := readBloomFilter(table.filterFilename)
+	//ok := bf.Query("zeljko")
+	//if ok {
+	//	ok, offset := FindSummary("zeljko", table.summaryFilename)
+	//	if ok {
+	//		ok, offset = FindIndex("zeljko", offset, table.indexFilename)
+	//		if ok {
+	//			println(table.SStableFind("zeljko", offset))
+	//		}
+	//	}
+	//}
 }
