@@ -12,19 +12,17 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"unsafe"
 )
 
 const (
 	WAL_PATH = "data/wal/"
 
-	T_SIZE = 8
-	C_SIZE = 4
-
-	CRC_SIZE       = T_SIZE + C_SIZE
-	TOMBSTONE_SIZE = CRC_SIZE + 1
-	KEY_SIZE       = TOMBSTONE_SIZE + T_SIZE
-	VALUE_SIZE     = KEY_SIZE + T_SIZE
+	// VELICINE SU U BAJTOVIMA
+	CRC_SIZE       = 4
+	TIMESTAMP_SIZE = 8
+	TOMBSTONE_SIZE = 1
+	KEY_SIZE_SIZE   = 8
+	VALUE_SIZE_SIZE = 8
 
 	SEGMENT_CAPACITY = 50
 	LOW_WATER_MARK   = 0
@@ -71,7 +69,6 @@ func (s *Segment) Dump(walPath string) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println("cur", s.data)
 
 	file, err := os.OpenFile(path, os.O_WRONLY, 0666)
 	if err != nil {
@@ -83,13 +80,12 @@ func (s *Segment) Dump(walPath string) {
 	if err != nil {
 		return
 	}
-	bs, err := bufferedWriter.Write(s.data)
+	_, err = bufferedWriter.Write(s.data)
 	err = bufferedWriter.Flush()
 	if err != nil {
 		return
 	}
 	//fmt.Println(s.data)
-	fmt.Println("bytes", bs)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -130,14 +126,13 @@ func CreateWal(path string) *Wal{
 
 func (w *Wal) Dump() {
 
-	fmt.Println("data", w.currentSegment.data)
 	w.currentSegment.Dump(w.path)
 }
 
 func (w *Wal) NewSegment() {
 	newSegm := Segment{
 		index:    w.currentSegment.index + 1,
-		data:     make([]byte, w.currentSegment.capacity),
+		data:     make([]byte, 0, SEGMENT_CAPACITY),
 		size:     0,
 		capacity: w.currentSegment.capacity,
 	}
@@ -164,23 +159,20 @@ func (w *Wal) NewSegment() {
 
 func (w  *Wal) Put(elem *Element) {
 
-	crc := elem.checksum
-	timestamp := []byte(strconv.FormatInt(time.Now().Unix(), 10))
-	tombstone := []byte(strconv.FormatBool(elem.tombstone))
-	key_size := make([]byte, KEY_SIZE)
-	value_size := make([]byte, VALUE_SIZE)
-	switch KEY_SIZE {
-	case 4:
-		binary.LittleEndian.PutUint32(key_size, uint32(unsafe.Sizeof(elem.key)))
-	case 8:
-		binary.LittleEndian.PutUint64(key_size, uint64(unsafe.Sizeof(elem.key)))
+	crc := make([]byte, CRC_SIZE) // 32 bit
+	binary.LittleEndian.PutUint32(crc, elem.checksum)
+	timestamp := make([]byte, TIMESTAMP_SIZE) // 64 bit - unsafe.Sizeof(time.Now().Unix()) size je vracalo vrijednost 8, pa bolje 64 bita nego 32
+	binary.LittleEndian.PutUint64(timestamp, uint64(time.Now().Unix()))
+	tombstone := make([]byte, TOMBSTONE_SIZE) // 8 bit
+	switch (elem.tombstone) {
+		case true: tombstone = []byte{1}
+		case false: tombstone = []byte{0}
 	}
-	switch VALUE_SIZE {
-	case 4:
-		binary.LittleEndian.PutUint32(value_size, uint32(unsafe.Sizeof(elem.value)))
-	case 8:
-		binary.LittleEndian.PutUint64(value_size, uint64(unsafe.Sizeof(elem.value)))
-	}
+	key_size := make([]byte, KEY_SIZE_SIZE)
+	value_size := make([]byte, VALUE_SIZE_SIZE)
+	binary.LittleEndian.PutUint64(key_size, uint64(len(elem.key)))
+	binary.LittleEndian.PutUint64(value_size, uint64(len(elem.value)))
+
 	key := []byte(elem.key)
 	value := elem.value
 
@@ -195,7 +187,7 @@ func (w  *Wal) Put(elem *Element) {
 
 	start := 0
 	for start >= 0 {
-		//fmt.Println(elemData[start:])
+		fmt.Println(elemData[start:])
 		start = w.CurrentSegment().addData(elemData[start:])
 		if start != -1 {
 			w.NewSegment()
@@ -254,8 +246,6 @@ func Recover(path string) *Wal{
 		fmt.Println(err)
 	}
 
-	fmt.Println(wal.currentSegment.size)
-	fmt.Println(wal.currentSegment.data)
 	return wal
 }
 
@@ -308,12 +298,20 @@ func main() {
 		next:      nil,
 		timestamp: "",
 		tombstone: false,
-		checksum:  nil,
+		checksum:  CRC32([]byte("keke")),
+	})
+	w.Put(&Element{
+		key:       "meke",
+		value:     []byte("asdd"),
+		next:      nil,
+		timestamp: "",
+		tombstone: false,
+		checksum:  CRC32([]byte("meke")),
 	})
 
 	//Recover(WAL_PATH)
 	//w.RemoveSegments()
 
-	//w.Dump()
+	w.Dump()
 }
 

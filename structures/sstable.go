@@ -3,8 +3,6 @@ package main
 import (
 	"bufio"
 	"encoding/binary"
-	"encoding/gob"
-	"fmt"
 	"log"
 	"os"
 )
