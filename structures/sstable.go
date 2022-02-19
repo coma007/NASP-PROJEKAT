@@ -3,8 +3,6 @@ package main
 import (
 	"bufio"
 	"encoding/binary"
-	"errors"
-	"fmt"
 	"log"
 	"os"
 	"strconv"
