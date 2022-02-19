@@ -5,7 +5,6 @@ import (
 	"encoding/binary"
 	"fmt"
 	"hash/crc32"
-	"io"
 	"io/ioutil"
 	"log"
 	"os"
@@ -100,6 +99,7 @@ type Wal struct {
 	path string // data/wal
 	lowWaterMark uint
 	segmentSize uint
+	segmentsNames map[uint64]string
 	segments []*Segment
 	currentSegment *Segment
 }
@@ -115,7 +115,8 @@ func (w *Wal) Path() string {
 
 
 func CreateWal(path string) *Wal{
-	wal := Wal{path, LOW_WATER_MARK, SEGMENT_CAPACITY,  make([]*Segment, 0), &Segment{
+	wal := Wal{path, LOW_WATER_MARK, SEGMENT_CAPACITY, make(map[uint64]string),
+		make([]*Segment, 0), &Segment{
 		index:    0,
 		data:     nil,
 		size:     0,
@@ -127,6 +128,8 @@ func CreateWal(path string) *Wal{
 func (w *Wal) Dump() {
 
 	w.currentSegment.Dump(w.path)
+	w.segmentsNames[w.currentSegment.index] = "wal" + strconv.FormatUint(w.currentSegment.index, 10) + ".log"
+
 }
 
 func (w *Wal) NewSegment() {
@@ -196,37 +199,57 @@ func (w  *Wal) Put(elem *Element) {
 
 }
 
-
-func Recover(path string) *Wal{
-	wal := CreateWal(path)
+// ReadWal - cita u memoriju posljednji dodani segment
+func (wal *Wal) ReadWal(path string) {
 
 	// citanje fajlova iz direktorijuma wal
-	files, err := ioutil.ReadDir(WAL_PATH[:len(WAL_PATH) - 1])  // skidanje "/" sa kraja
+	files, err := ioutil.ReadDir(WAL_PATH)
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	// vracanje posljednjeg segmenta u memoriju
-	current := files[len(files) - 1].Name()
-
-	// pronalazak indeksa posljednjeg dodanog segmenta
-	index_str := strings.Split(current, "wal")[1]
-	index_str = strings.Split(index_str, ".log")[0]
-	index, err := strconv.ParseUint(index_str, 10, 64)
-	if err != nil {
-		fmt.Println(err)
+	// upis svih segmenata u mapu indeksa i putanja
+	for i := 0; i < len(files); i++ {
+		index_s := strings.Split(files[i].Name(), "wal")[1]
+		index_s = strings.Split(index_s, ".log")[0]
+		indexx, err := strconv.ParseUint(index_s, 10, 64)
+		if err != nil {
+			fmt.Println(err)
+		}
+		wal.segmentsNames[indexx] = files[i].Name()
 	}
+
+	// pronalazak i vracanje posljednjeg segmenta u memoriju
+	max := uint64(0)
+	for key, _ := range wal.segmentsNames {
+		if max < key {
+			max = key
+		}
+	}
+	index := max
+	current := wal.segmentsNames[index]
 
 	// citanje posljednjeg dodanog fajla
 	file, err := os.Open(path + current)
 	if err != nil {
 		fmt.Println(err)
 	}
-	data, err := io.ReadAll(file)
+
+	err = file.Close()
 	if err != nil {
 		fmt.Println(err)
 	}
 
+	bufferedReader := bufio.NewReader(file)
+	// broj bajtova koje trebamo procitati
+	info, err := os.Stat(file.Name())
+	if err != nil {
+		fmt.Println(err)
+	}
+	num_of_bytes := info.Size()
+
+	bytes := make([]byte, num_of_bytes)
+	_, err = bufferedReader.Read(bytes)
 
 	currentSegment := Segment{
 		index:    index,
@@ -236,7 +259,7 @@ func Recover(path string) *Wal{
 	}
 
 	// upis podataka u memoriju
-	currentSegment.addData(data)
+	currentSegment.addData(bytes)
 
 	wal.currentSegment = &currentSegment
 	wal.segments = append(wal.segments, &currentSegment)
@@ -246,27 +269,14 @@ func Recover(path string) *Wal{
 		fmt.Println(err)
 	}
 
-	return wal
 }
 
-
+// RemoveSegments - bise segmente do lowWaterMark-a
 func (w *Wal) RemoveSegments() {
-
-	files, err := ioutil.ReadDir(WAL_PATH[:len(WAL_PATH) - 1])  // skidanje "/" sa kraja
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	for _, file := range files {
-		index_str := strings.Split(file.Name(), "wal")[1]
-		index_str = strings.Split(index_str, ".log")[0]
-		index, err := strconv.ParseUint(index_str, 10, 64)
-		if err != nil {
-			fmt.Println(err)
-		}
+	for index, value := range w.segmentsNames {
 		index2 := uint(index)
 		if index2 <= w.lowWaterMark {
-			err = os.Remove(WAL_PATH + file.Name())
+			err := os.Remove(WAL_PATH + value)
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -274,42 +284,31 @@ func (w *Wal) RemoveSegments() {
 	}
 }
 
-// TODO uklanjanje kose
-// TODO prodiskutovati recovery i remove segments
-// TODO wal_index.log
-// TODO recovery/scan -> struktura index: putanja
-
-// TODO recovery -> sta je rekao na predavanjima:
-// npr. upisuju se 3 podatka u wal, zatim 4. i svi su u istom segmentu,
-// ova prva tri su stigla da se upisu na disk a 4. nije
-// prilikom recovery-a se uzimaju podaci iz tekuceg segmenta, provjerava se da li su na disku
-// moze npr da se segment strpa u memoriju, i kad se izvrsi provjera, pravi se novi segment i
-// u njega se stavlja samo 4. element jer on nije na disku, a stari segment se brise
-// ovo moze da se koristi kad se u sred put-a prekine program, a mem table nije pun
 // TODO moramo posljednji segment dumpovati na kraju !!!
-
 
 //
 //func main() {
-//	w:= CreateWal(WAL_PATH)
-//	w.Put(&Element{
-//		key:       "keke",
-//		value:     []byte("asdd"),
-//		next:      nil,
-//		timestamp: "",
-//		tombstone: false,
-//		checksum:  CRC32([]byte("keke")),
-//	})
-//	w.Put(&Element{
-//		key:       "meke",
-//		value:     []byte("asdd"),
-//		next:      nil,
-//		timestamp: "",
-//		tombstone: false,
-//		checksum:  CRC32([]byte("meke")),
-//	})
+//	//w:= CreateWal(WAL_PATH)
+//	//w.Put(&Element{
+//	//	key:       "keke",
+//	//	value:     []byte("asdd"),
+//	//	next:      nil,
+//	//	timestamp: "",
+//	//	tombstone: false,
+//	//	checksum:  CRC32([]byte("keke")),
+//	//})
+//	//w.Put(&Element{
+//	//	key:       "meke",
+//	//	value:     []byte("asdd"),
+//	//	next:      nil,
+//	//	timestamp: "",
+//	//	tombstone: false,
+//	//	checksum:  CRC32([]byte("meke")),
+//	//})
 //
-//	//Recover(WAL_PATH)
+//	w := CreateWal(WAL_PATH)
+//	w.ReadWal(WAL_PATH)
+//
 //	//w.RemoveSegments()
 //
 //	w.Dump()
