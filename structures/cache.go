@@ -5,15 +5,15 @@ import (
 )
 
 
-type Node struct {
+type CacheNode struct {
 	key   string
 	value []byte
-	next  *Node
+	next  *CacheNode
 }
 
 
-func CreateNode(data string, value []byte) *Node {
-	n := Node{
+func CreateNode(data string, value []byte) *CacheNode {
+	n := CacheNode{
 		key:   data,
 		value: value,
 		next:  nil,
@@ -24,8 +24,8 @@ func CreateNode(data string, value []byte) *Node {
 
 type LinkedList struct {
 	length int
-	head *Node
-	tail *Node
+	head *CacheNode
+	tail *CacheNode
 	maxLength int
 }
 
@@ -54,7 +54,7 @@ func CreateCache(max int) *Cache {
 }
 
 // Add - dodavanje novog (na pocetak liste)
-func (c *Cache) Add(n *Node) {
+func (c *Cache) Add(n *CacheNode) {
 	l := c.linkedList
 
 	// provjera da li ovakav cvor vec postoji u cache-u
