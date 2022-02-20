@@ -150,6 +150,7 @@ func ReadAndWrite(currentOffset, currentOffset1, currentOffset2 uint, newData, f
 	filter := CreateBloomFilter(uint(fileLen1+fileLen2), 2)
 	keys := make([]string, 0)
 	offset := make([]uint, 0)
+	//values := make()
 
 	crc1, timestamp1, tombstone1, keyLen1, valueLen1,
 		key1, value1, currentOffset1 := ReadData(fDataFile, currentOffset1)

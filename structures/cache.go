@@ -4,13 +4,11 @@ import (
 	"fmt"
 )
 
-
 type CacheNode struct {
 	key   string
 	value []byte
 	next  *CacheNode
 }
-
 
 func CreateNode(data string, value []byte) *CacheNode {
 	n := CacheNode{
@@ -21,20 +19,17 @@ func CreateNode(data string, value []byte) *CacheNode {
 	return &n
 }
 
-
 type LinkedList struct {
-	length int
-	head *CacheNode
-	tail *CacheNode
+	length    int
+	head      *CacheNode
+	tail      *CacheNode
 	maxLength int
 }
-
 
 type Cache struct {
 	linkedList *LinkedList
 	mapOfData  map[string][]byte
 }
-
 
 func CreateCache(max int) *Cache {
 	l := LinkedList{
@@ -50,7 +45,7 @@ func CreateCache(max int) *Cache {
 		linkedList: &l,
 		mapOfData:  m,
 	}
-	return  &cache
+	return &cache
 }
 
 // Add - dodavanje novog (na pocetak liste)
@@ -61,12 +56,12 @@ func (c *Cache) Add(n *CacheNode) {
 	_, ok := c.mapOfData[n.key]
 	if ok == true {
 		current := l.head
-		if current.key == n.key {  // ako pretrazujemo posljednji dodani
+		if current.key == n.key { // ako pretrazujemo posljednji dodani
 			delete(c.mapOfData, n.key)
 			c.mapOfData[n.key] = n.value
 			return
 		}
-		for current.next.key != n.key {  // ide do elementa koji je prije onog koji se trazi
+		for current.next.key != n.key { // ide do elementa koji je prije onog koji se trazi
 			current = current.next
 		}
 
@@ -118,7 +113,6 @@ func (c *Cache) Add(n *CacheNode) {
 	}
 }
 
-
 func (c *Cache) Print() {
 	l := c.linkedList
 	fmt.Println("\nSpregunta lista")
@@ -137,7 +131,6 @@ func (c *Cache) Print() {
 		fmt.Println("Kljuc: ", key, ", value: ", value)
 	}
 }
-
 
 func (c *Cache) DeleteNode(n *CacheNode) {
 	_, ok := c.mapOfData[n.key]
@@ -168,6 +161,16 @@ func (c *Cache) DeleteNode(n *CacheNode) {
 	}
 }
 
+func (c *Cache) Get(key string) (bool, []byte) {
+	current := c.linkedList.head
+	for current.key != key {
+		if current.key == c.linkedList.tail.key {
+			return false, nil
+		}
+		current = current.next
+	}
+	return true, current.value
+}
 
 //func main()  {
 //	fmt.Println("Pocetak...")

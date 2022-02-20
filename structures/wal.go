@@ -17,9 +17,9 @@ const (
 	WAL_PATH = "data/wal/"
 
 	// VELICINE SU U BAJTOVIMA
-	CRC_SIZE       = 4
-	TIMESTAMP_SIZE = 8
-	TOMBSTONE_SIZE = 1
+	CRC_SIZE        = 4
+	TIMESTAMP_SIZE  = 8
+	TOMBSTONE_SIZE  = 1
 	KEY_SIZE_SIZE   = 8
 	VALUE_SIZE_SIZE = 8
 
@@ -34,11 +34,10 @@ func CRC32(data []byte) uint32 {
 ////////////////////////
 
 type Segment struct {
-	index uint64
-	data []byte
-	size uint64
+	index    uint64
+	data     []byte
+	size     uint64
 	capacity uint64
-
 }
 
 func (s *Segment) Index() uint64 {
@@ -89,18 +88,16 @@ func (s *Segment) Dump(walPath string) {
 		log.Fatal(err)
 	}
 
-
 }
 
 /////////////////////////
 
-
 type Wal struct {
-	path string // data/wal
-	lowWaterMark uint
-	segmentSize uint
-	segmentsNames map[uint64]string
-	segments []*Segment
+	path           string // data/wal
+	lowWaterMark   uint
+	segmentSize    uint
+	segmentsNames  map[uint64]string
+	segments       []*Segment
 	currentSegment *Segment
 }
 
@@ -108,20 +105,18 @@ func (w *Wal) CurrentSegment() *Segment {
 	return w.currentSegment
 }
 
-
 func (w *Wal) Path() string {
 	return w.path
 }
 
-
-func CreateWal(path string) *Wal{
+func CreateWal(path string) *Wal {
 	wal := Wal{path, LOW_WATER_MARK, SEGMENT_CAPACITY, make(map[uint64]string),
 		make([]*Segment, 0), &Segment{
-		index:    0,
-		data:     nil,
-		size:     0,
-		capacity: SEGMENT_CAPACITY,
-	}}
+			index:    0,
+			data:     nil,
+			size:     0,
+			capacity: SEGMENT_CAPACITY,
+		}}
 	return &wal
 }
 
@@ -159,17 +154,18 @@ func (w *Wal) NewSegment() {
    Timestamp = Timestamp of the operation in seconds
 */
 
-
-func (w  *Wal) Put(elem *Element) bool {
+func (w *Wal) Put(elem *Element) bool {
 
 	crc := make([]byte, CRC_SIZE) // 32 bit
 	binary.LittleEndian.PutUint32(crc, elem.checksum)
 	timestamp := make([]byte, TIMESTAMP_SIZE) // 64 bit - unsafe.Sizeof(time.Now().Unix()) size je vracalo vrijednost 8, pa bolje 64 bita nego 32
 	binary.LittleEndian.PutUint64(timestamp, uint64(time.Now().Unix()))
 	tombstone := make([]byte, TOMBSTONE_SIZE) // 8 bit
-	switch (elem.tombstone) {
-		case true: tombstone = []byte{1}
-		case false: tombstone = []byte{0}
+	switch elem.tombstone {
+	case true:
+		tombstone = []byte{1}
+	case false:
+		tombstone = []byte{0}
 	}
 	key_size := make([]byte, KEY_SIZE_SIZE)
 	value_size := make([]byte, VALUE_SIZE_SIZE)
@@ -190,7 +186,6 @@ func (w  *Wal) Put(elem *Element) bool {
 
 	start := 0
 	for start >= 0 {
-		fmt.Println(elemData[start:])
 		start = w.CurrentSegment().addData(elemData[start:])
 		if start != -1 {
 			w.NewSegment()
@@ -275,10 +270,12 @@ func (wal *Wal) ReadWal(path string) {
 
 // RemoveSegments - bise segmente do lowWaterMark-a
 func (w *Wal) RemoveSegments() {
+	w.lowWaterMark = uint(w.currentSegment.index - 2)
 	for index, value := range w.segmentsNames {
 		index2 := uint(index)
 		if index2 <= w.lowWaterMark {
 			err := os.Remove(WAL_PATH + value)
+			delete(w.segmentsNames, index)
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -315,4 +312,3 @@ func (w *Wal) RemoveSegments() {
 //
 //	w.Dump()
 //}
-

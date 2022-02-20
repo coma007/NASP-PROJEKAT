@@ -1,12 +1,15 @@
 package main
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 type System struct {
-	wal *Wal
-	memTable *MemTable
-	cache *Cache
-	lsm *LSM
+	wal         *Wal
+	memTable    *MemTable
+	cache       *Cache
+	lsm         *LSM
 	tokenBucket *TokenBucket
 }
 
@@ -20,8 +23,7 @@ func (s *System) Init() {
 
 }
 
-
-func (s *System) Put(key string, data string) bool {
+func (s *System) Put(key string, data string, tombstone bool) bool {
 	request := s.tokenBucket.CheckRequest()
 	if !request {
 		return false
@@ -33,7 +35,7 @@ func (s *System) Put(key string, data string) bool {
 		value:     value,
 		next:      nil,
 		timestamp: time.Now().String(),
-		tombstone: false,
+		tombstone: tombstone,
 		checksum:  CRC32(value),
 	}
 	s.wal.Put(&elem)
@@ -43,7 +45,7 @@ func (s *System) Put(key string, data string) bool {
 
 	if s.memTable.size >= 3 {
 		s.memTable.Flush() // TODO dodati pravljenje merkle stabla
-		                   // TODO isto dodati kod
+		// TODO isto dodati kod
 		s.wal.RemoveSegments()
 		s.lsm.DoCompaction("./data/sstable/", 1)
 		s.memTable = CreateMemTable(5)
@@ -52,8 +54,52 @@ func (s *System) Put(key string, data string) bool {
 	return true
 }
 
+func (s *System) Get(key string) (bool, []byte) {
+	ok, deleted, value := s.memTable.Find(key)
+	if ok && deleted {
+		return false, nil
+	} else if ok {
+		return true, value
+	}
+	ok, value = s.cache.Get(key)
+	if ok {
+		return true, value
+	}
+	ok, value = SearchThroughSSTables(key)
+	if ok {
+		return true, value
+	}
+	return false, nil
+}
+
+func (s *System) Delete(key string) bool {
+	if s.memTable.Remove(key) {
+		s.cache.DeleteNode(CreateNode(key, nil))
+		return true
+	}
+	ok, value := s.Get(key)
+	if !ok {
+		return false
+	}
+	s.Put(key, string(value), true)
+	s.cache.DeleteNode(CreateNode(key, value))
+	return true
+}
+
 func main() {
 	system := new(System)
 	system.Init()
-	system.Put("Milica", "Maca")
+	system.Put("Milica", "Maca", false)
+	system.Put("ad", "Peccca", false)
+	system.Put("aa", "Macca", false)
+	_, value := system.Get("aa")
+	fmt.Println("value")
+	fmt.Println(value)
+	_, value = system.Get("aa")
+	fmt.Println("value")
+	fmt.Println(value)
+	fmt.Println("delete")
+	fmt.Println(system.Delete("aa"))
+	fmt.Println("opet get")
+	fmt.Println(system.Get("aa"))
 }

@@ -5,7 +5,6 @@ import (
 	"time"
 )
 
-
 type SkipList struct {
 	maxHeight int
 	height    int
@@ -13,11 +12,11 @@ type SkipList struct {
 	head      *Element
 }
 
-func  CreateSkipList(maxHeight int) *SkipList {
+func CreateSkipList(maxHeight int) *SkipList {
 	bytes := []byte("head")
 	crc := CRC32(bytes)
 	root := Element{"head", nil, make([]*Element, maxHeight+1), time.Time{}.String(),
-		      false, crc}
+		false, crc}
 	skiplist := SkipList{maxHeight, 1, 1, &root}
 	return &skiplist
 }
@@ -39,15 +38,15 @@ func (skiplist *SkipList) roll() int {
 	return level
 }
 
-func (skiplist *SkipList) Add(key string, value []byte) *Element{
+func (skiplist *SkipList) Add(key string, value []byte) *Element {
 
 	level := skiplist.roll()
 	bytes := []byte(key)
 	crc := CRC32(bytes)
-	node := &Element{key, value,  make([]*Element, level+1), time.Time{}.String(),
-		       false, crc}
+	node := &Element{key, value, make([]*Element, level+1), time.Time{}.String(),
+		false, crc}
 	current := skiplist.head
-	for i := skiplist.height-1; i >= 0; i-- {
+	for i := skiplist.height - 1; i >= 0; i-- {
 		next := current.next[i]
 		for next != nil {
 			current = next
@@ -68,7 +67,7 @@ func (skiplist *SkipList) Add(key string, value []byte) *Element{
 func (skiplist *SkipList) Find(key string) *Element {
 
 	current := skiplist.head
-	for i := skiplist.height-1; i >= 0; i-- {
+	for i := skiplist.height - 1; i >= 0; i-- {
 		next := current.next[i]
 		for next != nil {
 			current = next
@@ -88,7 +87,7 @@ func (skiplist *SkipList) Find(key string) *Element {
 func (skiplist *SkipList) Remove(key string) *Element {
 
 	current := skiplist.head
-	for i := skiplist.height-1; i >= 0; i-- {
+	for i := skiplist.height - 1; i >= 0; i-- {
 		next := current.next[i]
 		for next != nil {
 			current = next
@@ -97,9 +96,8 @@ func (skiplist *SkipList) Remove(key string) *Element {
 				break
 			}
 			if current.key == key {
-				// kod memetablea promijeniti tombstone ?
-				// TODO dodati tombstone i time
-				skiplist.size--
+				current.tombstone = true
+				current.timestamp = time.Now().String()
 				tmp := current
 				current = current.next[i]
 				return tmp
@@ -109,8 +107,8 @@ func (skiplist *SkipList) Remove(key string) *Element {
 
 	return nil
 
-
 }
+
 //
 //func main() {
 //		sl := CreateSkipList(25)

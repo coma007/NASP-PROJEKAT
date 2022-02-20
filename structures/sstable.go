@@ -2,8 +2,8 @@ package main
 
 import (
 	"bufio"
-	"errors"
 	"encoding/binary"
+	"errors"
 	"log"
 	"os"
 	"strconv"
@@ -16,18 +16,17 @@ type Table interface {
 }
 
 type SSTable struct {
-	generalFilename	string
-	SSTableFilename	string
-	indexFilename	string
-	summaryFilename	string
-	filterFilename	string
+	generalFilename string
+	SSTableFilename string
+	indexFilename   string
+	summaryFilename string
+	filterFilename  string
 }
 
-func CreateSStable(data MemTable, filename string)  (table *SSTable){
+func CreateSStable(data MemTable, filename string) (table *SSTable) {
 	generalFilename := "data/sstable/usertable-data-ic-" + filename + "-lev1-"
 	table = &SSTable{generalFilename, generalFilename + "Data.db", generalFilename + "Index.db",
 		generalFilename + "Summary.db", generalFilename + "Filter.gob"}
-
 
 	filter := CreateBloomFilter(data.Size(), 2)
 	keys := make([]string, 0)
@@ -56,7 +55,7 @@ func CreateSStable(data MemTable, filename string)  (table *SSTable){
 	}
 
 	// We need to check if data is sorted
-	for node := data.data.head.next[0]; node != nil; node = node.next[0]{
+	for node := data.data.head.next[0]; node != nil; node = node.next[0] {
 		key := node.key
 		value := node.value
 		keys = append(keys, key)
@@ -147,7 +146,7 @@ func CreateSStable(data MemTable, filename string)  (table *SSTable){
 	return
 }
 
-func (st *SSTable) SStableFind(key string, offset int64)  (ok bool, value []byte){
+func (st *SSTable) SStableFind(key string, offset int64) (ok bool, value []byte) {
 	ok = false
 
 	file, err := os.Open(st.SSTableFilename)
@@ -203,7 +202,6 @@ func (st *SSTable) SStableFind(key string, offset int64)  (ok bool, value []byte
 		if tombstone == 1 {
 			deleted = true
 		}
-
 
 		// keyLen
 		keyLenBytes := make([]byte, 8)
@@ -297,12 +295,11 @@ func readSSTable(filename, level string) (table *SSTable) {
 
 	reader := bufio.NewReader(file)
 
-	generalFilename, _:= reader.ReadString('\n')
-	SSTableFilename, _:= reader.ReadString('\n')
-	indexFilename, _:= reader.ReadString('\n')
-	summaryFilename, _:= reader.ReadString('\n')
-	filterFilename, _:= reader.ReadString('\n')
-
+	generalFilename, _ := reader.ReadString('\n')
+	SSTableFilename, _ := reader.ReadString('\n')
+	indexFilename, _ := reader.ReadString('\n')
+	summaryFilename, _ := reader.ReadString('\n')
+	filterFilename, _ := reader.ReadString('\n')
 
 	table = &SSTable{generalFilename: generalFilename[:len(generalFilename)-1],
 		SSTableFilename: SSTableFilename[:len(SSTableFilename)-1], indexFilename: indexFilename[:len(indexFilename)-1],
@@ -310,7 +307,7 @@ func readSSTable(filename, level string) (table *SSTable) {
 	return
 }
 
-func (st *SSTable) SSTableQuery(key string) (ok bool, value []byte){
+func (st *SSTable) SSTableQuery(key string) (ok bool, value []byte) {
 	ok = false
 	value = nil
 	bf := readBloomFilter(st.filterFilename)
@@ -327,7 +324,7 @@ func (st *SSTable) SSTableQuery(key string) (ok bool, value []byte){
 	return
 }
 
-func findSSTableFilename(level string) (filename string){
+func findSSTableFilename(level string) (filename string) {
 	filenameNum := 1
 	filename = strconv.Itoa(filenameNum)
 	possibleFilename := "data/sstable/usertable-data-ic-" + filename + "-lev" + level + "-TOC.txt"
@@ -345,15 +342,19 @@ func findSSTableFilename(level string) (filename string){
 
 }
 
-func SearchThroughSSTables(key string) (ok bool, value []byte){
+func SearchThroughSSTables(key string) (ok bool, value []byte) {
 	levelNum := 1
 	filenameNum := 1
 	filename := strconv.Itoa(filenameNum)
 	level := strconv.Itoa(levelNum)
 	maxFilename := findSSTableFilename(level)
 	maxFilenameNum, _ := strconv.Atoi(maxFilename)
-	for ; levelNum >= 1 ;levelNum-- {
+	for ; levelNum >= 1; levelNum-- {
+		level := strconv.Itoa(levelNum)
+		maxFilename = findSSTableFilename(level)
+		maxFilenameNum, _ = strconv.Atoi(maxFilename)
 		for ; filenameNum < maxFilenameNum; filenameNum++ {
+			filename = strconv.Itoa(filenameNum)
 			table := readSSTable(filename, level)
 			ok, value = table.SSTableQuery(key)
 			if ok {

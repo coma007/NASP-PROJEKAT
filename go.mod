@@ -1,4 +1,4 @@
-module Key-Value-Engine
+module nasp
 
 go 1.17
 
