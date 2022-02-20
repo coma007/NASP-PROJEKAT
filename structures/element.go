@@ -7,7 +7,7 @@ type Element struct {
 	next      []*Element
 	timestamp string
 	tombstone bool
-	checksum  []byte
+	checksum  uint32
 }
 
 func (elem *Element) Key() string {

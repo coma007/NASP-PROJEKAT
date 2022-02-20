@@ -139,6 +139,36 @@ func (c *Cache) Print() {
 }
 
 
+func (c *Cache) DeleteNode(n *CacheNode) {
+	_, ok := c.mapOfData[n.key]
+	l := c.linkedList
+
+	if ok == true {
+		delete(c.mapOfData, n.key)
+		current := l.head
+		if current.key == n.key {
+			l.head = current.next
+			l.length--
+			return
+		}
+		// ako ne brisemo head
+		previous := current
+		current = current.next
+		next := current.next
+		for current != nil {
+			if current.key == n.key {
+				previous.next = next
+				l.length--
+				return
+			}
+			previous = current
+			current = current.next
+			next = current.next
+		}
+	}
+}
+
+
 //func main()  {
 //	fmt.Println("Pocetak...")
 //
@@ -146,16 +176,20 @@ func (c *Cache) Print() {
 //
 //	node := CreateNode("Katarina", []byte("necega"))
 //	cache.Add(node)
-//	node = CreateNode("Milica", []byte("nesto"))
-//	cache.Add(node)
-//	node = CreateNode("Bojan", []byte("blabla"))
-//	cache.Add(node)
+//	node3 := CreateNode("Milica", []byte("nesto"))
+//	cache.Add(node3)
+//	node2 := CreateNode("Bojan", []byte("blabla"))
+//	cache.Add(node2)
 //	node = CreateNode("Sara", []byte("nesto"))
 //	cache.Add(node)
 //	node = CreateNode("Sara" , []byte("0"))
 //	cache.Add(node)
-//	node = CreateNode("Mico", []byte("necega"))
-//	cache.Add(node)
+//	node4 := CreateNode("Mico", []byte("necega"))
+//	cache.Add(node4)
+//
+//	cache.Print()
+//
+//	cache.DeleteNode(node3)
 //
 //	cache.Print()
 //}

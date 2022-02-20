@@ -1,7 +1,6 @@
 package main
 
 import (
-	"crypto/sha1"
 	"math/rand"
 	"time"
 )
@@ -16,8 +15,7 @@ type SkipList struct {
 
 func  CreateSkipList(maxHeight int) *SkipList {
 	bytes := []byte("head")
-	crc_ := sha1.Sum(bytes)
-	crc := crc_[:]
+	crc := CRC32(bytes)
 	root := Element{"head", nil, make([]*Element, maxHeight+1), time.Time{}.String(),
 		      false, crc}
 	skiplist := SkipList{maxHeight, 1, 1, &root}
@@ -44,10 +42,9 @@ func (skiplist *SkipList) roll() int {
 func (skiplist *SkipList) Add(key string, value []byte) *Element{
 
 	level := skiplist.roll()
-	bytes := []byte("head")
-	crc_ := sha1.Sum(bytes)
-	crc := crc_[:]
-	node := &Element{key, value,  make([]*Element, level+1), time.Now().String(),
+	bytes := []byte(key)
+	crc := CRC32(bytes)
+	node := &Element{key, value,  make([]*Element, level+1), time.Time{}.String(),
 		       false, crc}
 	current := skiplist.head
 	for i := skiplist.height-1; i >= 0; i-- {

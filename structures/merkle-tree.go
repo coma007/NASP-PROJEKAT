@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 )
 
 type MerkleRoot struct {
@@ -43,22 +44,21 @@ func StringsToBytes(strings []string) [][] byte {
 }
 
 // CreateMerkleTree - funkcija od koje krece kriranje stabla
-func CreateMerkleTree(keys [][]byte) MerkleRoot {
-	//                keys []string
-
-	// string to byte
-	//data := StringsToBytes(keys)
+func CreateMerkleTree(keys [][]byte, path string) *MerkleRoot {
 
 	// ako je proslijedjen array bajtova
 	data := keys
 
 	leaves := Leaves(data)
-	all_nodes := CreateAllNodes(leaves)
+	root_node := CreateAllNodes(leaves)
 
-	root := MerkleRoot{all_nodes[len(all_nodes) - 1][0]}
-	return root
-
+	root := MerkleRoot{root_node}
+	new_path := strings.Replace(path, "Data.db", "Metadata.txt", 1)
+	new_path = "data/metadata/" + new_path
+	WriteInFile(root_node, new_path)
+	return &root
 }
+
 
 // Leaves - formira listove stabla
 func Leaves(data [][]byte) []*MerkleNode {
@@ -73,17 +73,14 @@ func Leaves(data [][]byte) []*MerkleNode {
 }
 
 // CreateAllNodes - kreira sve nivoe stabla od listova ka korijenu
-func CreateAllNodes(leaves []*MerkleNode) [][]*MerkleNode {
-	// all_levels - lista nivoa (svaki nivo je lista cvorova)
-	all_levels := [][]*MerkleNode{}
-	all_levels = append(all_levels, leaves)
+func CreateAllNodes(leaves []*MerkleNode) *MerkleNode {
 
 	// svi cvorovi jednog nivoa
 	level := []*MerkleNode{}
 
 	nodes := leaves
 
-	for len(nodes) > 1 {
+	if len(nodes) > 1 {
 		for i := 0; i < len(nodes); i += 2 {
 			if (i + 1) < len(nodes) {
 				node1 := nodes[i]
@@ -103,11 +100,13 @@ func CreateAllNodes(leaves []*MerkleNode) [][]*MerkleNode {
 				level = append(level, &new_node)
 			}
 		}
-		all_levels = append(all_levels, level)
 		nodes = level
-		level = []*MerkleNode{} // prelazak na novi nivo
+
+		if len(nodes) == 1 {
+			return nodes[0]
+		}
 	}
-	return all_levels
+	return CreateAllNodes(level)
 }
 
 // PrintTree - print stablo po sirini
@@ -129,8 +128,9 @@ func PrintTree(root *MerkleNode) {
 	}
 }
 
-func WriteInFile(root *MerkleNode) {
-	file, err := os.OpenFile("data/metadata/metadata.txt", os.O_WRONLY, 0444)
+func WriteInFile(root *MerkleNode, path string) {
+	_, err := os.Create(path)
+	file, err := os.OpenFile(path, os.O_WRONLY, 0444)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -141,8 +141,7 @@ func WriteInFile(root *MerkleNode) {
 	for len(queue) != 0 {
 		e := queue[0]
 		queue = queue[1:]
-		bytes := e.data[:]
-		_, _ = file.Write(bytes)
+		_, _ = file.WriteString(e.String() + "\n")
 
 		if e.left != nil {
 			queue = append(queue, e.left)
@@ -151,19 +150,25 @@ func WriteInFile(root *MerkleNode) {
 			queue = append(queue, e.right)
 		}
 	}
+	err = file.Close()
+	if err != nil {
+		fmt.Println(err)
+	}
 }
 
-//func main(){
-//	fmt.Println("Pocetak...")
-//
-//	stringovi := []string{"kljuc1", "key2", "kljuc3", "key", "kljuc5"}
-//	bajtovi := StringsToBytes(stringovi)
-//	root := CreateMerkleTree(bajtovi)
-//	current := root.root
-//
-//	PrintTree(current)
-//
-//	WriteInFile(current)
-//
-//	fmt.Println("Kraj...")
-//}
+func main(){
+	fmt.Println("Pocetak...")
+
+	stringovi := []string{"kljuc1", "key2", "kljuc3", "key", "kljuc5", "keeeey2", "kljuuuuc3", "keeeey", "milica",
+		   				  "tasija", "nemanja", "katarina"}
+	// ova funkcija treba samo za testiranje
+	bajtovi := StringsToBytes(stringovi)
+	path := "usertable-data-ic-2-lev1-Data.db"
+
+	root := CreateMerkleTree(bajtovi, path)
+	current := root.root
+
+	PrintTree(current)
+
+	fmt.Println("Kraj...")
+}

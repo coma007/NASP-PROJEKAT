@@ -40,7 +40,7 @@ func FindSummary(key, filename string) (ok bool, offset int64){
 		panic(err)
 	}
 	startKey := string(bytes[:])
-	println(startKey)
+	//println(startKey)
 
 	if key < startKey {
 		return false, 0
@@ -60,7 +60,7 @@ func FindSummary(key, filename string) (ok bool, offset int64){
 		panic(err)
 	}
 	endKey := string(bytes[:])
-	println(endKey)
+	//println(endKey)
 
 	if key > endKey {
 		return false, 0
@@ -82,7 +82,7 @@ func FindSummary(key, filename string) (ok bool, offset int64){
 			panic(err)
 		}
 		nodeKey := string(bytes[:])
-		println(nodeKey)
+		//println(nodeKey)
 
 		if nodeKey <= key {
 			ok = true
@@ -94,7 +94,7 @@ func FindSummary(key, filename string) (ok bool, offset int64){
 			panic(err)
 		}
 		newOffset := binary.LittleEndian.Uint64(bytes)
-		println(newOffset)
+		//println(newOffset)
 
 		if ok {
 			offset = int64(newOffset)

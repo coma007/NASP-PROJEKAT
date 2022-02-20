@@ -45,3 +45,7 @@ func (mt *MemTable) Size() uint {
 	return mt.size
 }
 
+func (mt *MemTable) Flush() {
+	filename := findSSTableFilename("1")
+	CreateSStable(*mt, filename)
+}
