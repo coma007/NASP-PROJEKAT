@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bytes"
+	"encoding/gob"
 	"fmt"
 	"github.com/spaolacci/murmur3"
 	"hash"
@@ -8,7 +10,7 @@ import (
 	"time"
 )
 
-type CountMS struct {
+type CountMinSketch struct {
 	M     uint          // Velicina Set-a
 	K     uint          // Broj hash funkcija
 	E     float64       // Preciznost
@@ -18,7 +20,7 @@ type CountMS struct {
 	TimeConst uint
 }
 
-func CreateCMS(p float64, d float64) *CountMS {
+func CreateCMS(p float64, d float64) *CountMinSketch {
 	m := findM(p)
 	k := findK(d)
 	hashs, tc := createHashFunctions(k)
@@ -26,12 +28,12 @@ func CreateCMS(p float64, d float64) *CountMS {
 	for i, _ := range set {
 		set[i] = make([]int, m)
 	}
-	bf := CountMS{m, k, p, d, set, hashs, tc}
+	bf := CountMinSketch{m, k, p, d, set, hashs, tc}
 	fmt.Printf("Created Count Min Skatch with M = %d, K = %d\n", m, k)
 	return &bf
 }
 
-func (cms *CountMS) Add(elem string) {
+func (cms *CountMinSketch) Add(elem string) {
 	for i, hashF := range cms.hashs {
 		j := hashIt(hashF, elem, cms.M)
 		cms.Set[i][j] += 1
@@ -39,7 +41,7 @@ func (cms *CountMS) Add(elem string) {
 	fmt.Printf("Element %s added !\n", elem)
 }
 
-func (cms *CountMS) Query(elem string) int {
+func (cms *CountMinSketch) Query(elem string) int {
 	values := make([]int, cms.K)
 	for i, hashF := range cms.hashs {
 		j:= hashIt(hashF, elem, cms.M)
@@ -80,6 +82,9 @@ func createHashFunctions(k uint) ([]hash.Hash32, uint) {
 	}
 	return h, ts
 }
+
+
+
 //
 //func main() {
 //
