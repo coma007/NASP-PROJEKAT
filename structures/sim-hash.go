@@ -2,6 +2,8 @@ package main
 
 import (
 	"bufio"
+	"bytes"
+	"encoding/gob"
 	"fmt"
 	"log"
 	"os"
@@ -110,6 +112,29 @@ func SumHashs(hashs map[int]string) []int {
 		}
 	}
 	return arr
+}
+
+func (sim *SimHash) SerializeSH() []byte {
+
+	var buff bytes.Buffer
+	encoder := gob.NewEncoder(&buff)
+	encoder.Encode(sim)
+	return buff.Bytes()
+}
+
+func DeserializeSH(data []byte) *SimHash {
+
+	buff := bytes.NewBuffer(data)
+	decoder := gob.NewDecoder(buff)
+	sim := new(SimHash)
+
+	for {
+		err := decoder.Decode(sim)
+		if err != nil {
+			break
+		}
+	}
+	return sim
 }
 
 
