@@ -110,11 +110,6 @@ func DeserializeHLL(data []byte) *HyperLogLog {
 	return hll
 }
 
-
-
-return true
-}
-
 func main() {
 
 	//fmt.Println(int('1' - '0'))
