@@ -44,7 +44,12 @@ func (lsm LSM) DoCompaction(dir string, level int) {
 	dataFiles, indexFiles, summaryFiles, tocFiles, filterFiles := FindFiles(dir, level)
 
 	i := 0
-	numFile := 1
+	var numFile int
+	if lsm.helper[level] == lsm.maxLevel {
+		numFile = 1
+	} else {
+		numFile = 3
+	}
 
 	for i < lsm.maxSize { // while petlja
 		fDataFile := dataFiles[i]
