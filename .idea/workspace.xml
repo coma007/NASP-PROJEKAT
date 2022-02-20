@@ -4,7 +4,10 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ef3889eb-b93b-45ca-8d5b-f96edb214b18" name="Changes" comment="" />
+    <list default="true" id="536872e3-73bd-46d0-93ef-2d5e299b8086" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/structures/hll.go" beforeDir="false" afterPath="$PROJECT_DIR$/structures/hll.go" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -32,7 +35,16 @@
     <property name="go.sdk.automatically.set" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/structures/merkle-tree.go" />
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Go Build.go build hll.go">
+    <configuration name="go build hll.go" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+      <module name="Key-Value-Engine" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="FILE" />
+      <package value="Key-Value-Engine" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$/structures/hll.go" />
+      <method v="2" />
+    </configuration>
     <configuration name="go build merkle-tree.go" type="GoApplicationRunConfiguration" factoryName="Go Application">
       <module name="Key-Value-Engine" />
       <working_directory value="$PROJECT_DIR$" />
@@ -42,6 +54,11 @@
       <filePath value="$PROJECT_DIR$/structures/merkle-tree.go" />
       <method v="2" />
     </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Go Build.go build hll.go" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TypeScriptGeneratedFilesManager">

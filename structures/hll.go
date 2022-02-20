@@ -1,7 +1,9 @@
 package main
 
-import(
+import (
+	"bytes"
 	"crypto/md5"
+	"encoding/gob"
 	"encoding/hex"
 	"fmt"
 	"math"
@@ -12,19 +14,14 @@ const (
 	HLL_MAX_PRECISION = 16
 )
 
-type HyperLogLog interface {
-	emptyCount()
-	Add()
-	Estimate()
-}
 
-type HLL struct {
+type HyperLogLog struct {
 	m   uint64
 	p   uint8
 	reg []uint8
 }
 
-func (hll *HLL) emptyCount() uint8 {
+func (hll *HyperLogLog) emptyCount() uint8 {
 	sum := uint8(0)
 	for _, val := range hll.reg {
 		if val == 0 {
@@ -34,12 +31,12 @@ func (hll *HLL) emptyCount() uint8 {
 	return sum
 }
 
-func Create(p uint8) HLL {
+func Create(p uint8) HyperLogLog {
 	m := int(math.Pow(2, float64(p)))
-	return HLL{uint64(m),p, make([]uint8, m, m)}
+	return HyperLogLog{uint64(m),p, make([]uint8, m, m)}
 }
 
-func (hll *HLL) Add(word string) {
+func (hll *HyperLogLog) Add(word string) {
 	bin := ToBinary(GetMD5Hash(word))
 	key := 0
 	p := hll.p
@@ -71,7 +68,7 @@ func ToBinary(s string) string {
 	return res
 }
 
-func (hll *HLL) Estimate() float64 {
+func (hll *HyperLogLog) Estimate() float64 {
 	sum := 0.0
 	for _, val := range hll.reg {
 		sum = sum + math.Pow( float64(-val), 2.0) // ovo promijenih !!
@@ -90,24 +87,53 @@ func (hll *HLL) Estimate() float64 {
 	return estimation
 }
 
-//func main() {
-	//
-	////fmt.Println(int('1' - '0'))
-	////fmt.Println(ToBinary(GetMD5Hash("nice")))
-	//hll := Create(6)
-	//hll.Add("Bojan")
-	//hll.Add("Bojan")
-	//hll.Add("Ica")
-	//hll.Add("Bojan")
-	//hll.Add("Bojan")
-	//hll.Add("Mica")
-	//hll.Add("Mica")
-	//hll.Add("Tica")
-	//hll.Add("Mica")
-	//hll.Add("Jeca")
-	//hll.Add("Katarina")
-	//hll.Add("Jelena")
-	//hll.Add("Katarina")
-	//hll.Add("Ivan")
-	//fmt.Println(hll.Estimate())
-//}
+func (hll *HyperLogLog) SerializeHLL() []byte {
+
+	var buff bytes.Buffer
+	encoder := gob.NewEncoder(&buff)
+	encoder.Encode(hll)
+	return buff.Bytes()
+}
+
+func DeserializeHLL(data []byte) *HyperLogLog {
+
+	buff := bytes.NewBuffer(data)
+	decoder := gob.NewDecoder(buff)
+	hll := new(HyperLogLog)
+
+	for {
+		err := decoder.Decode(hll)
+		if err != nil {
+			break
+		}
+	}
+	return hll
+}
+
+
+
+return true
+}
+
+func main() {
+
+	//fmt.Println(int('1' - '0'))
+	//fmt.Printlnh(ToBinary(GetMD5Hash("nice")))
+	hll := Create(6)
+	hll.Add("Bojan")
+	hll.Add("Bojan")
+	hll.Add("Ica")
+	hll.Add("Bojan")
+	hll.Add("Bojan")
+	hll.Add("Mica")
+	hll.Add("Mica")
+	hll.Add("Tica")
+	hll.Add("Mica")
+	hll.Add("Jeca")
+	hll.Add("Katarina")
+	hll.Add("Jelena")
+	hll.Add("Katarina")
+	hll.Add("Ivan")
+	fmt.Println(hll.Estimate())
+	hll.SerializeHLL()
+}
