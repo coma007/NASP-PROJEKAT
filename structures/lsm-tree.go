@@ -14,22 +14,18 @@ import (
 type LSM struct {
 	maxLevel int
 	maxSize  int
-	helper   []int // pomocna struktura - trenutno stanje stabla na osnovu popunjenosti
 }
 
 func CreateLsm(maxL, maxS int) *LSM {
 	return &LSM{
 		maxLevel: maxL,
 		maxSize:  maxS,
-		helper:   make([]int, maxL, maxL),
 	}
 }
 
-func (lsm LSM) IsCompactionNeeded(level int) bool {
-	if level == 1 {
-		lsm.helper[1]++ // cim dodamo novu sstabelu prvi nivo se povecava za 1
-	}
-	return lsm.helper[level] == lsm.maxSize
+func (lsm LSM) IsCompactionNeeded(dir string, level int) (bool, []string, []string, []string, []string, []string) {
+	dataFiles, indexFiles, summaryFiles, tocFiles, filterFiles := FindFiles(dir, level)
+	return len(dataFiles) == lsm.maxSize, dataFiles, indexFiles, summaryFiles, tocFiles, filterFiles
 }
 
 func (lsm LSM) DoCompaction(dir string, level int) {
@@ -37,15 +33,14 @@ func (lsm LSM) DoCompaction(dir string, level int) {
 		return
 	}
 
-	if !lsm.IsCompactionNeeded(level) {
+	compaction, dataFiles, indexFiles, summaryFiles, tocFiles, filterFiles := lsm.IsCompactionNeeded(dir, level)
+	if !compaction {
 		return
 	}
 
-	dataFiles, indexFiles, summaryFiles, tocFiles, filterFiles := FindFiles(dir, level)
-
 	i := 0
 	var numFile int
-	if lsm.helper[level] == lsm.maxLevel {
+	if len(dataFiles) == lsm.maxLevel {
 		numFile = 1
 	} else {
 		numFile = 3
@@ -64,9 +59,6 @@ func (lsm LSM) DoCompaction(dir string, level int) {
 		sFilterFile := filterFiles[i+1]
 		Merge(dir, fDataFile, fIndexFile, fSummaryFile, fTocFile, fFilterFile, sDataFile, sIndexFile,
 			sSummaryFile, sTocFile, sFilterFile, level, numFile)
-		lsm.helper[level]-- // broj elemenata na prosledjenom nivou se smanjuje za 2
-		lsm.helper[level]-- // jer smo spojili 2 sstabele
-		lsm.helper[level+1]++
 		i = i + 2
 		numFile++
 	}
@@ -85,7 +77,6 @@ func Merge(dir, fDFile, fIFile, fSFile, fTFile, fFFile, sDFile, sIFile, sSFile,
 		generalFilename + "Filter.gob"}
 
 	newData, _ := os.Create(generalFilename + "Data.db")
-	// novi indeks i summary fajl pravimo pomocu data fajla
 
 	currentOffset := uint(0)  // trenutni offset u novom data fajlu
 	currentOffset1 := uint(0) // trenutni offset u data1 fajlu
@@ -111,6 +102,7 @@ func Merge(dir, fDFile, fIFile, fSFile, fTFile, fFFile, sDFile, sIFile, sSFile,
 		panic(err)
 	}
 
+	// file length prvog data fajla
 	reader1 := bufio.NewReader(fDataFile)
 	bytes := make([]byte, 8)
 	_, err = reader1.Read(bytes)
@@ -120,6 +112,7 @@ func Merge(dir, fDFile, fIFile, fSFile, fTFile, fFFile, sDFile, sIFile, sSFile,
 	fileLen1 := binary.LittleEndian.Uint64(bytes)
 	currentOffset1 += 8
 
+	// file length drugog data fajla
 	reader2 := bufio.NewReader(sDataFile)
 	bytes = make([]byte, 8)
 	_, err = reader2.Read(bytes)
@@ -164,20 +157,12 @@ func ReadAndWrite(currentOffset, currentOffset1, currentOffset2 uint, newData, f
 	crc2, timestamp2, tombstone2, keyLen2, valueLen2,
 		key2, value2, currentOffset2 := ReadData(sDataFile, currentOffset2)
 
-	first := uint64(0)
-	second := uint64(0)
+	first := uint64(1)
+	second := uint64(1)
 
 	for {
-		fmt.Println("prvi")
-		fmt.Println(first)
-		fmt.Println("drugi")
-		fmt.Println(second)
-		fmt.Println("file1")
-		fmt.Println(fileLen1)
-		fmt.Println("file2")
-		fmt.Println(fileLen2)
 		// sigurno su vec upisani svi podaci bar jednog fajla
-		if fileLen1-1 == first || fileLen2-1 == second {
+		if fileLen1 == first || fileLen2 == second {
 			break
 		}
 
@@ -232,7 +217,7 @@ func ReadAndWrite(currentOffset, currentOffset1, currentOffset2 uint, newData, f
 		}
 	}
 
-	// ako je prvi dosao do kraja drugi treba da iscitamo
+	// ako je prvi dosao do kraja drugi treba da iscitamo do kraja
 	if fileLen1 == first && fileLen2 != second {
 		for fileLen2 != second {
 			currentOffset = WriteData(newData, currentOffset, crc2, timestamp2,
@@ -245,7 +230,7 @@ func ReadAndWrite(currentOffset, currentOffset1, currentOffset2 uint, newData, f
 				key2, value2, currentOffset2 = ReadData(sDataFile, currentOffset2)
 			second++
 		}
-		// ako je drugi dosao do kraja prvi treba da iscitamo
+		// ako je drugi dosao do kraja prvi treba da iscitamo do kraja
 	} else if fileLen2 == second && fileLen1 != first {
 		for fileLen1 != first {
 			currentOffset = WriteData(newData, currentOffset, crc1, timestamp1,
@@ -348,7 +333,6 @@ func WriteData(file *os.File, currentOffset uint, crcBytes []byte, timestamp str
 func ReadData(file *os.File, currentOffset uint) ([]byte, string, byte,
 	uint64, uint64, string, string, uint) {
 
-	//fmt.Println("citanje")
 	file.Seek(int64(currentOffset), 0)
 	reader := bufio.NewReader(file)
 
@@ -476,14 +460,7 @@ func FindFiles(dir string, level int) ([]string, []string, []string, []string, [
 
 func main() {
 	var lsm = CreateLsm(4, 4)
-	//a, _, _, _ := FindFiles("./data/sstable/", 1)
-	//lsm.helper[1] = len(a)
 	lsm.DoCompaction("./data/sstable/", 1)
-	lsm.DoCompaction("./data/sstable/", 1)
-	lsm.DoCompaction("./data/sstable/", 1)
-	lsm.DoCompaction("./data/sstable/", 1)
-	fmt.Println(lsm.helper)
-	fmt.Println(lsm.helper[1] == lsm.maxSize)
 }
 
 //
