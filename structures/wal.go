@@ -160,7 +160,7 @@ func (w *Wal) NewSegment() {
 */
 
 
-func (w  *Wal) Put(elem *Element) {
+func (w  *Wal) Put(elem *Element) bool {
 
 	crc := make([]byte, CRC_SIZE) // 32 bit
 	binary.LittleEndian.PutUint32(crc, elem.checksum)
@@ -196,6 +196,8 @@ func (w  *Wal) Put(elem *Element) {
 			w.NewSegment()
 		}
 	}
+
+	return true
 
 }
 

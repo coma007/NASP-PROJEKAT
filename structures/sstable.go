@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"encoding/binary"
 	"log"
 	"os"
@@ -363,31 +364,31 @@ func SearchThroughSSTables(key string) (ok bool, value []byte){
 	return
 }
 
-func main() {
-
-	mt := CreateMemTable(25)
-	mt.Add("kopitaneskita", []byte("123"))
-	mt.Add("joca", []byte("123"))
-	mt.Add("mica", []byte("123"))
-	mt.Add("maca", []byte("123"))
-	mt.Add("zeljko", []byte("123"))
-	mt.Add("zdravomir", []byte("123"))
-	mt.Change("zeljko", []byte("234"))
-	filename := findSSTableFilename("1")
-	_ = CreateSStable(*mt, filename)
-	//table = readSSTable("1", "1")
-	//ok, value := table.SSTableQuery("zeljko")
-	ok, value := SearchThroughSSTables("zeljko")
-	fmt.Println(ok, value)
-	//bf := readBloomFilter(table.filterFilename)
-	//ok := bf.Query("zeljko")
-	//if ok {
-	//	ok, offset := FindSummary("zeljko", table.summaryFilename)
-	//	if ok {
-	//		ok, offset = FindIndex("zeljko", offset, table.indexFilename)
-	//		if ok {
-	//			println(table.SStableFind("zeljko", offset))
-	//		}
-	//	}
-	//}
-}
+//func main() {
+//
+//	mt := CreateMemTable(25)
+//	mt.Add("kopitaneskita", []byte("123"))
+//	mt.Add("joca", []byte("123"))
+//	mt.Add("mica", []byte("123"))
+//	mt.Add("maca", []byte("123"))
+//	mt.Add("zeljko", []byte("123"))
+//	mt.Add("zdravomir", []byte("123"))
+//	mt.Change("zeljko", []byte("234"))
+//	filename := findSSTableFilename("1")
+//	_ = CreateSStable(*mt, filename)
+//	//table = readSSTable("1", "1")
+//	//ok, value := table.SSTableQuery("zeljko")
+//	ok, value := SearchThroughSSTables("zeljko")
+//	fmt.Println(ok, value)
+//	//bf := readBloomFilter(table.filterFilename)
+//	//ok := bf.Query("zeljko")
+//	//if ok {
+//	//	ok, offset := FindSummary("zeljko", table.summaryFilename)
+//	//	if ok {
+//	//		ok, offset = FindIndex("zeljko", offset, table.indexFilename)
+//	//		if ok {
+//	//			println(table.SStableFind("zeljko", offset))
+//	//		}
+//	//	}
+//	//}
+//}

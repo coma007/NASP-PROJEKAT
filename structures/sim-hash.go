@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/gob"
-	"fmt"
 	"log"
 	"os"
 	"strings"
@@ -138,15 +137,15 @@ func DeserializeSH(data []byte) *SimHash {
 }
 
 
-func main() {
-	//fmt.Println((GetMD5Hash("hello")))
-	//fmt.Println(len(ToBinary(GetMD5Hash("hello"))))
-
-	sh := CreateSimHash()
-	t1 := CreateText("sim-hash/tekst1.txt", sh)
-	t2 := CreateText("sim-hash/tekst2.txt", sh)
-	t3 := CreateText("sim-hash/tekst3.txt", sh)
-	t4 := CreateText("sim-hash/tekst4.txt", sh)
-	fmt.Println(sh.Hemingway(t1, t2))
-	fmt.Println(sh.Hemingway(t3, t4))
-}
+//func main() {
+//	//fmt.Println((GetMD5Hash("hello")))
+//	//fmt.Println(len(ToBinary(GetMD5Hash("hello"))))
+//
+//	sh := CreateSimHash()
+//	t1 := CreateText("sim-hash/tekst1.txt", sh)
+//	t2 := CreateText("sim-hash/tekst2.txt", sh)
+//	t3 := CreateText("sim-hash/tekst3.txt", sh)
+//	t4 := CreateText("sim-hash/tekst4.txt", sh)
+//	fmt.Println(sh.Hemingway(t1, t2))
+//	fmt.Println(sh.Hemingway(t3, t4))
+//}

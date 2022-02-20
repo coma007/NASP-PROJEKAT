@@ -5,8 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ef3889eb-b93b-45ca-8d5b-f96edb214b18" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/structures/test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/nasp.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/nasp.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/structures/lsm-tree.go" beforeDir="false" afterPath="$PROJECT_DIR$/structures/lsm-tree.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/structures/merkle-tree.go" beforeDir="false" afterPath="$PROJECT_DIR$/structures/merkle-tree.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/structures/sim-hash.go" beforeDir="false" afterPath="$PROJECT_DIR$/structures/sim-hash.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/structures/sstable.go" beforeDir="false" afterPath="$PROJECT_DIR$/structures/sstable.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/structures/wal.go" beforeDir="false" afterPath="$PROJECT_DIR$/structures/wal.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -41,9 +47,26 @@
     <property name="go.import.settings.migrated" value="true" />
     <property name="go.modules.go.list.on.any.changes.was.set" value="true" />
     <property name="go.sdk.automatically.set" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/structures/merkle-tree.go" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/structures/test.go" />
   </component>
-  <component name="RunManager" selected="Go Build.go build wal.go">
+  <component name="RunManager" selected="Go Build.go build Key-Value-Engine/structures">
+    <configuration default="true" type="GoApplicationRunConfiguration" factoryName="Go Application">
+      <module name="nasp" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="PACKAGE" />
+      <package value="Key-Value-Engine" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="go build Key-Value-Engine/structures" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="DIRECTORY" />
+      <package value="C:\Users\User\Documents\GitHub\NASP-PROJEKAT\structures" />
+      <directory value="$PROJECT_DIR$/structures" />
+      <filePath value="$PROJECT_DIR$/structures/test.go" />
+      <method v="2" />
+    </configuration>
     <configuration name="go build merkle-tree.go" type="GoApplicationRunConfiguration" factoryName="Go Application">
       <module name="Key-Value-Engine" />
       <working_directory value="$PROJECT_DIR$" />
@@ -53,22 +76,23 @@
       <filePath value="$PROJECT_DIR$/structures/merkle-tree.go" />
       <method v="2" />
     </configuration>
-    <configuration name="go build wal.go" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
-      <module name="Key-Value-Engine" />
+    <configuration default="true" type="GoTestRunConfiguration" factoryName="Go Test">
+      <module name="nasp" />
       <working_directory value="$PROJECT_DIR$" />
-      <kind value="FILE" />
+      <kind value="DIRECTORY" />
       <package value="Key-Value-Engine" />
       <directory value="$PROJECT_DIR$" />
-      <filePath value="$PROJECT_DIR$/structures/wal.go" />
+      <filePath value="$PROJECT_DIR$" />
+      <framework value="gotest" />
       <method v="2" />
     </configuration>
     <list>
       <item itemvalue="Go Build.go build merkle-tree.go" />
-      <item itemvalue="Go Build.go build wal.go" />
+      <item itemvalue="Go Build.go build Key-Value-Engine/structures" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Go Build.go build wal.go" />
+        <item itemvalue="Go Build.go build Key-Value-Engine/structures" />
       </list>
     </recent_temporary>
   </component>

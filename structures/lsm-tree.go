@@ -458,10 +458,10 @@ func FindFiles(dir string, level int) ([]string, []string, []string, []string, [
 	return dataFiles, indexFiles, summaryFiles, tocFiles, filterFiles
 }
 
-func main() {
-	var lsm = CreateLsm(4, 4)
-	lsm.DoCompaction("./data/sstable/", 1)
-}
+//func main() {
+//	var lsm = CreateLsm(4, 4)
+//	lsm.DoCompaction("./data/sstable/", 1)
+//}
 
 //
 //	currentOffset1 := uint(0)

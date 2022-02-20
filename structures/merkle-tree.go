@@ -44,10 +44,10 @@ func StringsToBytes(strings []string) [][] byte {
 }
 
 // CreateMerkleTree - funkcija od koje krece kriranje stabla
-func CreateMerkleTree(keys [][]byte, path string) *MerkleRoot {
+func CreateMerkleTree(values [][]byte, path string) *MerkleRoot {
 
 	// ako je proslijedjen array bajtova
-	data := keys
+	data := values
 
 	leaves := Leaves(data)
 	root_node := CreateAllNodes(leaves)
@@ -156,19 +156,19 @@ func WriteInFile(root *MerkleNode, path string) {
 	}
 }
 
-func main(){
-	fmt.Println("Pocetak...")
-
-	stringovi := []string{"kljuc1", "key2", "kljuc3", "key", "kljuc5", "keeeey2", "kljuuuuc3", "keeeey", "milica",
-		   				  "tasija", "nemanja", "katarina"}
-	// ova funkcija treba samo za testiranje
-	bajtovi := StringsToBytes(stringovi)
-	path := "usertable-data-ic-2-lev1-Data.db"
-
-	root := CreateMerkleTree(bajtovi, path)
-	current := root.root
-
-	PrintTree(current)
-
-	fmt.Println("Kraj...")
-}
+//func main(){
+//	fmt.Println("Pocetak...")
+//
+//	stringovi := []string{"kljuc1", "key2", "kljuc3", "key", "kljuc5", "keeeey2", "kljuuuuc3", "keeeey", "milica",
+//		   				  "tasija", "nemanja", "katarina"}
+//	// ova funkcija treba samo za testiranje
+//	bajtovi := StringsToBytes(stringovi)
+//	path := "usertable-data-ic-2-lev1-Data.db"
+//
+//	root := CreateMerkleTree(bajtovi, path)
+//	current := root.root
+//
+//	PrintTree(current)
+//
+//	fmt.Println("Kraj...")
+//}
