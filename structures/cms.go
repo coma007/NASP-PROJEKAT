@@ -83,9 +83,29 @@ func createHashFunctions(k uint) ([]hash.Hash32, uint) {
 	return h, ts
 }
 
+func (cms *CountMinSketch) SerializeCMS() []byte {
 
+	var buff bytes.Buffer
+	encoder := gob.NewEncoder(&buff)
+	encoder.Encode(cms)
+	return buff.Bytes()
+}
 
-//
+func DeserializeCMS(data []byte) *CountMinSketch {
+
+	buff := bytes.NewBuffer(data)
+	decoder := gob.NewDecoder(buff)
+	cms := new(CountMinSketch)
+
+	for {
+		err := decoder.Decode(cms)
+		if err != nil {
+			break
+		}
+	}
+	return cms
+}
+
 //func main() {
 //
 //	bf := CreateCMS(0.1, 0.01)
