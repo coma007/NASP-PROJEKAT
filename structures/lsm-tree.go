@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"encoding/binary"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -41,35 +40,45 @@ func (lsm LSM) DoCompaction(dir string, level int) {
 		return
 	}
 
-	dataFiles, indexFiles, summaryFiles := ReadFiles(dir, level)
+	dataFiles, indexFiles, summaryFiles, tocFiles := FindFiles(dir, level)
 
 	i := 0
+	numFile := 1
 
 	for i >= lsm.maxSize { // while petlja
 		fDataFile := dataFiles[i]
 		fIndexFile := indexFiles[i]
 		fSummaryFile := summaryFiles[i]
+		fTocFile := tocFiles[i]
 		sDataFile := dataFiles[i+1]
 		sIndexFile := indexFiles[i+1]
 		sSummaryFile := summaryFiles[i+1]
-		Merge(dir, fDataFile, fIndexFile, fSummaryFile, sDataFile, sIndexFile, sSummaryFile, level)
+		sTocFile := tocFiles[i+1]
+		Merge(dir, fDataFile, fIndexFile, fSummaryFile, fTocFile, sDataFile, sIndexFile,
+			sSummaryFile, sTocFile, level, numFile)
 		lsm.helper[level]-- // broj elemenata na prosledjenom nivou se smanjuje za 2
 		lsm.helper[level]-- // jer smo spojili 2 sstabele
 		lsm.helper[level+1]++
 		i = i + 2
+		numFile++
 	}
 
 	lsm.DoCompaction(dir, level+1) // provera da li je na narednom nivou potrebna kompakcija
 }
 
-func Merge(dir, fDFile, fIFile, fSFile, sDFile, sIFile, sSFile string, level int) {
+func Merge(dir, fDFile, fIFile, fSFile, fTFile, sDFile, sIFile, sSFile, sTFile string, level, numFile int) {
 	strLevel := strconv.Itoa(level + 1)
 
 	// kreiranje nove sstabele
-	newData, _ := os.Create(dir + fDFile + sDFile + "lev" + strLevel + "-Data.db")
+	generalFilename := dir + "usertable-data-ic-" + strconv.Itoa(numFile) + "lev" + strLevel + "-"
+	table := &SSTable{generalFilename, generalFilename + "Data.db",
+		generalFilename + "Index.db", generalFilename + "Summary.db",
+		generalFilename + "Filter.gob"}
+
+	newData, _ := os.Create(generalFilename + "Data.db")
 	// novi indeks i summary fajl pravimo pomocu data fajla
 
-	currentOffset := uint(0)  // trenutrni offset u novom data fajlu
+	currentOffset := uint(0)  // trenutni offset u novom data fajlu
 	currentOffset1 := uint(0) // trenutni offset u data1 fajlu
 	currentOffset2 := uint(0) // trenutni offset u data2 fajlu
 
@@ -113,20 +122,28 @@ func Merge(dir, fDFile, fIFile, fSFile, sDFile, sIFile, sSFile string, level int
 	fileLen2 := binary.LittleEndian.Uint64(bytes)
 	currentOffset2 += 8
 
-	// TODO redosledno citanje datoteka
-	ReadAndWrite(currentOffset, currentOffset1, currentOffset2, newData, fDataFile, sDataFile, fileLen1, fileLen2)
+	fileLen := ReadAndWrite(currentOffset, currentOffset1, currentOffset2, newData, fDataFile, sDataFile,
+		fileLen1, fileLen2, table)
+
+	// upis duzine fajla (broj kljuceva)
+	FileSize(generalFilename+"Data.db", fileLen)
 
 	// brisanje starih sstabela
-	os.Remove(dir + fDFile)
+	err = os.Remove(dir + fDFile)
+	if err != nil {
+		log.Println(err)
+	}
 	os.Remove(dir + fIFile)
 	os.Remove(dir + fSFile)
+	os.Remove(dir + fTFile)
 	os.Remove(dir + sDFile)
 	os.Remove(dir + sIFile)
 	os.Remove(dir + sSFile)
+	os.Remove(dir + sTFile)
 }
 
-func ReadAndWrite(currentOffset, currentOffset1, currentOffset2 uint,
-	newData, fDataFile, sDataFile *os.File, fileLen1, fileLen2 uint64) {
+func ReadAndWrite(currentOffset, currentOffset1, currentOffset2 uint, newData, fDataFile, sDataFile *os.File, fileLen1,
+	fileLen2 uint64, table *SSTable) uint64 {
 
 	filter := CreateBloomFilter(uint(fileLen1+fileLen2), 2)
 	keys := make([]string, 0)
@@ -138,9 +155,12 @@ func ReadAndWrite(currentOffset, currentOffset1, currentOffset2 uint,
 	crc2, timestamp2, tombstone2, keyLen2, valueLen2,
 		key2, value2, currentOffset2 := ReadData(sDataFile, currentOffset2)
 
+	first := uint64(0)
+	second := uint64(0)
+
 	for {
 		// sigurno su vec upisani svi podaci bar jednog fajla
-		if fileLen1 < uint64(currentOffset1) || fileLen2 < uint64(currentOffset2) {
+		if fileLen1 < first || fileLen2 < second {
 			break
 		}
 
@@ -163,9 +183,11 @@ func ReadAndWrite(currentOffset, currentOffset1, currentOffset2 uint,
 			}
 			crc1, timestamp1, tombstone1, keyLen1, valueLen1,
 				key1, value1, currentOffset1 = ReadData(fDataFile, currentOffset1)
+			first++
 
 			crc2, timestamp2, tombstone2, keyLen2, valueLen2,
 				key2, value2, currentOffset2 = ReadData(sDataFile, currentOffset2)
+			second++
 
 		} else if key1 < key2 {
 			// samo prvi se upisuje
@@ -177,6 +199,8 @@ func ReadAndWrite(currentOffset, currentOffset1, currentOffset2 uint,
 
 			crc1, timestamp1, tombstone1, keyLen1, valueLen1,
 				key1, value1, currentOffset1 = ReadData(fDataFile, currentOffset1)
+			first++
+
 		} else {
 			// samo drugi se upisuje
 			currentOffset = WriteData(newData, currentOffset, crc2, timestamp2,
@@ -187,11 +211,12 @@ func ReadAndWrite(currentOffset, currentOffset1, currentOffset2 uint,
 
 			crc2, timestamp2, tombstone2, keyLen2, valueLen2,
 				key2, value2, currentOffset2 = ReadData(sDataFile, currentOffset2)
+			second++
 		}
 	}
 
 	// ako je prvi dosao do kraja drugi treba da iscitamo
-	if fileLen1 < uint64(currentOffset1) {
+	if fileLen1 < first {
 		for fileLen2 != uint64(currentOffset2) {
 			currentOffset = WriteData(newData, currentOffset, crc2, timestamp2,
 				tombstone2, keyLen2, valueLen2, key2, value2)
@@ -202,7 +227,8 @@ func ReadAndWrite(currentOffset, currentOffset1, currentOffset2 uint,
 			crc2, timestamp2, tombstone2, keyLen2, valueLen2,
 				key2, value2, currentOffset2 = ReadData(sDataFile, currentOffset2)
 		}
-	} else if fileLen2 < uint64(currentOffset2) {
+		// ako je drugi dosao do kraja prvi treba da iscitamo
+	} else if fileLen2 < second {
 		for fileLen1 != uint64(currentOffset1) {
 			currentOffset = WriteData(newData, currentOffset, crc1, timestamp1,
 				tombstone1, keyLen1, valueLen1, key1, value1)
@@ -214,8 +240,13 @@ func ReadAndWrite(currentOffset, currentOffset1, currentOffset2 uint,
 				key1, value1, currentOffset1 = ReadData(sDataFile, currentOffset2)
 		}
 	}
+	//kreiranje ostalih delova sstabele
+	index := CreateIndex(keys, offset, table.indexFilename)
+	keys, offsets := index.Write()
+	WriteSummary(keys, offsets, table.summaryFilename)
+	table.WriteTOC()
 
-	return
+	return uint64(len(keys))
 }
 
 func WriteData(file *os.File, currentOffset uint, crcBytes []byte, timestamp string, tombstone byte,
@@ -350,7 +381,6 @@ func ReadData(file *os.File, currentOffset uint) ([]byte, string, byte,
 	}
 
 	key := string(keyBytes[:])
-	println(key)
 	currentOffset += uint(keyLen)
 
 	// value
@@ -366,36 +396,185 @@ func ReadData(file *os.File, currentOffset uint) ([]byte, string, byte,
 	return crcBytes, timestamp, tombstone, keyLen, valueLen, key, value, currentOffset
 }
 
-func ReadFiles(dir string, level int) ([]string, []string, []string) {
+func FileSize(filename string, len uint64) {
+	file, err := os.OpenFile(filename, os.O_WRONLY, 0644)
+	if err != nil {
+		log.Println(err)
+	}
+	_, err = file.Seek(0, 0)
+
+	writer := bufio.NewWriter(file)
+
+	bytesLen := make([]byte, 8)
+	binary.LittleEndian.PutUint64(bytesLen, len)
+	_, err = writer.Write(bytesLen)
+
+	if err != nil {
+		log.Println(err)
+	}
+
+	err = writer.Flush()
+	if err != nil {
+		return
+	}
+
+	file.Close()
+}
+
+func FindFiles(dir string, level int) ([]string, []string, []string, []string) {
 	substr := strconv.Itoa(level)
 
-	files, err := ioutil.ReadDir(dir) // lista svih fajlova iz direktorijuma
-	if err != nil {
-		fmt.Println("greska!")
-		return nil, nil, nil
-	}
+	files, _ := ioutil.ReadDir(dir) // lista svih fajlova iz direktorijuma
 
 	var dataFiles []string
 	var indexFiles []string
 	var summaryFiles []string
+	var tocFiles []string
 
 	for _, f := range files {
-		if strings.Contains(f.Name(), substr+"-Data") {
+		if strings.Contains(f.Name(), "lev"+substr+"-Data.db") {
 			dataFiles = append(dataFiles, f.Name())
 		}
-		if strings.Contains(f.Name(), substr+"-Index") {
-			indexFiles = append(dataFiles, f.Name())
+		if strings.Contains(f.Name(), "lev"+substr+"-Index.db") {
+			indexFiles = append(indexFiles, f.Name())
 		}
-		if strings.Contains(f.Name(), substr+"-Summary") {
-			summaryFiles = append(dataFiles, f.Name())
+		if strings.Contains(f.Name(), "lev"+substr+"-Summary.db") {
+			summaryFiles = append(summaryFiles, f.Name())
+		}
+		if strings.Contains(f.Name(), "lev"+substr+"-TOC.txt") {
+			tocFiles = append(tocFiles, f.Name())
 		}
 	}
 
-	return dataFiles, indexFiles, summaryFiles
+	return dataFiles, indexFiles, summaryFiles, tocFiles
 }
 
-func main() {
-	var lsm = CreateLsm(4, 4)
-	lsm.IsCompactionNeeded(2)
-	ReadFiles("./structures/", 1)
-}
+//func main() {
+//	var lsm = CreateLsm(4, 4)
+//	lsm.IsCompactionNeeded(2)
+//	a, b, c, d := FindFiles("./data/sstable/", 1)
+//	fmt.Println(a)
+//	fmt.Println(b)
+//	fmt.Println(c)
+//	fmt.Println(d)
+//
+//	currentOffset1 := uint(0)
+//	fDataFile, err := os.Open("./data/sstable/usertable-data-ic-1-lev1-Data.db") // otvoren drugi data fajl
+//	if err != nil {
+//		panic(err)
+//	}
+//	defer fDataFile.Close()
+//
+//	// provera da li radi citanje duzine fajla  RADI
+//	reader1 := bufio.NewReader(fDataFile)
+//	bytes := make([]byte, 8)
+//	_, err = reader1.Read(bytes)
+//	if err != nil {
+//		panic(err)
+//	}
+//	fileLen1 := binary.LittleEndian.Uint64(bytes)
+//	fmt.Println(fileLen1)
+//	currentOffset1 += 8 // dobije se 6, to je broj kljuceva
+//
+//	// citanje iz fajla - RADI
+//	crc1, timestamp1, tombstone1, keyLen1, valueLen1, key1, value1, currentOffset1 := ReadData(fDataFile, currentOffset1)
+//	fmt.Println(crc1)
+//	fmt.Println(timestamp1)
+//	fmt.Println(tombstone1)
+//	fmt.Println(keyLen1)
+//	fmt.Println(valueLen1)
+//	fmt.Println(key1)
+//	fmt.Println(value1)
+//	fmt.Println(currentOffset1)
+//
+//	currentOffset := uint(0)
+//	newData, _ := os.Create("./data/sstable/usertable-data-ic-2-lev1-Data.db")
+//
+//	writer := bufio.NewWriter(newData)
+//
+//	//file length (na pocetku je 0 jer ne znamo jos koja je duzina fajla)
+//	bytesLen := make([]byte, 8)
+//	bytesWritten, err := writer.Write(bytesLen)
+//	currentOffset += uint(bytesWritten)
+//	if err != nil {
+//		log.Fatal(err)
+//	}
+//	err = writer.Flush()
+//	if err != nil {
+//		return
+//	}
+//
+//	// pisanje - RADI
+//	_ = WriteData(newData, currentOffset, crc1, timestamp1,
+//		tombstone1, keyLen1, valueLen1, key1, value1)
+//	fmt.Println("========================")
+//
+//	// provera citanja napisanog  RADI
+//	crc1, timestamp1, tombstone1, keyLen1, valueLen1, key1, value1, currentOffset1 = ReadData(newData, currentOffset)
+//	fmt.Println(crc1)
+//	fmt.Println(timestamp1)
+//	fmt.Println(tombstone1)
+//	fmt.Println(keyLen1)
+//	fmt.Println(valueLen1)
+//	fmt.Println(key1)
+//	fmt.Println(value1)
+//	fmt.Println(currentOffset1)
+//	newData.Close()
+//
+//	// upis duzine fajla na pocetak
+//	file, err := os.OpenFile("./data/sstable/usertable-data-ic-2-lev1-Data.db", os.O_WRONLY, 0644)
+//	if err != nil {
+//		log.Println(err)
+//	}
+//	_, err = file.Seek(0, 0)
+//
+//	writer = bufio.NewWriter(file)
+//
+//	bytesLen = make([]byte, 8)
+//	binary.LittleEndian.PutUint64(bytesLen, uint64(5))
+//	fmt.Println(bytesLen)
+//	s, err := writer.Write(bytesLen)
+//	fmt.Println(s)
+//
+//	if err != nil {
+//		log.Println(err)
+//	}
+//
+//	err = writer.Flush()
+//	if err != nil {
+//		return
+//	}
+//	file.Close()
+//	//zaglavlje(newData)
+//
+//	// citanje duzine
+//	file, _ = os.Open("./data/sstable/usertable-data-ic-2-lev1-Data.db")
+//	defer file.Close()
+//	reader := bufio.NewReader(file)
+//	file.Seek(0, 0)
+//	bytes1 := make([]byte, 8)
+//	_, err = reader.Read(bytes1)
+//	fmt.Println(bytes1)
+//	if err != nil {
+//		log.Println(err)
+//	}
+//	fileLen := binary.LittleEndian.Uint64(bytes1)
+//	fmt.Println("duzina:")
+//	fmt.Println(fileLen)
+//	currentOffset1 = 8
+//
+//	// provera da li dalje moze normalno da se cita
+//	//file, _ = os.Open("./data/sstable/usertable-data-ic-2-lev1-Data.db")
+//	crc1, timestamp1, tombstone1, keyLen1, valueLen1, key1, value1, currentOffset1 = ReadData(file, 8)
+//	fmt.Println("--------------------------------")
+//	fmt.Println(crc1)
+//	fmt.Println(timestamp1)
+//	fmt.Println(tombstone1)
+//	fmt.Println(keyLen1)
+//	fmt.Println(valueLen1)
+//	fmt.Println(key1)
+//	fmt.Println(value1)
+//	fmt.Println(currentOffset1)
+
+//os.Remove("./data/sstable/usertable-data-ic-2-lev1-Data.db")
+//}
