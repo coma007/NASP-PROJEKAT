@@ -23,9 +23,10 @@ func CreateLsm(maxL, maxS int) *LSM {
 	}
 }
 
-func (lsm LSM) IsCompactionNeeded(dir string, level int) (bool, []string, []string, []string, []string, []string) {
-	dataFiles, indexFiles, summaryFiles, tocFiles, filterFiles := FindFiles(dir, level)
-	return len(dataFiles) == lsm.maxSize, dataFiles, indexFiles, summaryFiles, tocFiles, filterFiles
+func (lsm LSM) IsCompactionNeeded(dir string, level int) (bool, []string, []string,
+	[]string, []string, []string, []string) {
+	dataFiles, indexFiles, summaryFiles, tocFiles, filterFiles, metaFiles := FindFiles(dir, level)
+	return len(dataFiles) == lsm.maxSize, dataFiles, indexFiles, summaryFiles, tocFiles, filterFiles, metaFiles
 }
 
 func (lsm LSM) DoCompaction(dir string, level int) {
@@ -33,7 +34,8 @@ func (lsm LSM) DoCompaction(dir string, level int) {
 		return
 	}
 
-	compaction, dataFiles, indexFiles, summaryFiles, tocFiles, filterFiles := lsm.IsCompactionNeeded(dir, level)
+	compaction, dataFiles, indexFiles, summaryFiles, tocFiles, filterFiles, _ :=
+		lsm.IsCompactionNeeded(dir, level)
 	if !compaction {
 		return
 	}
@@ -150,6 +152,7 @@ func ReadAndWrite(currentOffset, currentOffset1, currentOffset2 uint, newData, f
 	filter := CreateBloomFilter(uint(fileLen1+fileLen2), 2)
 	keys := make([]string, 0)
 	offset := make([]uint, 0)
+	values := make([][]byte, 0)
 
 	crc1, timestamp1, tombstone1, keyLen1, valueLen1,
 		key1, value1, currentOffset1 := ReadData(fDataFile, currentOffset1)
@@ -175,6 +178,7 @@ func ReadAndWrite(currentOffset, currentOffset1, currentOffset2 uint, newData, f
 				filter.Add(Element{key1, nil, nil, timestamp1, false, 0})
 				keys = append(keys, key1)
 				offset = append(offset, currentOffset)
+				values = append(values, []byte(value1))
 			} else {
 				// drugi se upisuje, prvi se preskace
 				currentOffset = WriteData(newData, currentOffset, crc2, timestamp2,
@@ -182,6 +186,7 @@ func ReadAndWrite(currentOffset, currentOffset1, currentOffset2 uint, newData, f
 				filter.Add(Element{key2, nil, nil, timestamp2, false, 0})
 				keys = append(keys, key2)
 				offset = append(offset, currentOffset)
+				values = append(values, []byte(value2))
 			}
 			crc1, timestamp1, tombstone1, keyLen1, valueLen1,
 				key1, value1, currentOffset1 = ReadData(fDataFile, currentOffset1)
@@ -198,6 +203,7 @@ func ReadAndWrite(currentOffset, currentOffset1, currentOffset2 uint, newData, f
 			filter.Add(Element{key1, nil, nil, timestamp1, false, 0})
 			keys = append(keys, key1)
 			offset = append(offset, currentOffset)
+			values = append(values, []byte(value1))
 
 			crc1, timestamp1, tombstone1, keyLen1, valueLen1,
 				key1, value1, currentOffset1 = ReadData(fDataFile, currentOffset1)
@@ -210,6 +216,7 @@ func ReadAndWrite(currentOffset, currentOffset1, currentOffset2 uint, newData, f
 			filter.Add(Element{key2, nil, nil, timestamp2, false, 0})
 			keys = append(keys, key2)
 			offset = append(offset, currentOffset)
+			values = append(values, []byte(value2))
 
 			crc2, timestamp2, tombstone2, keyLen2, valueLen2,
 				key2, value2, currentOffset2 = ReadData(sDataFile, currentOffset2)
@@ -225,6 +232,7 @@ func ReadAndWrite(currentOffset, currentOffset1, currentOffset2 uint, newData, f
 			filter.Add(Element{key2, nil, nil, timestamp2, false, 0})
 			keys = append(keys, key2)
 			offset = append(offset, currentOffset)
+			values = append(values, []byte(value2))
 
 			crc2, timestamp2, tombstone2, keyLen2, valueLen2,
 				key2, value2, currentOffset2 = ReadData(sDataFile, currentOffset2)
@@ -238,6 +246,7 @@ func ReadAndWrite(currentOffset, currentOffset1, currentOffset2 uint, newData, f
 			filter.Add(Element{key1, nil, nil, timestamp1, false, 0})
 			keys = append(keys, key1)
 			offset = append(offset, currentOffset)
+			values = append(values, []byte(value1))
 
 			crc1, timestamp1, tombstone1, keyLen1, valueLen1,
 				key1, value1, currentOffset1 = ReadData(sDataFile, currentOffset2)
@@ -250,6 +259,8 @@ func ReadAndWrite(currentOffset, currentOffset1, currentOffset2 uint, newData, f
 	WriteSummary(keys, offsets, table.summaryFilename)
 	table.WriteTOC()
 	writeBloomFilter(table.filterFilename, filter)
+	filename := strings.ReplaceAll(newData.Name(), "./data/sstable/", "")
+	CreateMerkleTree(values, filename)
 
 	return uint64(len(keys))
 }
@@ -426,16 +437,18 @@ func FileSize(filename string, len uint64) {
 	file.Close()
 }
 
-func FindFiles(dir string, level int) ([]string, []string, []string, []string, []string) {
+func FindFiles(dir string, level int) ([]string, []string, []string, []string, []string, []string) {
 	substr := strconv.Itoa(level)
 
 	files, _ := ioutil.ReadDir(dir) // lista svih fajlova iz direktorijuma
+	allMetaFiles, _ := ioutil.ReadDir(".data/metadata/")
 
 	var dataFiles []string
 	var indexFiles []string
 	var summaryFiles []string
 	var tocFiles []string
 	var filterFiles []string
+	var metaFiles []string
 
 	for _, f := range files {
 		if strings.Contains(f.Name(), "lev"+substr+"-Data.db") {
@@ -455,11 +468,17 @@ func FindFiles(dir string, level int) ([]string, []string, []string, []string, [
 		}
 	}
 
-	return dataFiles, indexFiles, summaryFiles, tocFiles, filterFiles
+	for _, metaFile := range allMetaFiles {
+		if strings.Contains(metaFile.Name(), "lev"+substr+"-Metadata.txt") {
+			dataFiles = append(dataFiles, metaFile.Name())
+		}
+	}
+
+	return dataFiles, indexFiles, summaryFiles, tocFiles, filterFiles, metaFiles
 }
 
 func main() {
-	var lsm = CreateLsm(4, 4)
+	var lsm = CreateLsm(4, 2)
 	lsm.DoCompaction("./data/sstable/", 1)
 }
 
