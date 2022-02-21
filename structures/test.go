@@ -48,8 +48,7 @@ func (s *System) Put(key string, data string, tombstone bool) bool {
 	s.cache.Add(cacheNode)
 
 	if s.memTable.CheckFlush() {
-		s.memTable.Flush() // TODO dodati pravljenje merkle stabla
-		// TODO isto dodati kod
+		s.memTable.Flush()
 		s.wal.RemoveSegments()
 		s.lsm.DoCompaction("data/sstable/", 1)
 		s.memTable = CreateMemTable(s.config.MemTableParameters.SkipListMaxHeight,
@@ -67,6 +66,7 @@ func (s *System) Get(key string) (bool, []byte) {
 	} else if ok {
 		return true, value
 	}
+	// TODO zasto je zakomentarisano
 	//ok, value = s.cache.Get(key)
 	//if ok {
 	//	return true, value
@@ -92,6 +92,31 @@ func (s *System) Delete(key string) bool {
 	return true
 }
 
+
+func (s *System) Edit(key string, data string)  {
+	value := []byte(data)
+	s.memTable.Change(key, value, false)
+	elem := Element{
+		key:       key,
+		value:     value,
+		next:      nil,
+		timestamp: time.Now().String(),
+		tombstone: false,
+		checksum:  CRC32(value),
+	}
+
+	s.wal.Put(&elem)
+
+	cacheNode := CacheNode{
+		key:   key,
+		value: value,
+		next:  nil,
+	}
+	s.cache.Add(&cacheNode)
+
+}
+
+
 func main() {
 	system := new(System)
 	system.Init()
@@ -108,4 +133,10 @@ func main() {
 	fmt.Println(system.Delete("aa"))
 	fmt.Println("opet get")
 	fmt.Println(system.Get("aa"))
+
+	// EDIT
+	//system.Edit("aa", "tralala")
+	//_, value = system.Get("aa")
+	//fmt.Println("Testiranje edita: ")
+	//fmt.Println(value)
 }
