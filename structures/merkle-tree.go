@@ -13,13 +13,13 @@ type MerkleRoot struct {
 	root *MerkleNode
 }
 
-func (mr *MerkleRoot) String() string{
+func (mr *MerkleRoot) String() string {
 	return mr.root.String()
 }
 
 type MerkleNode struct {
-	data [20]byte
-	left *MerkleNode
+	data  [20]byte
+	left  *MerkleNode
 	right *MerkleNode
 }
 
@@ -34,20 +34,20 @@ func Hash(data []byte) [20]byte {
 // ...
 
 // StringsToBytes - treba u slucaju da se posalje array stringova
-func StringsToBytes(strings []string) [][] byte {
-	data := [][] byte {}
-	for i:= 0; i < len(strings); i++ {
+func StringsToBytes(strings []string) [][]byte {
+	data := [][]byte{}
+	for i := 0; i < len(strings); i++ {
 		key_byte := []byte(strings[i])
 		data = append(data, key_byte)
 	}
-	 return data
+	return data
 }
 
 // CreateMerkleTree - funkcija od koje krece kriranje stabla
-func CreateMerkleTree(values [][]byte, path string) *MerkleRoot {
+func CreateMerkleTree(keys [][]byte, path string) *MerkleRoot {
 
 	// ako je proslijedjen array bajtova
-	data := values
+	data := keys
 
 	leaves := Leaves(data)
 	root_node := CreateAllNodes(leaves)
@@ -59,12 +59,11 @@ func CreateMerkleTree(values [][]byte, path string) *MerkleRoot {
 	return &root
 }
 
-
 // Leaves - formira listove stabla
 func Leaves(data [][]byte) []*MerkleNode {
 	leaves := []*MerkleNode{}
 
-	for i:= 0; i < len(data); i++ {
+	for i := 0; i < len(data); i++ {
 		node := MerkleNode{Hash(data[i]), nil, nil}
 		leaves = append(leaves, &node)
 	}
@@ -90,7 +89,7 @@ func CreateAllNodes(leaves []*MerkleNode) *MerkleNode {
 				new_node_bytes := append(node1_data, node2_data...)
 				new_node := MerkleNode{Hash(new_node_bytes), node1, node2}
 				level = append(level, &new_node)
-			} else {  // ako nam fali odgovarajuci cvor
+			} else { // ako nam fali odgovarajuci cvor
 				node1 := nodes[i]
 				node2 := MerkleNode{data: [20]byte{}, left: nil, right: nil}
 				node1_data := node1.data[:]
@@ -111,7 +110,7 @@ func CreateAllNodes(leaves []*MerkleNode) *MerkleNode {
 
 // PrintTree - print stablo po sirini
 func PrintTree(root *MerkleNode) {
-	queue := make([] *MerkleNode, 0)
+	queue := make([]*MerkleNode, 0)
 	queue = append(queue, root)
 
 	for len(queue) != 0 {
@@ -129,13 +128,17 @@ func PrintTree(root *MerkleNode) {
 }
 
 func WriteInFile(root *MerkleNode, path string) {
-	_, err := os.Create(path)
+	newFile, err := os.Create(path)
+	err = newFile.Close()
+	if err != nil {
+		return
+	}
 	file, err := os.OpenFile(path, os.O_WRONLY, 0444)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	queue := make([] *MerkleNode, 0)
+	queue := make([]*MerkleNode, 0)
 	queue = append(queue, root)
 
 	for len(queue) != 0 {

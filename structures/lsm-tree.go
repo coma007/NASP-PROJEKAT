@@ -131,21 +131,17 @@ func Merge(dir, fDFile, fIFile, fSFile, fTFile, fFFile, sDFile, sIFile, sSFile,
 	// upis duzine fajla (broj kljuceva)
 	FileSize(generalFilename+"Data.db", fileLen)
 
-	// brisanje starih sstabela
-	fDataFile.Close()
-	sDataFile.Close()
-	err = os.Remove(dir + fIFile) // TODO ne radi
+	_ = newData.Close()
 
-	if err != nil {
-		fmt.Println(err)
-	}
+	// brisanje starih sstabela
+	_ = fDataFile.Close()
+	_ = sDataFile.Close()
+	_ = os.Remove(dir + fDFile)
+	_ = os.Remove(dir + fIFile)
 	_ = os.Remove(dir + fSFile)
 	_ = os.Remove(dir + fTFile)
 	_ = os.Remove(dir + fFFile)
-	err = os.Remove(dir + sDFile)
-	if err != nil {
-		fmt.Println(err)
-	}
+	_ = os.Remove(dir + sDFile)
 	_ = os.Remove(dir + sIFile)
 	_ = os.Remove(dir + sSFile)
 	_ = os.Remove(dir + sTFile)
@@ -455,6 +451,9 @@ func FileSize(filename string, len uint64) {
 	}
 
 	err = file.Close()
+	if err != nil {
+		fmt.Println("zatv")
+	}
 }
 
 func FindFiles(dir string, level int) ([]string, []string, []string, []string, []string) {
@@ -493,9 +492,11 @@ func CreateMerkle(level int, newData string, values [][]byte) {
 	files, _ := ioutil.ReadDir("./data/metadata/") // lista svih fajlova iz direktorijuma
 	for _, f := range files {
 		// brisemo sve metadata fajlove sa zadatog nivoa
-		fmt.Println(f.Name())
 		if strings.Contains(f.Name(), "lev"+strconv.Itoa(level)+"-Metadata.txt") {
-			os.Remove("./data/metadata/" + f.Name()) // TODO fajl nece da se obrise
+			err := os.Remove("./data/metadata/" + f.Name())
+			if err != nil {
+				fmt.Println(err)
+			}
 		}
 	}
 
