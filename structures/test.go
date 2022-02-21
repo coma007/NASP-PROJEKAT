@@ -135,8 +135,8 @@ func main() {
 	fmt.Println(system.Get("aa"))
 
 	// EDIT
-	//system.Edit("aa", "tralala")
-	//_, value = system.Get("aa")
-	//fmt.Println("Testiranje edita: ")
-	//fmt.Println(value)
+	system.Edit("Milica", "tralala...")
+	_, value = system.Get("Milica")
+	fmt.Println("Testiranje edita: ")
+	fmt.Println(string(value))
 }

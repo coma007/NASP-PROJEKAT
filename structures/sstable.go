@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"encoding/binary"
 	"errors"
+	"io"
 	"log"
 	"os"
 	"strconv"
@@ -167,7 +168,6 @@ func (st *SSTable) SStableFind(key string, offset int64) (ok bool, value []byte)
 	}
 	fileLen := binary.LittleEndian.Uint64(bytes)
 	//println(fileLen)
-
 	_, err = file.Seek(offset, 0)
 	if err != nil {
 		return false, nil
@@ -182,6 +182,9 @@ func (st *SSTable) SStableFind(key string, offset int64) (ok bool, value []byte)
 		crcBytes := make([]byte, 4)
 		_, err = reader.Read(crcBytes)
 		if err != nil {
+			if err == io.EOF {
+				break
+			}
 			panic(err)
 		}
 		crcValue := binary.LittleEndian.Uint32(crcBytes)

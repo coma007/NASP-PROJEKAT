@@ -175,19 +175,19 @@ func ReadAndWrite(currentOffset, currentOffset1, currentOffset2 uint, newData, f
 			// biramo onog sa kasnijim vremenom
 			if timestamp1 >= timestamp2 {
 				// prvi se upisuje, drugi se preskace
+				offset = append(offset, currentOffset)
 				currentOffset = WriteData(newData, currentOffset, crc1, timestamp1,
 					tombstone1, keyLen1, valueLen1, key1, value1)
 				filter.Add(Element{key1, nil, nil, timestamp1, false, 0})
 				keys = append(keys, key1)
-				offset = append(offset, currentOffset)
 				values = append(values, []byte(value1))
 			} else {
 				// drugi se upisuje, prvi se preskace
+				offset = append(offset, currentOffset)
 				currentOffset = WriteData(newData, currentOffset, crc2, timestamp2,
 					tombstone2, keyLen2, valueLen2, key2, value2)
 				filter.Add(Element{key2, nil, nil, timestamp2, false, 0})
 				keys = append(keys, key2)
-				offset = append(offset, currentOffset)
 				values = append(values, []byte(value2))
 			}
 
@@ -205,11 +205,11 @@ func ReadAndWrite(currentOffset, currentOffset1, currentOffset2 uint, newData, f
 
 		} else if key1 < key2 {
 			// samo prvi se upisuje
+			offset = append(offset, currentOffset)
 			currentOffset = WriteData(newData, currentOffset, crc1, timestamp1,
 				tombstone1, keyLen1, valueLen1, key1, value1)
 			filter.Add(Element{key1, nil, nil, timestamp1, false, 0})
 			keys = append(keys, key1)
-			offset = append(offset, currentOffset)
 			values = append(values, []byte(value1))
 
 			if fileLen1-1 > first {
@@ -220,11 +220,11 @@ func ReadAndWrite(currentOffset, currentOffset1, currentOffset2 uint, newData, f
 
 		} else {
 			// samo drugi se upisuje
+			offset = append(offset, currentOffset)
 			currentOffset = WriteData(newData, currentOffset, crc2, timestamp2,
 				tombstone2, keyLen2, valueLen2, key2, value2)
 			filter.Add(Element{key2, nil, nil, timestamp2, false, 0})
 			keys = append(keys, key2)
-			offset = append(offset, currentOffset)
 			values = append(values, []byte(value2))
 
 			if fileLen2-1 > second {
@@ -238,11 +238,11 @@ func ReadAndWrite(currentOffset, currentOffset1, currentOffset2 uint, newData, f
 	// ako je prvi dosao do kraja drugi treba da iscitamo do kraja
 	if fileLen1 == first && fileLen2 != second {
 		for fileLen2 != second {
+			offset = append(offset, currentOffset)
 			currentOffset = WriteData(newData, currentOffset, crc2, timestamp2,
 				tombstone2, keyLen2, valueLen2, key2, value2)
 			filter.Add(Element{key2, nil, nil, timestamp2, false, 0})
 			keys = append(keys, key2)
-			offset = append(offset, currentOffset)
 			values = append(values, []byte(value2))
 
 			if fileLen2-1 > second {
@@ -255,11 +255,11 @@ func ReadAndWrite(currentOffset, currentOffset1, currentOffset2 uint, newData, f
 		// ako je drugi dosao do kraja prvi treba da iscitamo do kraja
 	} else if fileLen2 == second && fileLen1 != first {
 		for fileLen1 > first {
+			offset = append(offset, currentOffset)
 			currentOffset = WriteData(newData, currentOffset, crc1, timestamp1,
 				tombstone1, keyLen1, valueLen1, key1, value1)
 			filter.Add(Element{key1, nil, nil, timestamp1, false, 0})
 			keys = append(keys, key1)
-			offset = append(offset, currentOffset)
 			values = append(values, []byte(value1))
 
 			if fileLen1-1 != first {

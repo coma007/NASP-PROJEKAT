@@ -6,7 +6,17 @@
   <component name="ChangeListManager">
     <list default="true" id="072c343e-3522-435b-b3eb-59a8d414e422" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/metadata/usertable-data-ic-1-lev2-Metadata.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/sstable/usertable-data-ic-1-lev2-Data.db" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/sstable/usertable-data-ic-1-lev2-Filter.gob" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/sstable/usertable-data-ic-1-lev2-Index.db" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/sstable/usertable-data-ic-1-lev2-Summary.db" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/sstable/usertable-data-ic-1-lev2-TOC.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/wal/wal1.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/wal/wal2.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/structures/lsm-tree.go" beforeDir="false" afterPath="$PROJECT_DIR$/structures/lsm-tree.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/structures/sstable.go" beforeDir="false" afterPath="$PROJECT_DIR$/structures/sstable.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/structures/test.go" beforeDir="false" afterPath="$PROJECT_DIR$/structures/test.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -35,6 +45,14 @@
     <property name="last_opened_file_path" value="$USER_HOME$" />
   </component>
   <component name="RunManager">
+    <configuration default="true" type="GoApplicationRunConfiguration" factoryName="Go Application">
+      <module name="NASP-PROJEKAT" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="FILE" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <method v="2" />
+    </configuration>
     <configuration name="go build NASP-PROJEKAT/structures" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
       <module name="NASP-PROJEKAT" />
       <working_directory value="$PROJECT_DIR$" />
@@ -44,8 +62,27 @@
       <filePath value="$PROJECT_DIR$/structures/test.go" />
       <method v="2" />
     </configuration>
+    <configuration name="go build NASP-PROJEKAT/structures" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+      <module name="NASP-PROJEKAT" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="PACKAGE" />
+      <package value="NASP-PROJEKAT/structures" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$/structures/test.go" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="GoTestRunConfiguration" factoryName="Go Test">
+      <module name="NASP-PROJEKAT" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="DIRECTORY" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Go Build.go build NASP-PROJEKAT/structures" />
         <item itemvalue="Go Build.go build NASP-PROJEKAT/structures" />
       </list>
     </recent_temporary>
@@ -64,19 +101,9 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
-          <url>file://$PROJECT_DIR$/structures/test.go</url>
-          <line>124</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>
