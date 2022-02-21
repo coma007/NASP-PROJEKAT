@@ -6,20 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="072c343e-3522-435b-b3eb-59a8d414e422" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/metadata/usertable-data-ic-1-lev1-Metadata.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/sstable/usertable-data-ic-1-lev1-Data.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/sstable/usertable-data-ic-1-lev1-Filter.gob" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/sstable/usertable-data-ic-1-lev1-Index.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/sstable/usertable-data-ic-1-lev1-Summary.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/sstable/usertable-data-ic-1-lev1-TOC.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/sstable/usertable-data-ic-1-lev2-Data.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/sstable/usertable-data-ic-1-lev2-Filter.gob" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/sstable/usertable-data-ic-1-lev2-Index.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/sstable/usertable-data-ic-1-lev2-Summary.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/wal/wal1.log" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/wal/wal2.log" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/structures/test.go" beforeDir="false" afterPath="$PROJECT_DIR$/structures/test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/structures/sstable.go" beforeDir="false" afterPath="$PROJECT_DIR$/structures/sstable.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -80,5 +67,16 @@
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/structures/test.go</url>
+          <line>124</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
