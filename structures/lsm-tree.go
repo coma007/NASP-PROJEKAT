@@ -25,7 +25,7 @@ func CreateLsm(maxL, maxS int) *LSM {
 
 func (lsm LSM) IsCompactionNeeded(dir string, level int) (bool, []string, []string, []string, []string, []string) {
 	dataFiles, indexFiles, summaryFiles, tocFiles, filterFiles := FindFiles(dir, level)
-	return len(dataFiles) == lsm.maxSize, dataFiles, indexFiles, summaryFiles, tocFiles, filterFiles
+	return len(indexFiles) == lsm.maxSize, dataFiles, indexFiles, summaryFiles, tocFiles, filterFiles
 }
 
 func (lsm LSM) DoCompaction(dir string, level int) {
@@ -38,12 +38,15 @@ func (lsm LSM) DoCompaction(dir string, level int) {
 		return
 	}
 
+	_, indexFilesLvlUp, _, _, _ := FindFiles(dir, level+1)
+
 	i := 0
 	var numFile int
-	if len(dataFiles) == lsm.maxLevel {
+
+	if len(indexFilesLvlUp) == 0 {
 		numFile = 1
 	} else {
-		numFile = 3
+		numFile = len(indexFilesLvlUp) + 1
 	}
 
 	for i < lsm.maxSize { // while petlja
@@ -123,7 +126,7 @@ func Merge(dir, fDFile, fIFile, fSFile, fTFile, fFFile, sDFile, sIFile, sSFile,
 	currentOffset2 += 8
 
 	fileLen := ReadAndWrite(currentOffset, currentOffset1, currentOffset2, newData, fDataFile, sDataFile,
-		fileLen1, fileLen2, table)
+		fileLen1, fileLen2, table, level)
 
 	// upis duzine fajla (broj kljuceva)
 	FileSize(generalFilename+"Data.db", fileLen)
@@ -131,26 +134,30 @@ func Merge(dir, fDFile, fIFile, fSFile, fTFile, fFFile, sDFile, sIFile, sSFile,
 	// brisanje starih sstabela
 	fDataFile.Close()
 	sDataFile.Close()
-	fmt.Println(fDFile)
-	os.Remove(dir + fDFile)
-	os.Remove(dir + fIFile)
-	os.Remove(dir + fSFile)
-	os.Remove(dir + fTFile)
-	os.Remove(dir + fFFile)
-	os.Remove(dir + sDFile)
-	os.Remove(dir + sIFile)
-	os.Remove(dir + sSFile)
-	os.Remove(dir + sTFile)
-	os.Remove(dir + sFFile)
+	err = os.Remove(dir + fIFile)
+	if err != nil {
+		fmt.Println(err)
+	}
+	_ = os.Remove(dir + fSFile)
+	_ = os.Remove(dir + fTFile)
+	_ = os.Remove(dir + fFFile)
+	err = os.Remove(dir + sDFile)
+	if err != nil {
+		fmt.Println(err)
+	}
+	_ = os.Remove(dir + sIFile)
+	_ = os.Remove(dir + sSFile)
+	_ = os.Remove(dir + sTFile)
+	_ = os.Remove(dir + sFFile)
 }
 
 func ReadAndWrite(currentOffset, currentOffset1, currentOffset2 uint, newData, fDataFile, sDataFile *os.File, fileLen1,
-	fileLen2 uint64, table *SSTable) uint64 {
+	fileLen2 uint64, table *SSTable, level int) uint64 {
 
 	filter := CreateBloomFilter(uint(fileLen1+fileLen2), 2)
 	keys := make([]string, 0)
 	offset := make([]uint, 0)
-	//values := make()
+	values := make([][]byte, 0)
 
 	crc1, timestamp1, tombstone1, keyLen1, valueLen1,
 		key1, value1, currentOffset1 := ReadData(fDataFile, currentOffset1)
@@ -158,8 +165,8 @@ func ReadAndWrite(currentOffset, currentOffset1, currentOffset2 uint, newData, f
 	crc2, timestamp2, tombstone2, keyLen2, valueLen2,
 		key2, value2, currentOffset2 := ReadData(sDataFile, currentOffset2)
 
-	first := uint64(1)
-	second := uint64(1)
+	first := uint64(0)
+	second := uint64(0)
 
 	for {
 		// sigurno su vec upisani svi podaci bar jednog fajla
@@ -169,13 +176,14 @@ func ReadAndWrite(currentOffset, currentOffset1, currentOffset2 uint, newData, f
 
 		if key1 == key2 {
 			// biramo onog sa kasnijim vremenom
-			if timestamp1 > timestamp2 {
+			if timestamp1 >= timestamp2 {
 				// prvi se upisuje, drugi se preskace
 				currentOffset = WriteData(newData, currentOffset, crc1, timestamp1,
 					tombstone1, keyLen1, valueLen1, key1, value1)
 				filter.Add(Element{key1, nil, nil, timestamp1, false, 0})
 				keys = append(keys, key1)
 				offset = append(offset, currentOffset)
+				values = append(values, []byte(value1))
 			} else {
 				// drugi se upisuje, prvi se preskace
 				currentOffset = WriteData(newData, currentOffset, crc2, timestamp2,
@@ -183,13 +191,19 @@ func ReadAndWrite(currentOffset, currentOffset1, currentOffset2 uint, newData, f
 				filter.Add(Element{key2, nil, nil, timestamp2, false, 0})
 				keys = append(keys, key2)
 				offset = append(offset, currentOffset)
+				values = append(values, []byte(value2))
 			}
-			crc1, timestamp1, tombstone1, keyLen1, valueLen1,
-				key1, value1, currentOffset1 = ReadData(fDataFile, currentOffset1)
+
+			if fileLen1-1 > first {
+				crc1, timestamp1, tombstone1, keyLen1, valueLen1,
+					key1, value1, currentOffset1 = ReadData(fDataFile, currentOffset1)
+			}
 			first++
 
-			crc2, timestamp2, tombstone2, keyLen2, valueLen2,
-				key2, value2, currentOffset2 = ReadData(sDataFile, currentOffset2)
+			if fileLen2-1 > second {
+				crc2, timestamp2, tombstone2, keyLen2, valueLen2,
+					key2, value2, currentOffset2 = ReadData(sDataFile, currentOffset2)
+			}
 			second++
 
 		} else if key1 < key2 {
@@ -199,9 +213,12 @@ func ReadAndWrite(currentOffset, currentOffset1, currentOffset2 uint, newData, f
 			filter.Add(Element{key1, nil, nil, timestamp1, false, 0})
 			keys = append(keys, key1)
 			offset = append(offset, currentOffset)
+			values = append(values, []byte(value1))
 
-			crc1, timestamp1, tombstone1, keyLen1, valueLen1,
-				key1, value1, currentOffset1 = ReadData(fDataFile, currentOffset1)
+			if fileLen1-1 != first {
+				crc1, timestamp1, tombstone1, keyLen1, valueLen1,
+					key1, value1, currentOffset1 = ReadData(fDataFile, currentOffset1)
+			}
 			first++
 
 		} else {
@@ -211,13 +228,16 @@ func ReadAndWrite(currentOffset, currentOffset1, currentOffset2 uint, newData, f
 			filter.Add(Element{key2, nil, nil, timestamp2, false, 0})
 			keys = append(keys, key2)
 			offset = append(offset, currentOffset)
+			values = append(values, []byte(value2))
 
-			crc2, timestamp2, tombstone2, keyLen2, valueLen2,
-				key2, value2, currentOffset2 = ReadData(sDataFile, currentOffset2)
+			if fileLen2-1 != second {
+				crc2, timestamp2, tombstone2, keyLen2, valueLen2,
+					key2, value2, currentOffset2 = ReadData(sDataFile, currentOffset2)
+			}
 			second++
+
 		}
 	}
-
 	// ako je prvi dosao do kraja drugi treba da iscitamo do kraja
 	if fileLen1 == first && fileLen2 != second {
 		for fileLen2 != second {
@@ -226,32 +246,43 @@ func ReadAndWrite(currentOffset, currentOffset1, currentOffset2 uint, newData, f
 			filter.Add(Element{key2, nil, nil, timestamp2, false, 0})
 			keys = append(keys, key2)
 			offset = append(offset, currentOffset)
+			values = append(values, []byte(value2))
 
-			crc2, timestamp2, tombstone2, keyLen2, valueLen2,
-				key2, value2, currentOffset2 = ReadData(sDataFile, currentOffset2)
+			if fileLen2-1 != second {
+				crc2, timestamp2, tombstone2, keyLen2, valueLen2,
+					key2, value2, currentOffset2 = ReadData(sDataFile, currentOffset2)
+			}
 			second++
+
 		}
 		// ako je drugi dosao do kraja prvi treba da iscitamo do kraja
 	} else if fileLen2 == second && fileLen1 != first {
 		for fileLen1 != first {
+			fmt.Println(key1)
 			currentOffset = WriteData(newData, currentOffset, crc1, timestamp1,
 				tombstone1, keyLen1, valueLen1, key1, value1)
 			filter.Add(Element{key1, nil, nil, timestamp1, false, 0})
 			keys = append(keys, key1)
 			offset = append(offset, currentOffset)
+			values = append(values, []byte(value1))
 
-			crc1, timestamp1, tombstone1, keyLen1, valueLen1,
-				key1, value1, currentOffset1 = ReadData(sDataFile, currentOffset2)
+			if fileLen1-1 != first {
+				crc1, timestamp1, tombstone1, keyLen1, valueLen1,
+					key1, value1, currentOffset1 = ReadData(fDataFile, currentOffset1)
+			}
 			first++
 		}
 	}
 	//kreiranje ostalih delova sstabele
 	index := CreateIndex(keys, offset, table.indexFilename)
-	keys, offsets := index.Write()
-	WriteSummary(keys, offsets, table.summaryFilename)
+	keysIndex, offsets := index.Write()
+	WriteSummary(keysIndex, offsets, table.summaryFilename)
 	table.WriteTOC()
 	writeBloomFilter(table.filterFilename, filter)
 
+	CreateMerkle(level, newData.Name(), values)
+
+	fmt.Println(keys)
 	return uint64(len(keys))
 }
 
@@ -265,14 +296,14 @@ func WriteData(file *os.File, currentOffset uint, crcBytes []byte, timestamp str
 	file.Seek(int64(currentOffset), 0)
 	writer := bufio.NewWriter(file)
 
-	//crc
+	// crc
 	bytesWritten, err := writer.Write(crcBytes)
 	currentOffset += uint(bytesWritten)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	//timestamp
+	// timestamp
 	timestampBytes := make([]byte, 16)
 	copy(timestampBytes, timestamp)
 	bytesWritten, err = writer.Write(timestampBytes)
@@ -424,7 +455,10 @@ func FileSize(filename string, len uint64) {
 		return
 	}
 
-	file.Close()
+	err = file.Close()
+	if err != nil {
+		fmt.Println("zatvaranje")
+	}
 }
 
 func FindFiles(dir string, level int) ([]string, []string, []string, []string, []string) {
@@ -457,6 +491,19 @@ func FindFiles(dir string, level int) ([]string, []string, []string, []string, [
 	}
 
 	return dataFiles, indexFiles, summaryFiles, tocFiles, filterFiles
+}
+
+func CreateMerkle(level int, newData string, values [][]byte) {
+	files, _ := ioutil.ReadDir("./data/metadata/") // lista svih fajlova iz direktorijuma
+	for _, f := range files {
+		// brisemo sve metadata fajlove sa zadatog nivoa
+		if strings.Contains(f.Name(), "lev"+strconv.Itoa(level)+"-Metadata.txt") {
+			os.Remove("./data/metadata/" + f.Name())
+		}
+	}
+	
+	filename := strings.ReplaceAll(newData, "./data/sstable/", "")
+	CreateMerkleTree(values, filename)
 }
 
 //func main() {
