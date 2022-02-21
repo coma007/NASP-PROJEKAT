@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-func FindSummary(key, filename string) (ok bool, offset int64){
+func FindSummary(key, filename string) (ok bool, offset int64) {
 	ok = false
 	offset = int64(0)
 
@@ -15,7 +15,6 @@ func FindSummary(key, filename string) (ok bool, offset int64){
 	if err != nil {
 		panic(err)
 	}
-	defer file.Close()
 
 	reader := bufio.NewReader(file)
 
@@ -102,7 +101,7 @@ func FindSummary(key, filename string) (ok bool, offset int64){
 			break
 		}
 	}
-
+	file.Close()
 	return
 }
 
@@ -127,7 +126,6 @@ func WriteSummary(keys []string, offsets []uint, filename string) {
 		offset := offsets[i]
 
 		bytes := []byte(key)
-
 
 		keyLen := uint64(len(bytes))
 		bytesLen := make([]byte, 8)
@@ -155,6 +153,5 @@ func WriteSummary(keys []string, offsets []uint, filename string) {
 			return
 		}
 	}
-
+	file.Close()
 }
-

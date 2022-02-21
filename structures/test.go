@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"time"
 )
 
@@ -17,9 +16,9 @@ func (s *System) Init() {
 	s.wal = CreateWal(WAL_PATH)
 	s.memTable = CreateMemTable(5)
 	s.cache = CreateCache(5)
-	s.lsm = CreateLsm(4, 4)
-	rate := int64(5)
-	s.tokenBucket = NewTokenBucket(rate, 10)
+	s.lsm = CreateLsm(3, 2)
+	rate := int64(1000)
+	s.tokenBucket = NewTokenBucket(rate, 100)
 
 }
 
@@ -92,14 +91,20 @@ func main() {
 	system.Put("Milica", "Maca", false)
 	system.Put("ad", "Peccca", false)
 	system.Put("aa", "Macca", false)
-	_, value := system.Get("aa")
-	fmt.Println("value")
-	fmt.Println(value)
-	_, value = system.Get("aa")
-	fmt.Println("value")
-	fmt.Println(value)
-	fmt.Println("delete")
-	fmt.Println(system.Delete("aa"))
-	fmt.Println("opet get")
-	fmt.Println(system.Get("aa"))
+	system.Put("laaa", "Maca", false)
+	system.Put("bee", "Peccca", false)
+	system.Put("ccc", "Macca", false)
+	system.Put("Jecika", "Maca", false)
+	system.Put("Pecika", "Peccca", false)
+	system.Put("Necika", "Macca", false)
+	//_, value := system.Get("aa")
+	//fmt.Println("value")
+	//fmt.Println(value)
+	//_, value = system.Get("aa")
+	//fmt.Println("value")
+	//fmt.Println(value)
+	//fmt.Println("delete")
+	//fmt.Println(system.Delete("aa"))
+	//fmt.Println("opet get")
+	//fmt.Println(system.Get("aa"))
 }

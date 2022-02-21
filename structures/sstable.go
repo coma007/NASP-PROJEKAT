@@ -36,7 +36,6 @@ func CreateSStable(data MemTable, filename string) (table *SSTable) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer file.Close()
 
 	writer := bufio.NewWriter(file)
 
@@ -143,6 +142,8 @@ func CreateSStable(data MemTable, filename string) (table *SSTable) {
 	WriteSummary(keys, offsets, table.summaryFilename)
 	writeBloomFilter(table.filterFilename, filter)
 	table.WriteTOC()
+
+	file.Close()
 	return
 }
 
@@ -153,7 +154,6 @@ func (st *SSTable) SStableFind(key string, offset int64) (ok bool, value []byte)
 	if err != nil {
 		panic(err)
 	}
-	defer file.Close()
 
 	reader := bufio.NewReader(file)
 	bytes := make([]byte, 8)
@@ -243,7 +243,7 @@ func (st *SSTable) SStableFind(key string, offset int64) (ok bool, value []byte)
 			break
 		}
 	}
-
+	file.Close()
 	return ok, value
 }
 
@@ -253,7 +253,6 @@ func (st *SSTable) WriteTOC() {
 	if err != nil {
 		panic(err)
 	}
-	defer file.Close()
 
 	writer := bufio.NewWriter(file)
 
@@ -282,6 +281,7 @@ func (st *SSTable) WriteTOC() {
 	if err != nil {
 		return
 	}
+	file.Close()
 }
 
 func readSSTable(filename, level string) (table *SSTable) {
@@ -291,7 +291,6 @@ func readSSTable(filename, level string) (table *SSTable) {
 	if err != nil {
 		panic(err)
 	}
-	defer file.Close()
 
 	reader := bufio.NewReader(file)
 
@@ -304,6 +303,8 @@ func readSSTable(filename, level string) (table *SSTable) {
 	table = &SSTable{generalFilename: generalFilename[:len(generalFilename)-1],
 		SSTableFilename: SSTableFilename[:len(SSTableFilename)-1], indexFilename: indexFilename[:len(indexFilename)-1],
 		summaryFilename: summaryFilename[:len(summaryFilename)-1], filterFilename: filterFilename}
+
+	file.Close()
 	return
 }
 
