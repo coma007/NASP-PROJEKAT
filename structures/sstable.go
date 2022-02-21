@@ -32,6 +32,7 @@ func CreateSStable(data MemTable, filename string) (table *SSTable) {
 	filter := CreateBloomFilter(data.Size(), 2)
 	keys := make([]string, 0)
 	offset := make([]uint, 0)
+	values := make([][]byte, 0)
 	currentOffset := uint(0)
 	file, err := os.Create(table.SSTableFilename)
 	if err != nil {
@@ -61,6 +62,7 @@ func CreateSStable(data MemTable, filename string) (table *SSTable) {
 		value := node.value
 		keys = append(keys, key)
 		offset = append(offset, currentOffset)
+		values = append(values, value)
 
 		filter.Add(*node)
 		//crc
@@ -143,6 +145,7 @@ func CreateSStable(data MemTable, filename string) (table *SSTable) {
 	keys, offsets := index.Write()
 	WriteSummary(keys, offsets, table.summaryFilename)
 	writeBloomFilter(table.filterFilename, filter)
+	CreateMerkleTree(values, strings.ReplaceAll(table.SSTableFilename, "data/sstable/", ""))
 	table.WriteTOC()
 	return
 }
