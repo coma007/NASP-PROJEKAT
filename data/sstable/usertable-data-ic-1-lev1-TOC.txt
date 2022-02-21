@@ -1,4 +1,3 @@
-data/sstable/usertable-data-ic-1-lev1-
 data/sstable/usertable-data-ic-1-lev1-Data.db
 data/sstable/usertable-data-ic-1-lev1-Index.db
 data/sstable/usertable-data-ic-1-lev1-Summary.db

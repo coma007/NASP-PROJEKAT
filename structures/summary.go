@@ -9,7 +9,7 @@ import (
 
 func FindSummary(key, filename string) (ok bool, offset int64) {
 	ok = false
-	offset = int64(0)
+	offset = int64(8)
 
 	file, err := os.Open(filename)
 	if err != nil {
@@ -65,8 +65,10 @@ func FindSummary(key, filename string) (ok bool, offset int64) {
 		return false, 0
 	}
 
+	ok = true
 	var i uint64
 	for i = 0; i < fileLen-2; i++ {
+		good := false
 		bytes := make([]byte, 8)
 		_, err = reader.Read(bytes)
 		if err != nil {
@@ -83,8 +85,10 @@ func FindSummary(key, filename string) (ok bool, offset int64) {
 		nodeKey := string(bytes[:])
 		//println(nodeKey)
 
+		println(nodeKey)
+		println(key)
 		if nodeKey <= key {
-			ok = true
+			good = true
 		}
 
 		bytes = make([]byte, 8)
@@ -95,9 +99,9 @@ func FindSummary(key, filename string) (ok bool, offset int64) {
 		newOffset := binary.LittleEndian.Uint64(bytes)
 		//println(newOffset)
 
-		if ok {
+		if good {
 			offset = int64(newOffset)
-		} else if !ok {
+		} else if !good {
 			break
 		}
 	}

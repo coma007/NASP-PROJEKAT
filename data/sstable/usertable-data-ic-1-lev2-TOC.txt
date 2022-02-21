@@ -1,5 +1,0 @@
-./data/sstable/usertable-data-ic-1-lev2-
-./data/sstable/usertable-data-ic-1-lev2-Data.db
-./data/sstable/usertable-data-ic-1-lev2-Index.db
-./data/sstable/usertable-data-ic-1-lev2-Summary.db
-./data/sstable/usertable-data-ic-1-lev2-Filter.gob

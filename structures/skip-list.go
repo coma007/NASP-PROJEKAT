@@ -38,22 +38,24 @@ func (skiplist *SkipList) roll() int {
 	return level
 }
 
-func (skiplist *SkipList) Add(key string, value []byte) *Element {
+func (skiplist *SkipList) Add(key string, value []byte, tombstone bool) *Element {
 
 	level := skiplist.roll()
 	bytes := []byte(key)
 	crc := CRC32(bytes)
 	node := &Element{key, value, make([]*Element, level+1), time.Time{}.String(),
-		false, crc}
-	current := skiplist.head
+		tombstone, crc}
+	//current := skiplist.head
 	for i := skiplist.height - 1; i >= 0; i-- {
+		current := skiplist.head
 		next := current.next[i]
 		for next != nil {
-			current = next
-			next = current.next[i]
 			if next == nil || next.key > key {
 				break
 			}
+			current = next
+			next = current.next[i]
+
 		}
 		if i <= level {
 			skiplist.size++

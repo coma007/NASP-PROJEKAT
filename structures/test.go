@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"time"
 )
 
@@ -10,15 +11,19 @@ type System struct {
 	cache       *Cache
 	lsm         *LSM
 	tokenBucket *TokenBucket
+	config 		*Config
 }
 
 func (s *System) Init() {
+	s.config = GetSystemConfig()
 	s.wal = CreateWal(WAL_PATH)
-	s.memTable = CreateMemTable(5)
-	s.cache = CreateCache(5)
-	s.lsm = CreateLsm(3, 2)
-	rate := int64(1000)
-	s.tokenBucket = NewTokenBucket(rate, 100)
+	s.memTable = CreateMemTable(s.config.MemTableParameters.SkipListMaxHeight,
+		uint(s.config.MemTableParameters.MaxMemTableSize),
+		uint(s.config.MemTableParameters.MemTableThreshold))
+	s.cache = CreateCache(s.config.CacheParameters.CacheMaxData)
+	s.lsm = CreateLsm(s.config.LSMParameters.LSMMaxLevel, s.config.LSMParameters.LSMLevelSize)
+	rate := int64(s.config.TokenBucketParameters.TokenBucketInterval)
+	s.tokenBucket = NewTokenBucket(rate, s.config.TokenBucketParameters.TokenBucketMaxTokens)
 
 }
 
@@ -38,16 +43,18 @@ func (s *System) Put(key string, data string, tombstone bool) bool {
 		checksum:  CRC32(value),
 	}
 	s.wal.Put(&elem)
-	s.memTable.Add(key, value)
+	s.memTable.Add(key, value, tombstone)
 	cacheNode := CreateNode(key, value)
 	s.cache.Add(cacheNode)
 
-	if s.memTable.size >= 3 {
+	if s.memTable.CheckFlush() {
 		s.memTable.Flush() // TODO dodati pravljenje merkle stabla
 		// TODO isto dodati kod
 		s.wal.RemoveSegments()
-		s.lsm.DoCompaction("./data/sstable/", 1)
-		s.memTable = CreateMemTable(5)
+		s.lsm.DoCompaction("data/sstable/", 1)
+		s.memTable = CreateMemTable(s.config.MemTableParameters.SkipListMaxHeight,
+			uint(s.config.MemTableParameters.MaxMemTableSize),
+			uint(s.config.MemTableParameters.MemTableThreshold))
 	}
 
 	return true
@@ -60,11 +67,11 @@ func (s *System) Get(key string) (bool, []byte) {
 	} else if ok {
 		return true, value
 	}
-	ok, value = s.cache.Get(key)
-	if ok {
-		return true, value
-	}
-	ok, value = SearchThroughSSTables(key)
+	//ok, value = s.cache.Get(key)
+	//if ok {
+	//	return true, value
+	//}
+	ok, value = SearchThroughSSTables(key, s.config.LSMParameters.LSMMaxLevel)
 	if ok {
 		return true, value
 	}
@@ -91,20 +98,14 @@ func main() {
 	system.Put("Milica", "Maca", false)
 	system.Put("ad", "Peccca", false)
 	system.Put("aa", "Macca", false)
-	system.Put("laaa", "Maca", false)
-	system.Put("bee", "Peccca", false)
-	system.Put("ccc", "Macca", false)
-	system.Put("Jecika", "Maca", false)
-	system.Put("Pecika", "Peccca", false)
-	system.Put("Necika", "Macca", false)
-	//_, value := system.Get("aa")
-	//fmt.Println("value")
-	//fmt.Println(value)
-	//_, value = system.Get("aa")
-	//fmt.Println("value")
-	//fmt.Println(value)
-	//fmt.Println("delete")
-	//fmt.Println(system.Delete("aa"))
-	//fmt.Println("opet get")
-	//fmt.Println(system.Get("aa"))
+	_, value := system.Get("aa")
+	fmt.Println("value")
+	fmt.Println(value)
+	_, value = system.Get("aa")
+	fmt.Println("value")
+	fmt.Println(value)
+	fmt.Println("delete")
+	fmt.Println(system.Delete("aa"))
+	fmt.Println("opet get")
+	fmt.Println(system.Get("aa"))
 }
