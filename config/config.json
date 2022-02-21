@@ -1,0 +1,25 @@
+{
+  "wal_config": {
+    "wal_segment_capacity": -1
+  },
+  "hll_config": {
+    "hll_min_precision": -1,
+    "hll_max_precision": -1
+  },
+  "cache_config": {
+    "cache_max_data": -1
+  },
+  "lsm_config": {
+    "lsm_max_level": -1,
+    "lsm_level_size": -1
+  },
+  "token_bucket_config": {
+    "token_bucket_max_tokens": -1,
+    "token_bucket_interval": -1
+  },
+  "mem_table_config": {
+    "skip_list_max_height": -1,
+    "max_mem_table_size": -1,
+    "mem_table_threshold": -1
+  }
+}

@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"strings"
 )
 
 type Table interface {
@@ -257,10 +258,10 @@ func (st *SSTable) WriteTOC() {
 
 	writer := bufio.NewWriter(file)
 
-	_, err = writer.WriteString(st.generalFilename + "\n")
-	if err != nil {
-		return
-	}
+	//_, err = writer.WriteString(st.generalFilename + "\n")
+	//if err != nil {
+	//	return
+	//}
 	_, err = writer.WriteString(st.SSTableFilename + "\n")
 	if err != nil {
 		return
@@ -295,13 +296,14 @@ func readSSTable(filename, level string) (table *SSTable) {
 
 	reader := bufio.NewReader(file)
 
-	generalFilename, _ := reader.ReadString('\n')
+	//generalFilename, _ := reader.ReadString('\n')
 	SSTableFilename, _ := reader.ReadString('\n')
 	indexFilename, _ := reader.ReadString('\n')
 	summaryFilename, _ := reader.ReadString('\n')
 	filterFilename, _ := reader.ReadString('\n')
+	generalFilename := strings.ReplaceAll(SSTableFilename, "Data.db\n", "")
 
-	table = &SSTable{generalFilename: generalFilename[:len(generalFilename)-1],
+	table = &SSTable{generalFilename: generalFilename,
 		SSTableFilename: SSTableFilename[:len(SSTableFilename)-1], indexFilename: indexFilename[:len(indexFilename)-1],
 		summaryFilename: summaryFilename[:len(summaryFilename)-1], filterFilename: filterFilename}
 	return
@@ -342,8 +344,8 @@ func findSSTableFilename(level string) (filename string) {
 
 }
 
-func SearchThroughSSTables(key string) (ok bool, value []byte) {
-	levelNum := 1
+func SearchThroughSSTables(key string, maxLevels int) (ok bool, value []byte) {
+	levelNum := maxLevels
 	filenameNum := 1
 	filename := strconv.Itoa(filenameNum)
 	level := strconv.Itoa(levelNum)
