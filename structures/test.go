@@ -93,7 +93,11 @@ func (s *System) Delete(key string) bool {
 }
 
 
-func (s *System) Edit(key string, data string)  {
+func (s *System) Edit(key string, data string) bool {
+	request := s.tokenBucket.CheckRequest()
+	if !request {
+		return false
+	}
 	value := []byte(data)
 	s.memTable.Change(key, value, false)
 	elem := Element{
@@ -114,6 +118,7 @@ func (s *System) Edit(key string, data string)  {
 	}
 	s.cache.Add(&cacheNode)
 
+	return true
 }
 
 
@@ -135,7 +140,8 @@ func main() {
 	fmt.Println(system.Get("aa"))
 
 	// EDIT
-	system.Edit("Milica", "tralala...")
+	boolean :=  system.Edit("Milica", "tralala...")
+	fmt.Println(boolean)
 	_, value = system.Get("Milica")
 	fmt.Println("Testiranje edita: ")
 	fmt.Println(string(value))
