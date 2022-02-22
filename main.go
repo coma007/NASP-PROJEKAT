@@ -210,7 +210,6 @@ func parseChoice(choice string, system *sys.System) bool {
 }
 
 func main() {
-
 	system := new(sys.System)
 	system.Init()
 	fmt.Println("Welcome !")

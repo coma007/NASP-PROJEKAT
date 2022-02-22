@@ -39,6 +39,7 @@ func CreateSStable(data MemTable, filename string) (table *SSTable) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer file.Close()
 
 	writer := bufio.NewWriter(file)
 
@@ -148,7 +149,6 @@ func CreateSStable(data MemTable, filename string) (table *SSTable) {
 	CreateMerkleTree(values, strings.ReplaceAll(table.SSTableFilename, "kv-system/data/sstable/", ""))
 	table.WriteTOC()
 
-	file.Close()
 	return
 }
 
@@ -260,6 +260,7 @@ func (st *SSTable) WriteTOC() {
 	if err != nil {
 		panic(err)
 	}
+	defer file.Close()
 
 	writer := bufio.NewWriter(file)
 
@@ -288,7 +289,6 @@ func (st *SSTable) WriteTOC() {
 	if err != nil {
 		return
 	}
-	file.Close()
 }
 
 func readSSTable(filename, level string) (table *SSTable) {
@@ -298,6 +298,7 @@ func readSSTable(filename, level string) (table *SSTable) {
 	if err != nil {
 		panic(err)
 	}
+	defer file.Close()
 
 	reader := bufio.NewReader(file)
 
@@ -312,7 +313,6 @@ func readSSTable(filename, level string) (table *SSTable) {
 		SSTableFilename: SSTableFilename[:len(SSTableFilename)-1], indexFilename: indexFilename[:len(indexFilename)-1],
 		summaryFilename: summaryFilename[:len(summaryFilename)-1], filterFilename: filterFilename}
 
-	file.Close()
 	return
 }
 

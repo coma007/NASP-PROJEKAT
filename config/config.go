@@ -9,6 +9,11 @@ type WalConfig struct {
 	SegmentCapacity int `json:"wal_segment_capacity"`
 }
 
+type CSMConfig struct {
+	CSMPrecision	float64	`json:"csm_precision"`
+	CSMAccuracy		float64	`json:"csm_accuracy"`
+}
+
 type HLLConfig struct {
 	HLLPrecision    int `json:"hll_precision"`
 }
@@ -36,6 +41,7 @@ type MemTableConfig struct {
 type Config struct {
 	WalParameters         WalConfig         `json:"wal_config"`
 	HLLParameters         HLLConfig         `json:"hll_config"`
+	CSMParameters		  CSMConfig			`json:"csm_config"`
 	CacheParameters       CacheConfig       `json:"cache_config"`
 	LSMParameters         LSMConfig         `json:"lsm_config"`
 	TokenBucketParameters TokenBucketConfig `json:"token_bucket_config"`
@@ -60,6 +66,12 @@ func GetSystemConfig() (config *Config) {
 	}
 	if config.HLLParameters.HLLPrecision == -1 {
 		config.HLLParameters.HLLPrecision = 4
+	}
+	if config.CSMParameters.CSMPrecision == -1 {
+		config.CSMParameters.CSMPrecision = 0.1
+	}
+	if config.CSMParameters.CSMAccuracy == -1 {
+		config.CSMParameters.CSMAccuracy = 0.01
 	}
 	if config.CacheParameters.CacheMaxData == -1 {
 		config.CacheParameters.CacheMaxData = 5
@@ -95,6 +107,8 @@ func CreateConfigFile() {
 	config.LSMParameters.LSMLevelSize = -1
 	config.WalParameters.SegmentCapacity = -1
 	config.HLLParameters.HLLPrecision = -1
+	config.CSMParameters.CSMPrecision = -1
+	config.CSMParameters.CSMAccuracy = -1
 	config.CacheParameters.CacheMaxData = -1
 	config.TokenBucketParameters.TokenBucketMaxTokens = -1
 	config.TokenBucketParameters.TokenBucketInterval = -1

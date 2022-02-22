@@ -5,6 +5,10 @@
   "hll_config": {
     "hll_precision": -1
   },
+  "csm_config": {
+    "csm_precision": -1,
+    "csm_accuracy": -1
+  },
   "cache_config": {
     "cache_max_data": -1
   },

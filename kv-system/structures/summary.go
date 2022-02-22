@@ -15,6 +15,7 @@ func FindSummary(key, filename string) (ok bool, offset int64) {
 	if err != nil {
 		panic(err)
 	}
+	defer file.Close()
 
 	reader := bufio.NewReader(file)
 
@@ -105,7 +106,6 @@ func FindSummary(key, filename string) (ok bool, offset int64) {
 			break
 		}
 	}
-	file.Close()
 	return
 }
 
@@ -114,6 +114,7 @@ func WriteSummary(keys []string, offsets []uint, filename string) {
 	if err != nil {
 		return
 	}
+	defer file.Close()
 
 	writer := bufio.NewWriter(file)
 
@@ -157,5 +158,4 @@ func WriteSummary(keys []string, offsets []uint, filename string) {
 			return
 		}
 	}
-	file.Close()
 }
