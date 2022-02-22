@@ -200,13 +200,7 @@ func parseChoice(choice string, system *sys.System) bool {
 		fmt.Print("Value to query: ")
 		value := scan()
 		cms := structures.DeserializeCMS(cmsData)
-		var result string
-		if cms.Query(strings.ToUpper(value)) == 1 {
-			result = "true"
-		} else {
-			result = "false"
-		}
-		fmt.Println(value, " ? : ", result)
+		fmt.Println(value, " ? : ", cms.Query(strings.ToUpper(value)))
 		break
 	default:
 		fmt.Println("\nWrong input ! Please try again. ")
