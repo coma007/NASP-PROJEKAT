@@ -49,7 +49,7 @@ func (s *System) Put(key string, value []byte, tombstone bool) bool {
 	if s.memTable.CheckFlush() {
 		s.memTable.Flush()
 		s.wal.RemoveSegments()
-		s.lsm.DoCompaction("data/sstable/", 1)
+		s.lsm.DoCompaction("kv-system/data/sstable/", 1)
 		s.memTable = structures.CreateMemTable(s.config.MemTableParameters.SkipListMaxHeight,
 			uint(s.config.MemTableParameters.MaxMemTableSize),
 			uint(s.config.MemTableParameters.MemTableThreshold))

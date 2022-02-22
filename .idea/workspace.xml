@@ -4,160 +4,98 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="fe5b3a15-596d-468b-8a48-85f9cb1728d4" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/kv-system/structures/element.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/test.go" afterDir="false" />
+    <list default="true" id="5dcb9f7d-9af9-405d-84af-052c05f8d3ed" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/metadata/usertable-data-ic-1-lev1-Metadata.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/metadata/usertable-data-ic-1-lev3-Metadata.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/metadata/usertable-data-ic-2-lev3-Metadata.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/metadata/usertable-data-ic-3-lev3-Metadata.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/metadata/usertable-data-ic-4-lev3-Metadata.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/sstable/usertable-data-ic-1-lev1-Data.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/sstable/usertable-data-ic-1-lev1-Filter.gob" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/sstable/usertable-data-ic-1-lev1-Index.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/sstable/usertable-data-ic-1-lev1-Summary.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/sstable/usertable-data-ic-1-lev1-TOC.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/sstable/usertable-data-ic-1-lev3-Data.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/sstable/usertable-data-ic-1-lev3-Filter.gob" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/sstable/usertable-data-ic-1-lev3-Index.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/sstable/usertable-data-ic-1-lev3-Summary.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/sstable/usertable-data-ic-1-lev3-TOC.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/sstable/usertable-data-ic-2-lev3-Data.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/sstable/usertable-data-ic-2-lev3-Filter.gob" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/sstable/usertable-data-ic-2-lev3-Index.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/sstable/usertable-data-ic-2-lev3-Summary.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/sstable/usertable-data-ic-2-lev3-TOC.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/sstable/usertable-data-ic-3-lev3-Data.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/sstable/usertable-data-ic-3-lev3-Filter.gob" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/sstable/usertable-data-ic-3-lev3-Index.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/sstable/usertable-data-ic-3-lev3-Summary.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/sstable/usertable-data-ic-3-lev3-TOC.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/sstable/usertable-data-ic-4-lev3-Data.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/sstable/usertable-data-ic-4-lev3-Filter.gob" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/sstable/usertable-data-ic-4-lev3-Index.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/sstable/usertable-data-ic-4-lev3-Summary.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/sstable/usertable-data-ic-4-lev3-TOC.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/wal/wal1.log" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/wal/wal2.log" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/wal/wal3.log" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/structures/bloom-filter.go" beforeDir="false" afterPath="$PROJECT_DIR$/kv-system/structures/bloom-filter.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/structures/cache.go" beforeDir="false" afterPath="$PROJECT_DIR$/kv-system/structures/cache.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/structures/cms.go" beforeDir="false" afterPath="$PROJECT_DIR$/kv-system/structures/cms.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/structures/config.go" beforeDir="false" afterPath="$PROJECT_DIR$/config/config.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/structures/element.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/structures/hll.go" beforeDir="false" afterPath="$PROJECT_DIR$/kv-system/structures/hll.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/structures/index.go" beforeDir="false" afterPath="$PROJECT_DIR$/kv-system/structures/index.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/structures/lsm-tree.go" beforeDir="false" afterPath="$PROJECT_DIR$/kv-system/structures/lsm-tree.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/structures/memtable.go" beforeDir="false" afterPath="$PROJECT_DIR$/kv-system/structures/memtable.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/structures/merkle-tree.go" beforeDir="false" afterPath="$PROJECT_DIR$/kv-system/structures/merkle-tree.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/structures/sim-hash.go" beforeDir="false" afterPath="$PROJECT_DIR$/kv-system/structures/sim-hash.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/structures/skip-list.go" beforeDir="false" afterPath="$PROJECT_DIR$/kv-system/structures/skip-list.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/structures/sstable.go" beforeDir="false" afterPath="$PROJECT_DIR$/kv-system/structures/sstable.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/structures/summary.go" beforeDir="false" afterPath="$PROJECT_DIR$/kv-system/structures/summary.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/structures/test.go" beforeDir="false" afterPath="$PROJECT_DIR$/kv-system/SYSTEM.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/structures/tokenBucket.go" beforeDir="false" afterPath="$PROJECT_DIR$/kv-system/structures/tokenBucket.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/structures/wal.go" beforeDir="false" afterPath="$PROJECT_DIR$/kv-system/structures/wal.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-1-lev1-Data.db" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-1-lev1-Filter.gob" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-1-lev1-Index.db" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-1-lev1-Summary.db" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-1-lev1-TOC.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-2-lev1-Data.db" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-2-lev1-Filter.gob" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-2-lev1-Index.db" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-2-lev1-Summary.db" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-2-lev1-TOC.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-3-lev1-Data.db" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-3-lev1-Filter.gob" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-3-lev1-Index.db" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-3-lev1-Summary.db" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-3-lev1-TOC.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-4-lev1-Data.db" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-4-lev1-Filter.gob" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-4-lev1-Index.db" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-4-lev1-Summary.db" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-4-lev1-TOC.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-5-lev1-Data.db" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-5-lev1-Filter.gob" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-5-lev1-Index.db" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-5-lev1-Summary.db" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-5-lev1-TOC.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-6-lev1-Data.db" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-6-lev1-Filter.gob" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-6-lev1-Index.db" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-6-lev1-Summary.db" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-6-lev1-TOC.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/data/wal/wal1.log" beforeDir="false" afterPath="$PROJECT_DIR$/kv-system/data/wal/wal1.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/data/wal/wal2.log" beforeDir="false" afterPath="$PROJECT_DIR$/kv-system/data/wal/wal2.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/data/wal/wal3.log" beforeDir="false" afterPath="$PROJECT_DIR$/kv-system/data/wal/wal3.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/structures/sstable.go" beforeDir="false" afterPath="$PROJECT_DIR$/kv-system/structures/sstable.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/structures/summary.go" beforeDir="false" afterPath="$PROJECT_DIR$/kv-system/structures/summary.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="FileTemplateManagerImpl">
-    <option name="RECENT_TEMPLATES">
-      <list>
-        <option value="Go File" />
-      </list>
-    </option>
-  </component>
-  <component name="GOROOT" url="file://$PROJECT_DIR$/../../../../../../../../Program Files/Go" />
+  <component name="GOROOT" url="file://$PROJECT_DIR$/../../../../../Program Files/Go" />
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GoLibraries">
     <option name="indexEntireGoPath" value="false" />
   </component>
-  <component name="ProjectId" id="25RKtKOPuaEfA2VcGpIQ5ZA6UkT" />
+  <component name="ProjectId" id="25SaZH9244SobvHhasheDCVksP7" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
-    <property name="DefaultGoTemplateProperty" value="Go File" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="go.formatter.settings.were.checked" value="true" />
     <property name="go.import.settings.migrated" value="true" />
     <property name="go.modules.go.list.on.any.changes.was.set" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../VJEŽBE/03-probabilisticke/sim-hash" />
+    <property name="last_opened_file_path" value="$USER_HOME$" />
   </component>
-  <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\Milica\Desktop\Desktop\ftn\predmeti\NASP\Key-Value-Engine\kv-system" />
-      <recent name="C:\Users\Milica\Desktop\Desktop\ftn\predmeti\NASP\Key-Value-Engine\kv-ssystem" />
-      <recent name="C:\Users\Milica\Desktop\Desktop\ftn\predmeti\NASP\Key-Value-Engine" />
-      <recent name="C:\Users\Milica\Desktop\Desktop\ftn\predmeti\NASP\Key-Value-Engine\config" />
-      <recent name="C:\Users\Milica\Desktop\Desktop\ftn\predmeti\NASP\Key-Value-Engine\test" />
-    </key>
-  </component>
-  <component name="RunManager" selected="Go Build.go build SYSTEM.go">
-    <configuration name="go build Key-Value-Engine" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
-      <module name="Key-Value-Engine" />
+  <component name="RunManager" selected="Go Build.go build Key-Value-Engine/test">
+    <configuration name="go build Key-Value-Engine/test" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+      <module name="NASP-PROJEKAT" />
       <working_directory value="$PROJECT_DIR$" />
       <kind value="PACKAGE" />
-      <package value="Key-Value-Engine" />
+      <package value="Key-Value-Engine/test" />
       <directory value="$PROJECT_DIR$" />
-      <filePath value="$PROJECT_DIR$/main.go" />
+      <filePath value="$PROJECT_DIR$/test/test.go" />
       <method v="2" />
     </configuration>
-    <configuration name="go build SYSTEM.go" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
-      <module name="Key-Value-Engine" />
-      <working_directory value="$PROJECT_DIR$" />
-      <kind value="FILE" />
-      <package value="Key-Value-Engine" />
-      <directory value="$PROJECT_DIR$" />
-      <filePath value="$PROJECT_DIR$/kv-system/SYSTEM.go" />
-      <method v="2" />
-    </configuration>
-    <configuration name="go build main.go" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
-      <module name="Key-Value-Engine" />
-      <working_directory value="$PROJECT_DIR$" />
-      <kind value="FILE" />
-      <package value="Key-Value-Engine" />
-      <directory value="$PROJECT_DIR$" />
-      <filePath value="$PROJECT_DIR$/main.go" />
-      <method v="2" />
-    </configuration>
-    <configuration name="go build sim-hash.go (1)" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
-      <module name="Key-Value-Engine" />
+    <configuration name="go build NASP-PROJEKAT" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+      <module name="NASP-PROJEKAT" />
       <working_directory value="$PROJECT_DIR$" />
       <kind value="DIRECTORY" />
-      <package value="Key-Value-Engine" />
-      <directory value="$PROJECT_DIR$/kv-system/structures" />
-      <filePath value="$PROJECT_DIR$/kv-system/structures/sim-hash.go" />
-      <method v="2" />
-    </configuration>
-    <configuration name="go build sim-hash.go" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
-      <module name="Key-Value-Engine" />
-      <working_directory value="$PROJECT_DIR$" />
-      <kind value="DIRECTORY" />
-      <package value="Key-Value-Engine" />
+      <package value="NASP-PROJEKAT/test" />
       <directory value="$PROJECT_DIR$" />
-      <filePath value="$PROJECT_DIR$/kv-system/structures/sim-hash.go" />
+      <filePath value="$PROJECT_DIR$/test/test.go" />
       <method v="2" />
     </configuration>
+    <list>
+      <item itemvalue="Go Build.go build NASP-PROJEKAT" />
+      <item itemvalue="Go Build.go build Key-Value-Engine/test" />
+    </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Go Build.go build main.go" />
-        <item itemvalue="Go Build.go build SYSTEM.go" />
-        <item itemvalue="Go Build.go build Key-Value-Engine" />
-        <item itemvalue="Go Build.go build sim-hash.go" />
-        <item itemvalue="Go Build.go build sim-hash.go (1)" />
+        <item itemvalue="Go Build.go build Key-Value-Engine/test" />
+        <item itemvalue="Go Build.go build NASP-PROJEKAT" />
       </list>
     </recent_temporary>
   </component>
@@ -178,5 +116,21 @@
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/test/test.go</url>
+          <line>13</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/kv-system/SYSTEM.go</url>
+          <line>51</line>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

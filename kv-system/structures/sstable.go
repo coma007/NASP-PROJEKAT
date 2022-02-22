@@ -26,7 +26,7 @@ type SSTable struct {
 }
 
 func CreateSStable(data MemTable, filename string) (table *SSTable) {
-	generalFilename := "./kv-system/data/sstable/usertable-data-ic-" + filename + "-lev1-"
+	generalFilename := "kv-system/data/sstable/usertable-data-ic-" + filename + "-lev1-"
 	table = &SSTable{generalFilename, generalFilename + "Data.db", generalFilename + "Index.db",
 		generalFilename + "Summary.db", generalFilename + "Filter.gob"}
 
@@ -292,7 +292,7 @@ func (st *SSTable) WriteTOC() {
 }
 
 func readSSTable(filename, level string) (table *SSTable) {
-	filename = "./kv-system/data/sstable/usertable-data-ic-" + filename + "-lev" + level + "-TOC.txt"
+	filename = "kv-system/data/sstable/usertable-data-ic-" + filename + "-lev" + level + "-TOC.txt"
 
 	file, err := os.Open(filename)
 	if err != nil {

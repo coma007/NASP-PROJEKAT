@@ -85,8 +85,8 @@ func FindSummary(key, filename string) (ok bool, offset int64) {
 		nodeKey := string(bytes[:])
 		//println(nodeKey)
 
-		println(nodeKey)
-		println(key)
+		//println(nodeKey)
+		//println(key)
 		if nodeKey <= key {
 			good = true
 		}
