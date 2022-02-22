@@ -145,7 +145,7 @@ func CreateSStable(data MemTable, filename string) (table *SSTable) {
 	keys, offsets := index.Write()
 	WriteSummary(keys, offsets, table.summaryFilename)
 	writeBloomFilter(table.filterFilename, filter)
-	CreateMerkleTree(values, strings.ReplaceAll(table.SSTableFilename, "./kv-system/data/sstable/", ""))
+	CreateMerkleTree(values, strings.ReplaceAll(table.SSTableFilename, "kv-system/data/sstable/", ""))
 	table.WriteTOC()
 
 	file.Close()

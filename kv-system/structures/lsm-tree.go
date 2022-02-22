@@ -276,7 +276,6 @@ func ReadAndWrite(currentOffset, currentOffset1, currentOffset2 uint, newData, f
 	table.WriteTOC()
 	writeBloomFilter(table.filterFilename, filter)
 	CreateMerkle(level, newData.Name(), values)
-
 	fmt.Println(keys)
 	return uint64(len(keys))
 }
@@ -500,7 +499,7 @@ func CreateMerkle(level int, newData string, values [][]byte) {
 		}
 	}
 
-	filename := strings.ReplaceAll(newData, "./kv-system/data/sstable/", "")
+	filename := strings.ReplaceAll(newData, "kv-system/data/sstable/", "")
 	CreateMerkleTree(values, filename)
 }
 

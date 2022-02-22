@@ -6,7 +6,15 @@
   <component name="ChangeListManager">
     <list default="true" id="5dcb9f7d-9af9-405d-84af-052c05f8d3ed" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/kv-system/SYSTEM.go" beforeDir="false" afterPath="$PROJECT_DIR$/kv-system/SYSTEM.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-1-lev2-Data.db" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-1-lev2-Filter.gob" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-1-lev2-Index.db" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-1-lev2-Summary.db" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-1-lev2-TOC.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/data/wal/wal1.log" beforeDir="false" afterPath="$PROJECT_DIR$/kv-system/data/wal/wal1.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/data/wal/wal2.log" beforeDir="false" afterPath="$PROJECT_DIR$/kv-system/data/wal/wal2.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/structures/lsm-tree.go" beforeDir="false" afterPath="$PROJECT_DIR$/kv-system/structures/lsm-tree.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/structures/sstable.go" beforeDir="false" afterPath="$PROJECT_DIR$/kv-system/structures/sstable.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
