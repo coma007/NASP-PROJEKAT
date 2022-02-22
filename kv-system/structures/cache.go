@@ -66,6 +66,9 @@ func (c *Cache) Add(key string, value []byte) {
 		for current.Next.Key != n.Key { // ide do elementa koji je prije onog koji se trazi
 			current = current.Next
 		}
+		if n.Key == l.tail.Key {
+			l.tail = l.tail.Previous
+		}
 
 		currentPrevious := current
 		current = current.Next
