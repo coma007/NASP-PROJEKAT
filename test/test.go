@@ -12,8 +12,15 @@ func main() {
 	system.Put("Milica", []byte("Maca"), false)
 	system.Put("ad", []byte("Peccca"), false)
 	system.Put("aa", []byte("Macca"), false)
-	
-	// GET
+	system.Put("jovana", []byte("Maca"), false)
+	system.Put("zz", []byte("Peccca"), false)
+	system.Put("marija", []byte("Macca"), false)
+	system.Put("milena", []byte("Maca"), false)
+	system.Put("jovanina", []byte("Peccca"), false)
+	system.Put("a", []byte("Macca"), false)
+	system.Put("Krajoliko", []byte("Maca"), false)
+	system.Put("mmm", []byte("Peccca"), false)
+	system.Put("as", []byte("Macca"), false)
 	_, value := system.Get("aa")
 	fmt.Println("value")
 	fmt.Println(string(value))
@@ -37,4 +44,3 @@ func main() {
 	_, value = system.Cache.Get("ad")
 	fmt.Println(string(value))
 }
-
