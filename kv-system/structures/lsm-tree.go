@@ -173,26 +173,31 @@ func ReadAndWrite(currentOffset, currentOffset1, currentOffset2 uint, newData, f
 
 		if key1 == key2 {
 			// biramo onog sa kasnijim vremenom
-			fmt.Println("timest1: ", timestamp1)
-			fmt.Println("timest2: ", timestamp2)
+			//fmt.Println("timest1: ", timestamp1)
+			//fmt.Println("timest2: ", timestamp2)
 			if timestamp1 > timestamp2 {
-				fmt.Println("tombs1 ", tombstone1)
+				//fmt.Println("tombs1 ", tombstone1)
 				// prvi se upisuje, drugi se preskace
-				offset = append(offset, currentOffset)
-				currentOffset = WriteData(newData, currentOffset, crc1, timestamp1,
-					tombstone1, keyLen1, valueLen1, key1, value1)
-				filter.Add(Element{key1, nil, nil, timestamp1, false, 0})
-				keys = append(keys, key1)
-				values = append(values, []byte(value1))
+				if tombstone1 == 0 {
+					offset = append(offset, currentOffset)
+					currentOffset = WriteData(newData, currentOffset, crc1, timestamp1,
+						tombstone1, keyLen1, valueLen1, key1, value1)
+					filter.Add(Element{key1, nil, nil, timestamp1, false, 0})
+					keys = append(keys, key1)
+					values = append(values, []byte(value1))
+				}
 			} else {
-				fmt.Println("tombs2 ", tombstone2)
+				//fmt.Println("tombs2 ", tombstone2)
 				// drugi se upisuje, prvi se preskace
-				offset = append(offset, currentOffset)
-				currentOffset = WriteData(newData, currentOffset, crc2, timestamp2,
-					tombstone2, keyLen2, valueLen2, key2, value2)
-				filter.Add(Element{key2, nil, nil, timestamp2, false, 0})
-				keys = append(keys, key2)
-				values = append(values, []byte(value2))
+				if tombstone2 == 0 {
+					offset = append(offset, currentOffset)
+					currentOffset = WriteData(newData, currentOffset, crc2, timestamp2,
+						tombstone2, keyLen2, valueLen2, key2, value2)
+					filter.Add(Element{key2, nil, nil, timestamp2, false, 0})
+					keys = append(keys, key2)
+					values = append(values, []byte(value2))
+				}
+
 			}
 
 			if fileLen1-1 > first {
@@ -312,7 +317,7 @@ func WriteData(file *os.File, currentOffset uint, crcBytes []byte, timestamp str
 	currentOffset += uint(bytesWritten)
 
 	// Tombstone
-	tombstoneInt := uint8(0)
+	tombstoneInt := tombstone
 	err = writer.WriteByte(tombstoneInt)
 	currentOffset += 1
 	if err != nil {
