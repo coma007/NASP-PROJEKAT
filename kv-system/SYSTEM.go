@@ -65,11 +65,10 @@ func (s *System) Get(key string) (bool, []byte) {
 	} else if ok {
 		return true, value
 	}
-	// TODO zasto je zakomentarisano
-	//ok, value = s.cache.Get(key)
-	//if ok {
-	//	return true, value
-	//}
+	ok, value = s.cache.Get(key)
+	if ok {
+		return true, value
+	}
 	ok, value = structures.SearchThroughSSTables(key, s.config.LSMParameters.LSMMaxLevel)
 	if ok {
 		return true, value

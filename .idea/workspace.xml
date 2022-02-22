@@ -5,43 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5dcb9f7d-9af9-405d-84af-052c05f8d3ed" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-1-lev1-Data.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-1-lev1-Filter.gob" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-1-lev1-Index.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-1-lev1-Summary.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-1-lev1-TOC.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-2-lev1-Data.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-2-lev1-Filter.gob" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-2-lev1-Index.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-2-lev1-Summary.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-2-lev1-TOC.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-3-lev1-Data.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-3-lev1-Filter.gob" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-3-lev1-Index.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-3-lev1-Summary.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-3-lev1-TOC.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-4-lev1-Data.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-4-lev1-Filter.gob" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-4-lev1-Index.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-4-lev1-Summary.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-4-lev1-TOC.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-5-lev1-Data.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-5-lev1-Filter.gob" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-5-lev1-Index.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-5-lev1-Summary.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-5-lev1-TOC.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-6-lev1-Data.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-6-lev1-Filter.gob" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-6-lev1-Index.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-6-lev1-Summary.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-6-lev1-TOC.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/kv-system/data/wal/wal1.log" beforeDir="false" afterPath="$PROJECT_DIR$/kv-system/data/wal/wal1.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/kv-system/data/wal/wal2.log" beforeDir="false" afterPath="$PROJECT_DIR$/kv-system/data/wal/wal2.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/kv-system/data/wal/wal3.log" beforeDir="false" afterPath="$PROJECT_DIR$/kv-system/data/wal/wal3.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/kv-system/structures/sstable.go" beforeDir="false" afterPath="$PROJECT_DIR$/kv-system/structures/sstable.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/kv-system/structures/summary.go" beforeDir="false" afterPath="$PROJECT_DIR$/kv-system/structures/summary.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/SYSTEM.go" beforeDir="false" afterPath="$PROJECT_DIR$/kv-system/SYSTEM.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -128,7 +93,7 @@
         <line-breakpoint enabled="true" type="DlvLineBreakpoint">
           <url>file://$PROJECT_DIR$/kv-system/SYSTEM.go</url>
           <line>51</line>
-          <option name="timeStamp" value="4" />
+          <option name="timeStamp" value="5" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
