@@ -62,14 +62,17 @@ func (s *System) Get(key string) (bool, []byte) {
 	if ok && deleted {
 		return false, nil
 	} else if ok {
+		s.cache.Add(key, value)
 		return true, value
 	}
 	ok, value = s.cache.Get(key)
 	if ok {
+		s.cache.Add(key, value)
 		return true, value
 	}
 	ok, value = structures.SearchThroughSSTables(key, s.Config.LSMParameters.LSMMaxLevel)
 	if ok {
+		s.cache.Add(key, value)
 		return true, value
 	}
 	return false, nil
