@@ -197,7 +197,7 @@ func (st *SSTable) SStableFind(key string, offset int64) (ok bool, value []byte,
 		if err != nil {
 			panic(err)
 		}
-		_ = string(timestampBytes[:])
+		timestamp = string(timestampBytes[:])
 		//println(Timestamp)
 
 		//Tombstone
@@ -249,7 +249,7 @@ func (st *SSTable) SStableFind(key string, offset int64) (ok bool, value []byte,
 		if ok && !deleted && CRC32(valueBytes) == crcValue {
 			value = valueBytes
 			break
-		} else if ok && deleted{
+		} else if ok && deleted {
 			return false, nil, ""
 		}
 	}
@@ -373,6 +373,7 @@ func SearchThroughSSTables(key string, maxLevels int) (found bool, oldValue []by
 			if oldTimestamp == "" && ok {
 				oldTimestamp = timestamp
 				found = true
+				oldValue = value
 			} else if oldTimestamp != "" && ok {
 				if timestamp > oldTimestamp {
 					oldValue = value
