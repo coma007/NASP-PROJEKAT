@@ -79,7 +79,7 @@ func CreateSStable(data MemTable, filename string) (table *SSTable) {
 		//Timestamp
 		//??
 		timestamp := node.Timestamp
-		timestampBytes := make([]byte, 16)
+		timestampBytes := make([]byte, 19)
 		copy(timestampBytes, timestamp)
 		//println(timestampBytes)
 		bytesWritten, err = writer.Write(timestampBytes)
@@ -191,7 +191,7 @@ func (st *SSTable) SStableFind(key string, offset int64) (ok bool, value []byte)
 
 		// Timestamp
 		// ??
-		timestampBytes := make([]byte, 16)
+		timestampBytes := make([]byte, 19)
 		_, err = reader.Read(timestampBytes)
 		if err != nil {
 			panic(err)
