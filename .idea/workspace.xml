@@ -4,32 +4,31 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="aa122107-05a6-4ccb-9fc3-96c090aa37b9" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+    <list default="true" id="4b512a96-a4e1-4db0-ba3a-2df98d340309" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/config.go" beforeDir="false" afterPath="$PROJECT_DIR$/config/config.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/config.json" beforeDir="false" afterPath="$PROJECT_DIR$/config/config.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/kv-system/SYSTEM.go" beforeDir="false" afterPath="$PROJECT_DIR$/kv-system/SYSTEM.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/kv-system/structures/bloom-filter.go" beforeDir="false" afterPath="$PROJECT_DIR$/kv-system/structures/bloom-filter.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/kv-system/structures/hll.go" beforeDir="false" afterPath="$PROJECT_DIR$/kv-system/structures/hll.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/kv-system/structures/index.go" beforeDir="false" afterPath="$PROJECT_DIR$/kv-system/structures/index.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/data/wal/wal1.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/data/wal/wal2.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/data/wal/wal3.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/data/wal/wal4.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/structures/cache.go" beforeDir="false" afterPath="$PROJECT_DIR$/kv-system/structures/cache.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/kv-system/structures/lsm-tree.go" beforeDir="false" afterPath="$PROJECT_DIR$/kv-system/structures/lsm-tree.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/test.go" beforeDir="false" afterPath="$PROJECT_DIR$/test/test.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="GOROOT" url="file://$PROJECT_DIR$/../../../../../../../../Program Files/Go" />
+  <component name="GOROOT" url="file://$USER_HOME$/sdk/go1.17.2" />
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GoLibraries">
     <option name="indexEntireGoPath" value="false" />
   </component>
-  <component name="ProjectId" id="25SlZGlbEXIW8s3SrKsI9b090yV" />
+  <component name="ProjectId" id="25SouCNOIQacwQYUafmgZxWzHdc" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -41,21 +40,54 @@
     <property name="go.formatter.settings.were.checked" value="true" />
     <property name="go.import.settings.migrated" value="true" />
     <property name="go.modules.go.list.on.any.changes.was.set" value="true" />
-    <property name="last_opened_file_path" value="$USER_HOME$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/kv-system/structures/cache.go" />
   </component>
-  <component name="RunManager">
-    <configuration name="go build main.go" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="Go Build.go build Key-Value-Engine/test">
+    <configuration default="true" type="GoApplicationRunConfiguration" factoryName="Go Application">
       <module name="Key-Value-Engine" />
       <working_directory value="$PROJECT_DIR$" />
-      <kind value="FILE" />
-      <package value="Key-Value-Engine" />
+      <kind value="PACKAGE" />
+      <package value="NASP-PROJEKAT" />
       <directory value="$PROJECT_DIR$" />
-      <filePath value="$PROJECT_DIR$/main.go" />
+      <filePath value="$PROJECT_DIR$" />
       <method v="2" />
     </configuration>
+    <configuration name="go build Key-Value-Engine/kv-system/structures" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+      <module name="Key-Value-Engine" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="PACKAGE" />
+      <package value="Key-Value-Engine/kv-system/structures" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$/kv-system/structures/cache.go" />
+      <method v="2" />
+    </configuration>
+    <configuration name="go build Key-Value-Engine/test" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+      <module name="Key-Value-Engine" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="PACKAGE" />
+      <package value="Key-Value-Engine/test" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$/test/test.go" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="GoTestRunConfiguration" factoryName="Go Test">
+      <module name="Key-Value-Engine" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="DIRECTORY" />
+      <package value="NASP-PROJEKAT" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Go Build.go build Key-Value-Engine/kv-system/structures" />
+      <item itemvalue="Go Build.go build Key-Value-Engine/test" />
+    </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Go Build.go build main.go" />
+        <item itemvalue="Go Build.go build Key-Value-Engine/test" />
+        <item itemvalue="Go Build.go build Key-Value-Engine/kv-system/structures" />
       </list>
     </recent_temporary>
   </component>
@@ -63,7 +95,29 @@
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/kv-system/structures/cache.go</url>
+          <line>61</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

@@ -8,9 +8,9 @@ import (
 
 type System struct {
 	wal         *structures.Wal
-	memTable    *structures.MemTable
-	cache       *structures.Cache
-	lsm         *structures.LSM
+	memTable *structures.MemTable
+	Cache    *structures.Cache
+	lsm      *structures.LSM
 	tokenBucket *structures.TokenBucket
 	Config      *config.Config
 }
@@ -21,7 +21,7 @@ func (s *System) Init() {
 	s.memTable = structures.CreateMemTable(s.Config.MemTableParameters.SkipListMaxHeight,
 		uint(s.Config.MemTableParameters.MaxMemTableSize),
 		uint(s.Config.MemTableParameters.MemTableThreshold))
-	s.cache = structures.CreateCache(s.Config.CacheParameters.CacheMaxData)
+	s.Cache = structures.CreateCache(s.Config.CacheParameters.CacheMaxData)
 	s.lsm = structures.CreateLsm(s.Config.LSMParameters.LSMMaxLevel, s.Config.LSMParameters.LSMLevelSize)
 	rate := int64(s.Config.TokenBucketParameters.TokenBucketInterval)
 	s.tokenBucket = structures.NewTokenBucket(rate, s.Config.TokenBucketParameters.TokenBucketMaxTokens)
@@ -43,8 +43,7 @@ func (s *System) Put(key string, value []byte, tombstone bool) bool {
 	}
 	s.wal.Put(&elem)
 	s.memTable.Add(key, value, tombstone)
-	cacheNode := structures.CreateNode(key, value)
-	s.cache.Add(cacheNode)
+	s.Cache.Add(key, value)
 
 	if s.memTable.CheckFlush() {
 		s.memTable.Flush()
@@ -65,7 +64,7 @@ func (s *System) Get(key string) (bool, []byte) {
 	} else if ok {
 		return true, value
 	}
-	ok, value = s.cache.Get(key)
+	ok, value = s.Cache.Get(key)
 	if ok {
 		return true, value
 	}
@@ -78,7 +77,7 @@ func (s *System) Get(key string) (bool, []byte) {
 
 func (s *System) Delete(key string) bool {
 	if s.memTable.Remove(key) {
-		s.cache.DeleteNode(structures.CreateNode(key, nil))
+		s.Cache.DeleteNode(key)
 		return true
 	}
 	ok, value := s.Get(key)
@@ -86,7 +85,7 @@ func (s *System) Delete(key string) bool {
 		return false
 	}
 	s.Put(key, value, true)
-	s.cache.DeleteNode(structures.CreateNode(key, value))
+	s.Cache.DeleteNode(key)
 	return true
 }
 
@@ -108,12 +107,7 @@ func (s *System) Edit(key string, value []byte) bool {
 
 	s.wal.Put(&elem)
 
-	cacheNode := structures.CacheNode{
-		Key:   key,
-		Value: value,
-		Next:  nil,
-	}
-	s.cache.Add(&cacheNode)
+	s.Cache.Add(key, value)
 
 	return true
 }
