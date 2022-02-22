@@ -3,6 +3,7 @@ package kv_system
 import (
 	"Key-Value-Engine/config"
 	"Key-Value-Engine/kv-system/structures"
+	"fmt"
 	"time"
 )
 
@@ -11,7 +12,7 @@ type System struct {
 	memTable    *structures.MemTable
 	cache       *structures.Cache
 	lsm         *structures.LSM
-	tokenBucket *structures.TokenBucket
+	TokenBucket *structures.TokenBucket
 	Config      *config.Config
 }
 
@@ -24,14 +25,10 @@ func (s *System) Init() {
 	s.cache = structures.CreateCache(s.Config.CacheParameters.CacheMaxData)
 	s.lsm = structures.CreateLsm(s.Config.LSMParameters.LSMMaxLevel, s.Config.LSMParameters.LSMLevelSize)
 	rate := int64(s.Config.TokenBucketParameters.TokenBucketInterval)
-	s.tokenBucket = structures.NewTokenBucket(rate, s.Config.TokenBucketParameters.TokenBucketMaxTokens)
+	s.TokenBucket = structures.NewTokenBucket(rate, s.Config.TokenBucketParameters.TokenBucketMaxTokens)
 }
 
 func (s *System) Put(key string, value []byte, tombstone bool) bool {
-	request := s.tokenBucket.CheckRequest()
-	if !request {
-		return false
-	}
 
 	elem := structures.Element{
 		Key:       key,
@@ -81,9 +78,29 @@ func (s *System) Delete(key string) bool {
 		s.cache.DeleteNode(structures.CreateNode(key, nil))
 		return true
 	}
+	if s.memTable.Remove("hll-" + key) {
+		s.cache.DeleteNode(structures.CreateNode("hll-" + key, nil))
+		return true
+	}
+	if s.memTable.Remove("cms-" + key) {
+		s.cache.DeleteNode(structures.CreateNode("cms-" + key, nil))
+		return true
+	}
 	ok, value := s.Get(key)
 	if !ok {
-		return false
+		keyHLL := "hll-" + key
+		ok, value = s.Get(keyHLL)
+		if !ok {
+			keyCMS := "cms-" + key
+			ok, value = s.Get(keyCMS)
+			if !ok {
+				return false
+			} else {
+				key = keyCMS
+			}
+		} else {
+			key = keyHLL
+		}
 	}
 	s.Put(key, value, true)
 	s.cache.DeleteNode(structures.CreateNode(key, value))
@@ -92,10 +109,6 @@ func (s *System) Delete(key string) bool {
 
 
 func (s *System) Edit(key string, value []byte) bool {
-	request := s.tokenBucket.CheckRequest()
-	if !request {
-		return false
-	}
 	s.memTable.Change(key, value, false)
 	elem := structures.Element{
 		Key:       key,
@@ -116,5 +129,26 @@ func (s *System) Edit(key string, value []byte) bool {
 	s.cache.Add(&cacheNode)
 
 	return true
+}
+
+func (s *System) GetAsString(key string) string {
+	ok, val := s.Get(key)
+	var value string
+	if !ok {
+		ok, val = s.Get("hll-" + key)
+		if ok {
+			hll := structures.DeserializeHLL(val)
+			value = "It's a HLL with Estimation: " + fmt.Sprintf("%f", hll.Estimate())
+		} else {
+			ok, val = s.Get("cms-" + key)
+			value = "It's a CMS"
+			if !ok {
+				value = "Data with given key does not exist !"
+			}
+		}
+	} else {
+		value = string(val)
+	}
+	return value
 }
 

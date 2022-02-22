@@ -1,7 +1,6 @@
 package structures
 
 import (
-	"fmt"
 	"time"
 )
 
@@ -28,7 +27,6 @@ func (tb *TokenBucket) CheckRequest() bool{
 	}
 
 	if tb.currentToken <= 0 {
-		fmt.Println("Žao nam je ali vaš zahtev je odbijen :(")
 		return false
 	}
 	

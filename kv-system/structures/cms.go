@@ -3,7 +3,6 @@ package structures
 import (
 	"bytes"
 	"encoding/gob"
-	"fmt"
 	"github.com/spaolacci/murmur3"
 	"hash"
 	"math"
@@ -29,7 +28,7 @@ func CreateCMS(p float64, d float64) *CountMinSketch {
 		set[i] = make([]int, m)
 	}
 	bf := CountMinSketch{m, k, p, d, set, hashs, tc}
-	fmt.Printf("Created Count Min Skatch with M = %d, K = %d\n", m, k)
+	//fmt.Printf("Created Count Min Skatch with M = %d, K = %d\n", m, k)
 	return &bf
 }
 
@@ -38,7 +37,7 @@ func (cms *CountMinSketch) Add(elem string) {
 		j := hashIt(hashF, elem, cms.M)
 		cms.Set[i][j] += 1
 	}
-	fmt.Printf("Element %s added !\n", elem)
+	//fmt.Printf("Element %s added !\n", elem)
 }
 
 func (cms *CountMinSketch) Query(elem string) int {
