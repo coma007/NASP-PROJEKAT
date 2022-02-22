@@ -116,7 +116,7 @@ func PrintTree(root *MerkleNode) {
 	for len(queue) != 0 {
 		e := queue[0]
 		queue = queue[1:]
-		fmt.Println(e.String())
+		//fmt.Println(e.String())
 
 		if e.left != nil {
 			queue = append(queue, e.left)

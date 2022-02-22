@@ -60,18 +60,18 @@ func (s *System) Get(key string) (bool, []byte) {
 		return false, nil
 	} else if ok {
 		s.cache.Add(key, value)
-		fmt.Println("Pronadjen u memtable-u.")
+		//fmt.Println("Pronadjen u memtable-u.")
 		return true, value
 	}
 	ok, value = s.cache.Get(key)
 	if ok {
-		fmt.Println("Pronadjen u cache-u.")
+		//fmt.Println("Pronadjen u cache-u.")
 		s.cache.Add(key, value)
 		return true, value
 	}
 	ok, value = structures.SearchThroughSSTables(key, s.Config.LSMParameters.LSMMaxLevel)
 	if ok {
-		fmt.Println("Pronadjen u sstable-u.")
+		//fmt.Println("Pronadjen u sstable-u.")
 		s.cache.Add(key, value)
 		//if strings.Trim(string(value), " ") != "" {
 		//	return true, value
