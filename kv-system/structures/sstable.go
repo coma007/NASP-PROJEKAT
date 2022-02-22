@@ -330,7 +330,7 @@ func (st *SSTable) SSTableQuery(key string) (ok bool, value []byte) {
 			}
 		}
 	}
-	return
+	return false, nil
 }
 
 func findSSTableFilename(level string) (filename string) {
