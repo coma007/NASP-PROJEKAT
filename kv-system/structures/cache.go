@@ -70,10 +70,6 @@ func (c *Cache) Add(key string, value []byte) {
 			l.tail = l.tail.Previous
 		}
 
-		if n.Key == l.tail.Key {
-			l.tail = l.tail.Previous
-		}
-
 		currentPrevious := current
 		current = current.Next
 		nextOfCurrent := current.Next
