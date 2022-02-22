@@ -173,7 +173,10 @@ func ReadAndWrite(currentOffset, currentOffset1, currentOffset2 uint, newData, f
 
 		if key1 == key2 {
 			// biramo onog sa kasnijim vremenom
-			if timestamp1 >= timestamp2 {
+			fmt.Println("timest1: ", timestamp1)
+			fmt.Println("timest2: ", timestamp2)
+			if timestamp1 > timestamp2 {
+				fmt.Println("tombs1 ", tombstone1)
 				// prvi se upisuje, drugi se preskace
 				offset = append(offset, currentOffset)
 				currentOffset = WriteData(newData, currentOffset, crc1, timestamp1,
@@ -182,6 +185,7 @@ func ReadAndWrite(currentOffset, currentOffset1, currentOffset2 uint, newData, f
 				keys = append(keys, key1)
 				values = append(values, []byte(value1))
 			} else {
+				fmt.Println("tombs2 ", tombstone2)
 				// drugi se upisuje, prvi se preskace
 				offset = append(offset, currentOffset)
 				currentOffset = WriteData(newData, currentOffset, crc2, timestamp2,
@@ -299,7 +303,7 @@ func WriteData(file *os.File, currentOffset uint, crcBytes []byte, timestamp str
 	}
 
 	// Timestamp
-	timestampBytes := make([]byte, 16)
+	timestampBytes := make([]byte, 19)
 	copy(timestampBytes, timestamp)
 	bytesWritten, err = writer.Write(timestampBytes)
 	if err != nil {
@@ -372,13 +376,13 @@ func ReadData(file *os.File, currentOffset uint) ([]byte, string, byte,
 	currentOffset += 4
 
 	// Timestamp
-	timestampBytes := make([]byte, 16)
+	timestampBytes := make([]byte, 19)
 	_, err = reader.Read(timestampBytes)
 	if err != nil {
 		panic(err)
 	}
 	timestamp := string(timestampBytes[:])
-	currentOffset += 16
+	currentOffset += 19
 
 	// Tombstone
 	tombstone, err := reader.ReadByte()

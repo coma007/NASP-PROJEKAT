@@ -15,7 +15,7 @@ type SkipList struct {
 func CreateSkipList(maxHeight int) *SkipList {
 	bytes := []byte("head")
 	crc := CRC32(bytes)
-	root := Element{"head", nil, make([]*Element, maxHeight+1), time.Time{}.String(),
+	root := Element{"head", nil, make([]*Element, maxHeight+1), time.Now().String(),
 		false, crc}
 	skiplist := SkipList{maxHeight, 1, 1, &root}
 	return &skiplist
@@ -43,7 +43,7 @@ func (skiplist *SkipList) Add(key string, value []byte, tombstone bool) *Element
 	level := skiplist.roll()
 	bytes := []byte(key)
 	crc := CRC32(bytes)
-	node := &Element{key, value, make([]*Element, level+1), time.Time{}.String(),
+	node := &Element{key, value, make([]*Element, level+1), time.Now().String(),
 		tombstone, crc}
 	//current := skiplist.head
 	for i := skiplist.height - 1; i >= 0; i-- {

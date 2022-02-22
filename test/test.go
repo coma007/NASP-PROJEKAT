@@ -7,6 +7,7 @@ import (
 func main() {
 	system := new(sys.System)
 	system.Init()
+
 	// PUT
 	system.Put("Milica", []byte("Maca"), false)
 	system.Put("ad", []byte("Peccca"), false)
@@ -39,6 +40,26 @@ func main() {
 	//_, value = system.Get("Milica")
 	//fmt.Println("Testiranje edita: ")
 	//fmt.Println(string(value))
+
+
+	// CACHE
+	//system.Cache.Add("Milica", []byte("nesto"))
+	//system.Cache.Add("Katarina", []byte("123"))
+	//system.Cache.Add("Bojan", []byte("asd"))
+	//
+	//system.Cache.DeleteNode("Milica")
+	//
+	//system.Cache.Add("Mico", []byte("novi mico"))
+	//system.Cache.Add("Neki novi klinci", []byte("xxx"))
+	//
+	//system.Cache.Add("Milica", []byte("nova milica"))
+	//system.Cache.Add("Nesto", []byte("nnn"))
+
+	// 3 puta
+	// obrisao 1.
+	// 2 puta
+	// opet dodao prvi
+	// jos jedan put
 
 
 }
