@@ -23,12 +23,12 @@ func CreateCMS(p float64, d float64) *CountMinSketch {
 	m := findM(p)
 	k := findK(d)
 	hashs, tc := createHashFunctions(k)
-	set := make([][]int, k)
+	set := make([][]int, k, k)
 	for i, _ := range set {
-		set[i] = make([]int, m)
+		set[i] = make([]int, m, m)
 	}
 	bf := CountMinSketch{m, k, p, d, set, hashs, tc}
-	//fmt.Printf("Created Count Min Skatch with M = %d, K = %d\n", m, k)
+	//fmt.Printf("Created Count Min Skatch with M = %d, K = %d\n", M, k)
 	return &bf
 }
 
@@ -41,11 +41,12 @@ func (cms *CountMinSketch) Add(elem string) {
 }
 
 func (cms *CountMinSketch) Query(elem string) int {
-	values := make([]int, cms.K)
+	values := make([]int, cms.K, cms.K)
 	for i, hashF := range cms.hashs {
 		j:= hashIt(hashF, elem, cms.M)
 		values[i] = cms.Set[i][j]
 	}
+
 	min := values[0]
 	for _, v := range values {
 		if v < min {
@@ -102,6 +103,7 @@ func DeserializeCMS(data []byte) *CountMinSketch {
 			break
 		}
 	}
+	cms.hashs = CopyHashFunctions(cms.K, cms.TimeConst)
 	return cms
 }
 

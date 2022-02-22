@@ -185,10 +185,13 @@ func (w *Wal) Put(elem *Element) bool {
 	elemData = append(elemData, value...)
 
 	start := 0
-	for start >= 0 {
-		start = w.CurrentSegment().addData(elemData[start:])
-		if start != -1 {
+	offset := 0
+	for offset >= 0 {
+		fmt.Println(len(elemData[start:]))
+		offset = w.CurrentSegment().addData(elemData[start:])
+		if offset != -1 {
 			w.NewSegment()
+			start += offset
 		}
 	}
 

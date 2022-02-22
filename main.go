@@ -46,6 +46,7 @@ func request(s *sys.System) bool {
 func parseChoice(choice string, system *sys.System) bool {
 	switch choice {
 	case "0":
+		system.Wal.Dump()
 		fmt.Println("\nGoodbye !")
 		return false
 	case "1":
@@ -129,7 +130,7 @@ func parseChoice(choice string, system *sys.System) bool {
 		fmt.Print("Value to add: ")
 		value := scan()
 		hll.Add(value)
-		if system.Put(key, hll.SerializeHLL(), false) {
+		if system.Edit(key, hll.SerializeHLL()) {
 			fmt.Println("Value added !")
 		} else {
 			fmt.Println("Could not add data !")
@@ -178,7 +179,7 @@ func parseChoice(choice string, system *sys.System) bool {
 		fmt.Print("Value to add: ")
 		value := scan()
 		cms.Add(strings.ToUpper(value))
-		if system.Put(key, cms.SerializeCMS(), false) {
+		if system.Edit(key, cms.SerializeCMS()) {
 			fmt.Println("Value added !")
 		} else {
 			fmt.Println("Could not add data !")
@@ -199,7 +200,13 @@ func parseChoice(choice string, system *sys.System) bool {
 		fmt.Print("Value to query: ")
 		value := scan()
 		cms := structures.DeserializeCMS(cmsData)
-		fmt.Println(value, " ? : ", cms.Query(strings.ToUpper(value)))
+		var result string
+		if cms.Query(strings.ToUpper(value)) == 1 {
+			result = "true"
+		} else {
+			result = "false"
+		}
+		fmt.Println(value, " ? : ", result)
 		break
 	default:
 		fmt.Println("\nWrong input ! Please try again. ")

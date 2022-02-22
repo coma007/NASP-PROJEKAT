@@ -8,7 +8,7 @@ import (
 )
 
 type System struct {
-	wal         *structures.Wal
+	Wal      *structures.Wal
 	memTable *structures.MemTable
 	cache    *structures.Cache
 	lsm      *structures.LSM
@@ -18,7 +18,7 @@ type System struct {
 
 func (s *System) Init() {
 	s.Config = config.GetSystemConfig()
-	s.wal = structures.CreateWal(structures.WAL_PATH)
+	s.Wal = structures.CreateWal(structures.WAL_PATH)
 	s.memTable = structures.CreateMemTable(s.Config.MemTableParameters.SkipListMaxHeight,
 		uint(s.Config.MemTableParameters.MaxMemTableSize),
 		uint(s.Config.MemTableParameters.MemTableThreshold))
@@ -38,13 +38,13 @@ func (s *System) Put(key string, value []byte, tombstone bool) bool {
 		Tombstone: tombstone,
 		Checksum:  structures.CRC32(value),
 	}
-	s.wal.Put(&elem)
+	s.Wal.Put(&elem)
 	s.memTable.Add(key, value, tombstone)
 	s.cache.Add(key, value)
 
 	if s.memTable.CheckFlush() {
 		s.memTable.Flush()
-		s.wal.RemoveSegments()
+		s.Wal.RemoveSegments()
 		s.lsm.DoCompaction("kv-system/data/sstable/", 1)
 		s.memTable = structures.CreateMemTable(s.Config.MemTableParameters.SkipListMaxHeight,
 			uint(s.Config.MemTableParameters.MaxMemTableSize),
@@ -121,7 +121,7 @@ func (s *System) Edit(key string, value []byte) bool {
 		Checksum:  structures.CRC32(value),
 	}
 
-	s.wal.Put(&elem)
+	s.Wal.Put(&elem)
 
 	s.cache.Add(key, value)
 
