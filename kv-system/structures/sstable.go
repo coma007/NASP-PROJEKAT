@@ -327,6 +327,9 @@ func (st *SSTable) SSTableQuery(key string) (ok bool, value []byte) {
 			ok, offset = FindIndex(key, offset, st.indexFilename)
 			if ok {
 				ok, value = st.SStableFind(key, offset)
+				if ok {
+					return true, value
+				}
 			}
 		}
 	}
