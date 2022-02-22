@@ -105,26 +105,3 @@ func DeserializeHLL(data []byte) *HyperLogLog {
 	}
 	return hll
 }
-
-// func main() {
-
-// 	//fmt.Println(int('1' - '0'))
-// 	//fmt.Printlnh(ToBinary(GetMD5Hash("nice")))
-// 	hll := CreateHLL(6)
-// 	hll.Add("Bojan")
-// 	hll.Add("Bojan")
-// 	hll.Add("Ica")
-// 	hll.Add("Bojan")
-// 	hll.Add("Bojan")
-// 	hll.Add("Mica")
-// 	hll.Add("Mica")
-// 	hll.Add("Tica")
-// 	hll.Add("Mica")
-// 	hll.Add("Jeca")
-// 	hll.Add("Katarina")
-// 	hll.Add("Jelena")
-// 	hll.Add("Katarina")
-// 	hll.Add("Ivan")
-// 	fmt.Println(hll.Estimate())
-// 	hll.SerializeHLL()
-// }

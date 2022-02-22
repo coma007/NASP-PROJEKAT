@@ -77,11 +77,10 @@ func CreateSStable(data MemTable, filename string) (table *SSTable) {
 		}
 
 		//Timestamp
-		//??
 		timestamp := node.Timestamp
 		timestampBytes := make([]byte, 19)
 		copy(timestampBytes, timestamp)
-		//println(timestampBytes)
+
 		bytesWritten, err = writer.Write(timestampBytes)
 		if err != nil {
 			log.Fatal(err)
@@ -101,10 +100,7 @@ func CreateSStable(data MemTable, filename string) (table *SSTable) {
 			return
 		}
 
-		//log.Printf("Key: %d\n", Key)
 		keyBytes := []byte(key)
-		//println(keyLen(bytes))
-		//println(bytes)
 
 		keyLen := uint64(len(keyBytes))
 		keyLenBytes := make([]byte, 8)
@@ -168,7 +164,6 @@ func (st *SSTable) SStableFind(key string, offset int64) (ok bool, value []byte,
 		panic(err)
 	}
 	fileLen := binary.LittleEndian.Uint64(bytes)
-	//println(fileLen)
 	_, err = file.Seek(offset, 0)
 	if err != nil {
 		return false, nil, ""
@@ -191,14 +186,12 @@ func (st *SSTable) SStableFind(key string, offset int64) (ok bool, value []byte,
 		crcValue := binary.LittleEndian.Uint32(crcBytes)
 
 		// Timestamp
-		// ??
 		timestampBytes := make([]byte, 19)
 		_, err = reader.Read(timestampBytes)
 		if err != nil {
 			panic(err)
 		}
 		timestamp = string(timestampBytes[:])
-		//println(Timestamp)
 
 		//Tombstone
 
@@ -218,7 +211,6 @@ func (st *SSTable) SStableFind(key string, offset int64) (ok bool, value []byte,
 			panic(err)
 		}
 		keyLen := binary.LittleEndian.Uint64(keyLenBytes)
-		//println(keyLen)
 
 		valueLenBytes := make([]byte, 8)
 		_, err = reader.Read(valueLenBytes)
@@ -226,7 +218,6 @@ func (st *SSTable) SStableFind(key string, offset int64) (ok bool, value []byte,
 			panic(err)
 		}
 		valueLen := binary.LittleEndian.Uint64(valueLenBytes)
-		//println(valueLen)
 
 		keyBytes := make([]byte, keyLen)
 		_, err = reader.Read(keyBytes)
@@ -234,7 +225,6 @@ func (st *SSTable) SStableFind(key string, offset int64) (ok bool, value []byte,
 			panic(err)
 		}
 		nodeKey := string(keyBytes[:])
-		//println(nodeKey)
 
 		if nodeKey == key {
 			ok = true
@@ -267,10 +257,6 @@ func (st *SSTable) WriteTOC() {
 
 	writer := bufio.NewWriter(file)
 
-	//_, err = writer.WriteString(st.generalFilename + "\n")
-	//if err != nil {
-	//	return
-	//}
 	_, err = writer.WriteString(st.SSTableFilename + "\n")
 	if err != nil {
 		return
@@ -380,39 +366,7 @@ func SearchThroughSSTables(key string, maxLevels int) (found bool, oldValue []by
 					found = true
 				}
 			}
-			//if ok {
-			//	return
-			//}
 		}
 	}
 	return
 }
-
-//func main() {
-//
-//	mt := CreateMemTable(25)
-//	mt.Add("kopitaneskita", []byte("123"))
-//	mt.Add("joca", []byte("123"))
-//	mt.Add("mica", []byte("123"))
-//	mt.Add("maca", []byte("123"))
-//	mt.Add("zeljko", []byte("123"))
-//	mt.Add("zdravomir", []byte("123"))
-//	mt.Change("zeljko", []byte("234"))
-//	filename := findSSTableFilename("1")
-//	_ = CreateSStable(*mt, filename)
-//	//table = readSSTable("1", "1")
-//	//ok, Value := table.SSTableQuery("zeljko")
-//	ok, Value := SearchThroughSSTables("zeljko")
-//	fmt.Println(ok, Value)
-//	//bf := readBloomFilter(table.filterFilename)
-//	//ok := bf.Query("zeljko")
-//	//if ok {
-//	//	ok, offset := FindSummary("zeljko", table.summaryFilename)
-//	//	if ok {
-//	//		ok, offset = FindIndex("zeljko", offset, table.indexFilename)
-//	//		if ok {
-//	//			println(table.SStableFind("zeljko", offset))
-//	//		}
-//	//	}
-//	//}
-//}

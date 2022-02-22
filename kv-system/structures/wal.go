@@ -288,30 +288,3 @@ func (w *Wal) RemoveSegments() {
 
 // TODO moramo posljednji segment dumpovati na kraju !!!
 
-//
-//func main() {
-//	//w:= CreateWal(WAL_PATH)
-//	//w.Put(&Element{
-//	//	Key:       "keke",
-//	//	Value:     []byte("asdd"),
-//	//	Next:      nil,
-//	//	Timestamp: "",
-//	//	Tombstone: false,
-//	//	Checksum:  CRC32([]byte("keke")),
-//	//})
-//	//w.Put(&Element{
-//	//	Key:       "meke",
-//	//	Value:     []byte("asdd"),
-//	//	Next:      nil,
-//	//	Timestamp: "",
-//	//	Tombstone: false,
-//	//	Checksum:  CRC32([]byte("meke")),
-//	//})
-//
-//	w := CreateWal(WAL_PATH)
-//	w.ReadWal(WAL_PATH)
-//
-//	//w.RemoveSegments()
-//
-//	w.Dump()
-//}

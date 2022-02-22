@@ -158,20 +158,3 @@ func WriteInFile(root *MerkleNode, path string) {
 		fmt.Println(err)
 	}
 }
-
-//func main(){
-//	fmt.Println("Pocetak...")
-//
-//	stringovi := []string{"kljuc1", "key2", "kljuc3", "Key", "kljuc5", "keeeey2", "kljuuuuc3", "keeeey", "milica",
-//		   				  "tasija", "nemanja", "katarina"}
-//	// ova funkcija treba samo za testiranje
-//	bajtovi := StringsToBytes(stringovi)
-//	path := "usertable-data-ic-2-lev1-Data.db"
-//
-//	root := CreateMerkleTree(bajtovi, path)
-//	current := root.root
-//
-//	PrintTree(current)
-//
-//	fmt.Println("Kraj...")
-//}

@@ -173,10 +173,7 @@ func ReadAndWrite(currentOffset, currentOffset1, currentOffset2 uint, newData, f
 
 		if key1 == key2 {
 			// biramo onog sa kasnijim vremenom
-			//fmt.Println("timest1: ", timestamp1)
-			//fmt.Println("timest2: ", timestamp2)
 			if timestamp1 > timestamp2 {
-				//fmt.Println("tombs1 ", tombstone1)
 				// prvi se upisuje, drugi se preskace
 				if tombstone1 == 0 {
 					offset = append(offset, currentOffset)
@@ -187,7 +184,6 @@ func ReadAndWrite(currentOffset, currentOffset1, currentOffset2 uint, newData, f
 					values = append(values, []byte(value1))
 				}
 			} else {
-				//fmt.Println("tombs2 ", tombstone2)
 				// drugi se upisuje, prvi se preskace
 				if tombstone2 == 0 {
 					offset = append(offset, currentOffset)
@@ -516,130 +512,3 @@ func CreateMerkle(level int, newData string, values [][]byte) {
 	filename := strings.ReplaceAll(newData, "kv-system/data/sstable/", "")
 	CreateMerkleTree(values, filename)
 }
-
-//func main() {
-//	var lsm = CreateLsm(4, 4)
-//	lsm.DoCompaction("./kv-system/data/sstable/", 1)
-//}
-
-//
-//	currentOffset1 := uint(0)
-//	fDataFile, err := os.Open("./kv-system/data/sstable/usertable-data-ic-1-lev1-Data.db") // otvoren drugi data fajl
-//	if err != nil {
-//		panic(err)
-//	}
-//	defer fDataFile.Close()
-//
-//	// provera da li radi citanje duzine fajla  RADI
-//	reader1 := bufio.NewReader(fDataFile)
-//	bytes := make([]byte, 8)
-//	_, err = reader1.Read(bytes)
-//	if err != nil {
-//		panic(err)
-//	}
-//	fileLen1 := binary.LittleEndian.Uint64(bytes)
-//	fmt.Println(fileLen1)
-//	currentOffset1 += 8 // dobije se 6, to je broj kljuceva
-//
-//	// citanje iz fajla - RADI
-//	crc1, timestamp1, tombstone1, keyLen1, valueLen1, key1, value1, currentOffset1 := ReadData(fDataFile, currentOffset1)
-//	fmt.Println(crc1)
-//	fmt.Println(timestamp1)
-//	fmt.Println(tombstone1)
-//	fmt.Println(keyLen1)
-//	fmt.Println(valueLen1)
-//	fmt.Println(key1)
-//	fmt.Println(value1)
-//	fmt.Println(currentOffset1)
-//
-//	currentOffset := uint(0)
-//	newData, _ := os.CreateHLL("./kv-system/data/sstable/usertable-data-ic-2-lev1-Data.db")
-//
-//	writer := bufio.NewWriter(newData)
-//
-//	//file length (na pocetku je 0 jer ne znamo jos koja je duzina fajla)
-//	bytesLen := make([]byte, 8)
-//	bytesWritten, err := writer.Write(bytesLen)
-//	currentOffset += uint(bytesWritten)
-//	if err != nil {
-//		log.Fatal(err)
-//	}
-//	err = writer.Flush()
-//	if err != nil {
-//		return
-//	}
-//
-//	// pisanje - RADI
-//	_ = WriteData(newData, currentOffset, crc1, timestamp1,
-//		tombstone1, keyLen1, valueLen1, key1, value1)
-//	fmt.Println("========================")
-//
-//	// provera citanja napisanog  RADI
-//	crc1, timestamp1, tombstone1, keyLen1, valueLen1, key1, value1, currentOffset1 = ReadData(newData, currentOffset)
-//	fmt.Println(crc1)
-//	fmt.Println(timestamp1)
-//	fmt.Println(tombstone1)
-//	fmt.Println(keyLen1)
-//	fmt.Println(valueLen1)
-//	fmt.Println(key1)
-//	fmt.Println(value1)
-//	fmt.Println(currentOffset1)
-//	newData.Close()
-//
-//	// upis duzine fajla na pocetak
-//	file, err := os.OpenFile("./kv-system/data/sstable/usertable-data-ic-2-lev1-Data.db", os.O_WRONLY, 0644)
-//	if err != nil {
-//		log.Println(err)
-//	}
-//	_, err = file.Seek(0, 0)
-//
-//	writer = bufio.NewWriter(file)
-//
-//	bytesLen = make([]byte, 8)
-//	binary.LittleEndian.PutUint64(bytesLen, uint64(5))
-//	fmt.Println(bytesLen)
-//	s, err := writer.Write(bytesLen)
-//	fmt.Println(s)
-//
-//	if err != nil {
-//		log.Println(err)
-//	}
-//
-//	err = writer.Flush()
-//	if err != nil {
-//		return
-//	}
-//	file.Close()
-//	//zaglavlje(newData)
-//
-//	// citanje duzine
-//	file, _ = os.Open("./kv-system/data/sstable/usertable-data-ic-2-lev1-Data.db")
-//	defer file.Close()
-//	reader := bufio.NewReader(file)
-//	file.Seek(0, 0)
-//	bytes1 := make([]byte, 8)
-//	_, err = reader.Read(bytes1)
-//	fmt.Println(bytes1)
-//	if err != nil {
-//		log.Println(err)
-//	}
-//	fileLen := binary.LittleEndian.Uint64(bytes1)
-//	fmt.Println("duzina:")
-//	fmt.Println(fileLen)
-//	currentOffset1 = 8
-//
-//	// provera da li dalje moze normalno da se cita
-//	//file, _ = os.Open("./kv-system/data/sstable/usertable-data-ic-2-lev1-Data.db")
-//	crc1, timestamp1, tombstone1, keyLen1, valueLen1, key1, value1, currentOffset1 = ReadData(file, 8)
-//	fmt.Println("--------------------------------")
-//	fmt.Println(crc1)
-//	fmt.Println(timestamp1)
-//	fmt.Println(tombstone1)
-//	fmt.Println(keyLen1)
-//	fmt.Println(valueLen1)
-//	fmt.Println(key1)
-//	fmt.Println(value1)
-//	fmt.Println(currentOffset1)
-
-//os.Remove("./kv-system/data/sstable/usertable-data-ic-2-lev1-Data.db")
-//}

@@ -54,7 +54,7 @@ func FindIndex(key string, offset int64, filename string) (ok bool, dataOffset i
 		panic(err)
 	}
 	fileLen := binary.LittleEndian.Uint64(bytes)
-	//println(fileLen)
+
 
 	_, err = file.Seek(offset, 0)
 	if err != nil {
@@ -71,7 +71,7 @@ func FindIndex(key string, offset int64, filename string) (ok bool, dataOffset i
 			panic(err)
 		}
 		keyLen := binary.LittleEndian.Uint64(bytes)
-		//println(keyLen)
+
 
 		bytes = make([]byte, keyLen)
 		_, err = reader.Read(bytes)
@@ -79,7 +79,7 @@ func FindIndex(key string, offset int64, filename string) (ok bool, dataOffset i
 			panic(err)
 		}
 		nodeKey := string(bytes[:])
-		//println(nodeKey)
+
 
 		if nodeKey == key {
 			ok = true
@@ -93,7 +93,7 @@ func FindIndex(key string, offset int64, filename string) (ok bool, dataOffset i
 			panic(err)
 		}
 		newOffset := binary.LittleEndian.Uint64(bytes)
-		//println(newOffset)
+
 
 		if ok {
 			dataOffset = int64(newOffset)
@@ -142,10 +142,7 @@ func (index *SSIndex) Write() (keys []string, offsets []uint){
 			sampleKeys = append(sampleKeys, key)
 			sampleOffsets = append(sampleOffsets, currentOffset)
 		}
-		//log.Printf("Key: %d\n", Key)
 		bytes := []byte(key)
-		//println(keyLen(bytes))
-		//println(bytes)
 
 		keyLen := uint64(len(bytes))
 		bytesLen := make([]byte, 8)
@@ -180,34 +177,4 @@ func (index *SSIndex) Write() (keys []string, offsets []uint){
 	keys = append(rangeKeys, sampleKeys...)
 	offsets = append(rangeOffsets, sampleOffsets...)
 	return
-	//err = file.Close()
-	//if err != nil {
-	//	return
-	//}
 }
-
-//func main() {
-//
-//	root := SkipListNode{"start", nil, make([]*SkipListNode, 2)}
-//	sl := SkipList{25, 1, 1, &root}
-//	sl.Add("kopitaneskita", []byte("123"))
-//	sl.Add("joca", []byte("123"))
-//	sl.Add("mica", []byte("123"))
-//	sl.Add("maca", []byte("123"))
-//	sl.Add("zeljko", []byte("123"))
-//	sl.Add("zdravomir", []byte("123"))
-//	index := CreateHLL(sl, "index.db")
-//
-//	println(index)
-//	//index := SSIndex{OffsetSize: 8, KeySizeNumber: 2, filename: "index.db"}
-//	//index.Add("Marko", 0)
-//	//index.Add("Zivodrag", 10)
-//	//index.Add("Jovan", 20)
-//	//index.Add("Mirko", 30)
-//	//index.Add("Petar", 40)
-//	//
-//	//
-//	//index.Write()
-//	//
-//	//fmt.Println(index.Find("Zivodrag"))
-//}
