@@ -276,7 +276,7 @@ func ReadAndWrite(currentOffset, currentOffset1, currentOffset2 uint, newData, f
 	table.WriteTOC()
 	writeBloomFilter(table.filterFilename, filter)
 	CreateMerkle(level, newData.Name(), values)
-	fmt.Println(keys)
+	//fmt.Println(keys)
 	return uint64(len(keys))
 }
 

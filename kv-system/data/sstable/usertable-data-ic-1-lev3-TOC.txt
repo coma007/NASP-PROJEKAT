@@ -1,0 +1,4 @@
+kv-system/data/sstable/usertable-data-ic-1-lev3-Data.db
+kv-system/data/sstable/usertable-data-ic-1-lev3-Index.db
+kv-system/data/sstable/usertable-data-ic-1-lev3-Summary.db
+kv-system/data/sstable/usertable-data-ic-1-lev3-Filter.gob
