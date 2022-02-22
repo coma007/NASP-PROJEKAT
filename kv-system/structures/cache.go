@@ -98,8 +98,10 @@ func (c *Cache) Add(key string, value []byte) {
 		l.head.Previous = nil
 
 		l.tail = l.tail.Previous
-		delete(c.mapOfData, l.tail.Next.Key)
-		l.tail.Next = nil
+		if l.tail != nil && l.tail.Next != nil {
+			delete(c.mapOfData, l.tail.Next.Key)
+			l.tail.Next = nil
+		}
 
 	} else {
 		if l.head == nil {

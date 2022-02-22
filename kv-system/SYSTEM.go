@@ -10,9 +10,9 @@ import (
 type System struct {
 	wal         *structures.Wal
 	memTable *structures.MemTable
-	Cache    *structures.Cache
+	cache    *structures.Cache
 	lsm      *structures.LSM
-	tokenBucket *structures.TokenBucket
+	TokenBucket *structures.TokenBucket
 	Config      *config.Config
 }
 
@@ -22,7 +22,7 @@ func (s *System) Init() {
 	s.memTable = structures.CreateMemTable(s.Config.MemTableParameters.SkipListMaxHeight,
 		uint(s.Config.MemTableParameters.MaxMemTableSize),
 		uint(s.Config.MemTableParameters.MemTableThreshold))
-	s.Cache = structures.CreateCache(s.Config.CacheParameters.CacheMaxData)
+	s.cache = structures.CreateCache(s.Config.CacheParameters.CacheMaxData)
 	s.lsm = structures.CreateLsm(s.Config.LSMParameters.LSMMaxLevel, s.Config.LSMParameters.LSMLevelSize)
 	rate := int64(s.Config.TokenBucketParameters.TokenBucketInterval)
 	s.TokenBucket = structures.NewTokenBucket(rate, s.Config.TokenBucketParameters.TokenBucketMaxTokens)
@@ -40,7 +40,7 @@ func (s *System) Put(key string, value []byte, tombstone bool) bool {
 	}
 	s.wal.Put(&elem)
 	s.memTable.Add(key, value, tombstone)
-	s.Cache.Add(key, value)
+	s.cache.Add(key, value)
 
 	if s.memTable.CheckFlush() {
 		s.memTable.Flush()
@@ -59,17 +59,17 @@ func (s *System) Get(key string) (bool, []byte) {
 	if ok && deleted {
 		return false, nil
 	} else if ok {
-		s.Cache.Add(key, value)
+		s.cache.Add(key, value)
 		return true, value
 	}
-	ok, value = s.Cache.Get(key)
+	ok, value = s.cache.Get(key)
 	if ok {
-		s.Cache.Add(key, value)
+		s.cache.Add(key, value)
 		return true, value
 	}
 	ok, value = structures.SearchThroughSSTables(key, s.Config.LSMParameters.LSMMaxLevel)
 	if ok {
-		s.Cache.Add(key, value)
+		s.cache.Add(key, value)
 		return true, value
 	}
 	return false, nil
@@ -77,15 +77,15 @@ func (s *System) Get(key string) (bool, []byte) {
 
 func (s *System) Delete(key string) bool {
 	if s.memTable.Remove(key) {
-		s.Cache.DeleteNode(key)
+		s.cache.DeleteNode(key)
 		return true
 	}
 	if s.memTable.Remove("hll-" + key) {
-		s.cache.DeleteNode(structures.CreateNode("hll-" + key, nil))
+		s.cache.DeleteNode("hll-" + key)
 		return true
 	}
 	if s.memTable.Remove("cms-" + key) {
-		s.cache.DeleteNode(structures.CreateNode("cms-" + key, nil))
+		s.cache.DeleteNode("cms-" + key)
 		return true
 	}
 	ok, value := s.Get(key)
@@ -105,7 +105,7 @@ func (s *System) Delete(key string) bool {
 		}
 	}
 	s.Put(key, value, true)
-	s.Cache.DeleteNode(key)
+	s.cache.DeleteNode(key)
 	return true
 }
 
@@ -123,7 +123,7 @@ func (s *System) Edit(key string, value []byte) bool {
 
 	s.wal.Put(&elem)
 
-	s.Cache.Add(key, value)
+	s.cache.Add(key, value)
 
 	return true
 }
