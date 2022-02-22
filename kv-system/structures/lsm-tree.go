@@ -293,8 +293,7 @@ func ReadAndWrite(currentOffset, currentOffset1, currentOffset2 uint, newData, f
 	table.WriteTOC()
 	writeBloomFilter(table.filterFilename, filter)
 	CreateMerkle(level, newData.Name(), values)
-	fmt.Println(keys)
-	fmt.Println(offset)
+
 	return uint64(len(keys))
 }
 
@@ -468,9 +467,6 @@ func FileSize(filename string, len uint64) {
 	}
 
 	err = file.Close()
-	if err != nil {
-		fmt.Println("zatv")
-	}
 }
 
 func FindFiles(dir string, level int) ([]string, []string, []string, []string, []string) {
