@@ -95,13 +95,13 @@ func (c *Cache) Add(key string, value []byte) {
 		l.head = n
 		head.Previous = l.head
 		l.head.Next = head
-		l.head.Previous = nil
 
 		l.tail = l.tail.Previous
-		if l.tail != nil && l.tail.Next != nil {
-			delete(c.mapOfData, l.tail.Next.Key)
-			l.tail.Next = nil
-		}
+
+		delete(c.mapOfData, l.tail.Next.Key)
+
+		l.head.Previous = nil
+		l.tail.Next = nil
 
 	} else {
 		if l.head == nil {
@@ -165,6 +165,7 @@ func (c *Cache) DeleteNode(key string) bool {
 					next.Previous = previous
 				} else {
 					previous.Next = nil
+					l.tail = previous
 				}
 				l.length--
 				return true
