@@ -145,7 +145,7 @@ func readBloomFilter(filename string) (bf *BloomFilter) {
 //
 //	fmt.Println("\nSerialization in progress ...")
 //
-//	nwf, _ := os.Create("bf.gob")
+//	nwf, _ := os.CreateHLL("bf.gob")
 //	nwf.Close()
 //
 //	file, _ := os.OpenFile("bf.gob", os.O_RDWR, 0666)

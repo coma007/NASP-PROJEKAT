@@ -9,12 +9,6 @@ import (
 	"math"
 )
 
-const (
-	HLL_MIN_PRECISION = 4
-	HLL_MAX_PRECISION = 16
-)
-
-
 type HyperLogLog struct {
 	m   uint64
 	p   uint8
@@ -31,9 +25,9 @@ func (hll *HyperLogLog) emptyCount() uint8 {
 	return sum
 }
 
-func Create(p uint8) HyperLogLog {
+func CreateHLL(p uint8) *HyperLogLog {
 	m := int(math.Pow(2, float64(p)))
-	return HyperLogLog{uint64(m),p, make([]uint8, m, m)}
+	return &HyperLogLog{uint64(m),p, make([]uint8, m, m)}
 }
 
 func (hll *HyperLogLog) Add(word string) {
@@ -114,7 +108,7 @@ func DeserializeHLL(data []byte) *HyperLogLog {
 
 // 	//fmt.Println(int('1' - '0'))
 // 	//fmt.Printlnh(ToBinary(GetMD5Hash("nice")))
-// 	hll := Create(6)
+// 	hll := CreateHLL(6)
 // 	hll.Add("Bojan")
 // 	hll.Add("Bojan")
 // 	hll.Add("Ica")

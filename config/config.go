@@ -10,8 +10,7 @@ type WalConfig struct {
 }
 
 type HLLConfig struct {
-	HLLMinPrecision int `json:"hll_min_precision"`
-	HLLMaxPrecision int `json:"hll_max_precision"`
+	HLLPrecision    int `json:"hll_precision"`
 }
 
 type CacheConfig struct {
@@ -59,11 +58,8 @@ func GetSystemConfig() (config *Config) {
 	if config.WalParameters.SegmentCapacity == -1 {
 		config.WalParameters.SegmentCapacity = 50
 	}
-	if config.HLLParameters.HLLMinPrecision == -1 {
-		config.HLLParameters.HLLMinPrecision = -1
-	}
-	if config.HLLParameters.HLLMaxPrecision == -1 {
-		config.HLLParameters.HLLMaxPrecision = -1
+	if config.HLLParameters.HLLPrecision == -1 {
+		config.HLLParameters.HLLPrecision = 4
 	}
 	if config.CacheParameters.CacheMaxData == -1 {
 		config.CacheParameters.CacheMaxData = 5
@@ -98,8 +94,7 @@ func CreateConfigFile() {
 	config.LSMParameters.LSMMaxLevel = -1
 	config.LSMParameters.LSMLevelSize = -1
 	config.WalParameters.SegmentCapacity = -1
-	config.HLLParameters.HLLMinPrecision = -1
-	config.HLLParameters.HLLMaxPrecision = -1
+	config.HLLParameters.HLLPrecision = -1
 	config.CacheParameters.CacheMaxData = -1
 	config.TokenBucketParameters.TokenBucketMaxTokens = -1
 	config.TokenBucketParameters.TokenBucketInterval = -1

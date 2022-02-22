@@ -539,7 +539,7 @@ func CreateMerkle(level int, newData string, values [][]byte) {
 //	fmt.Println(currentOffset1)
 //
 //	currentOffset := uint(0)
-//	newData, _ := os.Create("./kv-system/data/sstable/usertable-data-ic-2-lev1-Data.db")
+//	newData, _ := os.CreateHLL("./kv-system/data/sstable/usertable-data-ic-2-lev1-Data.db")
 //
 //	writer := bufio.NewWriter(newData)
 //

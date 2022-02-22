@@ -196,7 +196,7 @@ func (index *SSIndex) Write() (keys []string, offsets []uint){
 //	sl.Add("maca", []byte("123"))
 //	sl.Add("zeljko", []byte("123"))
 //	sl.Add("zdravomir", []byte("123"))
-//	index := Create(sl, "index.db")
+//	index := CreateHLL(sl, "index.db")
 //
 //	println(index)
 //	//index := SSIndex{OffsetSize: 8, KeySizeNumber: 2, filename: "index.db"}

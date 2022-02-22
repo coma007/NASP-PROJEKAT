@@ -2,6 +2,7 @@ package main
 
 import (
 	sys "Key-Value-Engine/kv-system"
+	"Key-Value-Engine/kv-system/structures"
 	"bufio"
 	"fmt"
 	"os"
@@ -9,16 +10,18 @@ import (
 
 func menu() {
 	fmt.Println("\n======= MENU =======")
-	fmt.Println("1. PUT")
-	fmt.Println("2. GET")
-	fmt.Println("3. DELETE")
-	fmt.Println("4. EDIT")
+	fmt.Println(" 1. PUT")
+	fmt.Println(" 2. GET")
+	fmt.Println(" 3. DELETE")
+	fmt.Println(" 4. EDIT")
 	fmt.Println("--- HyperLogLog  ---")
-	fmt.Println("5. ADD TO HLL")
-	fmt.Println("6. ESTIMATE HLL")
+	fmt.Println(" 5. CREATE HLL")
+	fmt.Println(" 6. ADD TO HLL")
+	fmt.Println(" 7. ESTIMATE HLL")
 	fmt.Println("-- CountMinSketch --")
-	fmt.Println("7. ADD TO CMS")
-	fmt.Println("8. QUERY CMS")
+	fmt.Println(" 8. CREATE CMS")
+	fmt.Println(" 9. ADD TO CMS")
+	fmt.Println("10. QUERY CMS")
 	fmt.Println("--------------------")
 	fmt.Println("0. EXIT")
 	fmt.Print("\nChose option from menu: ")
@@ -63,6 +66,29 @@ func parseChoice(choice string, system *sys.System) bool {
 		fmt.Print("Value: ")
 		value := scan()
 		system.Edit(key, []byte(value))
+		break
+	case "5":
+		fmt.Println("\n- CREATE HLL")
+		fmt.Print("HLL's Key: ")
+		key := "hll-" + scan()
+		value := structures.CreateHLL(uint8(system.Config.HLLParameters.HLLPrecision)).SerializeHLL()
+		system.Put(key, value, false)
+		break
+	case "6":
+		fmt.Println("\n- ADD TO HLL")
+		fmt.Print("HLL's Key: ")
+		key := "hll-" + scan()
+		ok, hllData := system.Get(key)
+		if !ok {
+			fmt.Println("HLL with given key not found !")
+			break
+		}
+		hll := structures.DeserializeHLL(hllData)
+		fmt.Print("Value to add: ")
+		value := scan()
+		hll.Add(value)
+		fmt.Println("Value added !")
+		system.Put(key, hll.SerializeHLL(), false)
 		break
 	default:
 		fmt.Println("\nWrong input ! Please try again. ")

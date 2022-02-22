@@ -3,8 +3,7 @@
     "wal_segment_capacity": -1
   },
   "hll_config": {
-    "hll_min_precision": -1,
-    "hll_max_precision": -1
+    "hll_precision": -1
   },
   "cache_config": {
     "cache_max_data": -1
