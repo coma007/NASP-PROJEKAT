@@ -8,6 +8,7 @@ type CacheNode struct {
 	Key   string
 	Value []byte
 	Next  *CacheNode
+	Previous *CacheNode
 }
 
 func CreateNode(data string, value []byte) *CacheNode {
@@ -28,7 +29,7 @@ type LinkedList struct {
 
 type Cache struct {
 	linkedList *LinkedList
-	mapOfData  map[string][]byte
+	mapOfData   map[string][]byte
 }
 
 func CreateCache(max int) *Cache {
@@ -49,8 +50,9 @@ func CreateCache(max int) *Cache {
 }
 
 // Add - dodavanje novog (na pocetak liste)
-func (c *Cache) Add(n *CacheNode) {
+func (c *Cache) Add(key string, value []byte) {
 	l := c.linkedList
+	n := CreateNode(key, value)
 
 	// provjera da li ovakav cvor vec postoji u cache-u
 	_, ok := c.mapOfData[n.Key]
@@ -71,8 +73,12 @@ func (c *Cache) Add(n *CacheNode) {
 		current.Next = nil
 		head := l.head
 		l.head = current
+		head.Previous = l.head
 		l.head.Next = head
 		currentPrevious.Next = nextOfCurrent
+		if nextOfCurrent != nil {
+			nextOfCurrent.Previous = currentPrevious
+		}
 
 		// u slucaju da se pristupalo izmijenjenom cvoru
 		delete(c.mapOfData, n.Key)
@@ -86,15 +92,10 @@ func (c *Cache) Add(n *CacheNode) {
 	if l.length == l.maxLength {
 		head := l.head
 		l.head = n
-		n.Next = head
+		head.Previous = l.head
+		l.head.Next = head
 
-		current := l.head.Next
-
-		// prolazak kroz listu dok se ne dodje do pretposljednjeg elementa
-		for current.Next.Next != nil {
-			current = current.Next
-		}
-		l.tail = current
+		l.tail = l.tail.Previous
 		delete(c.mapOfData, l.tail.Next.Key)
 		l.tail.Next = nil
 
@@ -107,6 +108,7 @@ func (c *Cache) Add(n *CacheNode) {
 			// dodajemo na pocetak liste
 			head := l.head
 			l.head = n
+			head.Previous = l.head
 			l.head.Next = head
 			l.length++
 		}
@@ -128,18 +130,18 @@ func (c *Cache) Print() {
 	fmt.Println("\nMapa")
 	mapa := c.mapOfData
 	for key, value := range mapa {
-		fmt.Println("Kljuc: ", key, ", Value: ", value)
+		fmt.Println("Kljuc: ", key, ", Value: ", string(value))
 	}
 }
 
-func (c *Cache) DeleteNode(n *CacheNode) {
-	_, ok := c.mapOfData[n.Key]
+func (c *Cache) DeleteNode(key string) {
+	_, ok := c.mapOfData[key]
 	l := c.linkedList
 
 	if ok == true {
-		delete(c.mapOfData, n.Key)
+		delete(c.mapOfData, key)
 		current := l.head
-		if current.Key == n.Key {
+		if current.Key == key {
 			l.head = current.Next
 			l.length--
 			return
@@ -149,8 +151,9 @@ func (c *Cache) DeleteNode(n *CacheNode) {
 		current = current.Next
 		next := current.Next
 		for current != nil {
-			if current.Key == n.Key {
+			if current.Key == key {
 				previous.Next = next
+				next.Previous = previous
 				l.length--
 				return
 			}
@@ -162,14 +165,11 @@ func (c *Cache) DeleteNode(n *CacheNode) {
 }
 
 func (c *Cache) Get(key string) (bool, []byte) {
-	current := c.linkedList.head
-	for current.Key != key {
-		if current.Key == c.linkedList.tail.Key {
-			return false, nil
-		}
-		current = current.Next
+	_, ok := c.mapOfData[key]
+	if ok == true {
+		return true, c.mapOfData[key]
 	}
-	return true, current.Value
+	return false, nil
 }
 
 //func main()  {

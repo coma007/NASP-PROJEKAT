@@ -353,17 +353,13 @@ func findSSTableFilename(level string) (filename string) {
 
 func SearchThroughSSTables(key string, maxLevels int) (ok bool, value []byte) {
 	levelNum := maxLevels
-	filenameNum := 1
-	filename := strconv.Itoa(filenameNum)
-	level := strconv.Itoa(levelNum)
-	maxFilename := findSSTableFilename(level)
-	maxFilenameNum, _ := strconv.Atoi(maxFilename)
 	for ; levelNum >= 1; levelNum-- {
 		level := strconv.Itoa(levelNum)
-		maxFilename = findSSTableFilename(level)
-		maxFilenameNum, _ = strconv.Atoi(maxFilename)
-		for ; filenameNum < maxFilenameNum; filenameNum++ {
-			filename = strconv.Itoa(filenameNum)
+		maxFilename := findSSTableFilename(level)
+		maxFilenameNum, _ := strconv.Atoi(maxFilename)
+		filenameNum := maxFilenameNum - 1
+		for ; filenameNum > 0; filenameNum-- {
+			filename := strconv.Itoa(filenameNum)
 			table := readSSTable(filename, level)
 			ok, value = table.SSTableQuery(key)
 			if ok {
