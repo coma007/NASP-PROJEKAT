@@ -152,8 +152,9 @@ func CreateSStable(data MemTable, filename string) (table *SSTable) {
 	return
 }
 
-func (st *SSTable) SStableFind(key string, offset int64) (ok bool, value []byte) {
+func (st *SSTable) SStableFind(key string, offset int64) (ok bool, value []byte, timestamp string) {
 	ok = false
+	timestamp = ""
 
 	file, err := os.Open(st.SSTableFilename)
 	if err != nil {
@@ -170,7 +171,7 @@ func (st *SSTable) SStableFind(key string, offset int64) (ok bool, value []byte)
 	//println(fileLen)
 	_, err = file.Seek(offset, 0)
 	if err != nil {
-		return false, nil
+		return false, nil, ""
 	}
 	reader = bufio.NewReader(file)
 
@@ -248,10 +249,12 @@ func (st *SSTable) SStableFind(key string, offset int64) (ok bool, value []byte)
 		if ok && !deleted && CRC32(valueBytes) == crcValue {
 			value = valueBytes
 			break
+		} else if ok && deleted{
+			return false, nil, ""
 		}
 	}
 	file.Close()
-	return ok, value
+	return ok, value, timestamp
 }
 
 func (st *SSTable) WriteTOC() {
@@ -316,7 +319,7 @@ func readSSTable(filename, level string) (table *SSTable) {
 	return
 }
 
-func (st *SSTable) SSTableQuery(key string) (ok bool, value []byte) {
+func (st *SSTable) SSTableQuery(key string) (ok bool, value []byte, timestamp string) {
 	ok = false
 	value = nil
 	bf := readBloomFilter(st.filterFilename)
@@ -326,14 +329,14 @@ func (st *SSTable) SSTableQuery(key string) (ok bool, value []byte) {
 		if ok {
 			ok, offset = FindIndex(key, offset, st.indexFilename)
 			if ok {
-				ok, value = st.SStableFind(key, offset)
+				ok, value, timestamp = st.SStableFind(key, offset)
 				if ok {
-					return true, value
+					return true, value, timestamp
 				}
 			}
 		}
 	}
-	return false, nil
+	return false, nil, ""
 }
 
 func findSSTableFilename(level string) (filename string) {
@@ -354,7 +357,9 @@ func findSSTableFilename(level string) (filename string) {
 
 }
 
-func SearchThroughSSTables(key string, maxLevels int) (ok bool, value []byte) {
+func SearchThroughSSTables(key string, maxLevels int) (found bool, oldValue []byte) {
+	oldTimestamp := ""
+	found = false
 	levelNum := maxLevels
 	for ; levelNum >= 1; levelNum-- {
 		level := strconv.Itoa(levelNum)
@@ -364,10 +369,19 @@ func SearchThroughSSTables(key string, maxLevels int) (ok bool, value []byte) {
 		for ; filenameNum > 0; filenameNum-- {
 			filename := strconv.Itoa(filenameNum)
 			table := readSSTable(filename, level)
-			ok, value = table.SSTableQuery(key)
-			if ok {
-				return
+			ok, value, timestamp := table.SSTableQuery(key)
+			if oldTimestamp == "" && ok {
+				oldTimestamp = timestamp
+				found = true
+			} else if oldTimestamp != "" && ok {
+				if timestamp > oldTimestamp {
+					oldValue = value
+					found = true
+				}
 			}
+			//if ok {
+			//	return
+			//}
 		}
 	}
 	return
