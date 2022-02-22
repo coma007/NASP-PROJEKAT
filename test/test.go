@@ -40,7 +40,6 @@ func main() {
 	_, value = system.Get("Milica")
 	fmt.Println("Testiranje edita: ")
 	fmt.Println(string(value))
-	fmt.Println("\nCache")
-	_, value = system.Cache.Get("ad")
-	fmt.Println(string(value))
+
+
 }

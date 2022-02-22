@@ -75,6 +75,7 @@ func (c *Cache) Add(key string, value []byte) {
 		l.head = current
 		head.Previous = l.head
 		l.head.Next = head
+		l.head.Previous = nil
 		currentPrevious.Next = nextOfCurrent
 		if nextOfCurrent != nil {
 			nextOfCurrent.Previous = currentPrevious
@@ -94,6 +95,7 @@ func (c *Cache) Add(key string, value []byte) {
 		l.head = n
 		head.Previous = l.head
 		l.head.Next = head
+		l.head.Previous = nil
 
 		l.tail = l.tail.Previous
 		delete(c.mapOfData, l.tail.Next.Key)
@@ -110,6 +112,7 @@ func (c *Cache) Add(key string, value []byte) {
 			l.head = n
 			head.Previous = l.head
 			l.head.Next = head
+			l.head.Previous = nil
 			l.length++
 		}
 	}
@@ -134,7 +137,7 @@ func (c *Cache) Print() {
 	}
 }
 
-func (c *Cache) DeleteNode(key string) {
+func (c *Cache) DeleteNode(key string) bool {
 	_, ok := c.mapOfData[key]
 	l := c.linkedList
 
@@ -143,8 +146,11 @@ func (c *Cache) DeleteNode(key string) {
 		current := l.head
 		if current.Key == key {
 			l.head = current.Next
+			if l.head != nil {
+				l.head.Previous = nil
+			}
 			l.length--
-			return
+			return true
 		}
 		// ako ne brisemo head
 		previous := current
@@ -152,16 +158,21 @@ func (c *Cache) DeleteNode(key string) {
 		next := current.Next
 		for current != nil {
 			if current.Key == key {
-				previous.Next = next
-				next.Previous = previous
+				if next != nil {
+					previous.Next = next
+					next.Previous = previous
+				} else {
+					previous.Next = nil
+				}
 				l.length--
-				return
+				return true
 			}
 			previous = current
 			current = current.Next
 			next = current.Next
 		}
 	}
+	return false
 }
 
 func (c *Cache) Get(key string) (bool, []byte) {
