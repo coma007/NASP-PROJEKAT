@@ -5,16 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5dcb9f7d-9af9-405d-84af-052c05f8d3ed" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-1-lev2-Data.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-1-lev2-Filter.gob" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-1-lev2-Index.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-1-lev2-Summary.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/kv-system/data/sstable/usertable-data-ic-1-lev2-TOC.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/kv-system/data/wal/wal1.log" beforeDir="false" afterPath="$PROJECT_DIR$/kv-system/data/wal/wal1.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/kv-system/data/wal/wal2.log" beforeDir="false" afterPath="$PROJECT_DIR$/kv-system/data/wal/wal2.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/kv-system/structures/lsm-tree.go" beforeDir="false" afterPath="$PROJECT_DIR$/kv-system/structures/lsm-tree.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/data/wal/wal1.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/data/wal/wal2.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/data/wal/wal3.log" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/kv-system/data/wal/wal4.log" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/kv-system/structures/sstable.go" beforeDir="false" afterPath="$PROJECT_DIR$/kv-system/structures/sstable.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/test.go" beforeDir="false" afterPath="$PROJECT_DIR$/test/test.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,6 +39,15 @@
     <property name="last_opened_file_path" value="$USER_HOME$" />
   </component>
   <component name="RunManager" selected="Go Build.go build Key-Value-Engine/test">
+    <configuration default="true" type="GoApplicationRunConfiguration" factoryName="Go Application">
+      <module name="NASP-PROJEKAT" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="PACKAGE" />
+      <package value="Key-Value-Engine" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <method v="2" />
+    </configuration>
     <configuration name="go build Key-Value-Engine/test" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
       <module name="NASP-PROJEKAT" />
       <working_directory value="$PROJECT_DIR$" />
@@ -59,6 +64,16 @@
       <package value="NASP-PROJEKAT/test" />
       <directory value="$PROJECT_DIR$" />
       <filePath value="$PROJECT_DIR$/test/test.go" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="GoTestRunConfiguration" factoryName="Go Test">
+      <module name="NASP-PROJEKAT" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="DIRECTORY" />
+      <package value="Key-Value-Engine" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <framework value="gotest" />
       <method v="2" />
     </configuration>
     <list>
@@ -86,24 +101,9 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
-          <url>file://$PROJECT_DIR$/test/test.go</url>
-          <line>13</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
-          <url>file://$PROJECT_DIR$/kv-system/SYSTEM.go</url>
-          <line>51</line>
-          <option name="timeStamp" value="5" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>
