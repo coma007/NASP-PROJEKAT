@@ -94,15 +94,15 @@ func (skiplist *SkipList) Remove(key string) *Element {
 		for next != nil {
 			current = next
 			next = current.Next[i]
-			if next == nil || current.Key > key {
-				break
-			}
 			if current.Key == key {
 				current.Tombstone = true
 				current.Timestamp = time.Now().String()
 				tmp := current
 				current = current.Next[i]
 				return tmp
+			}
+			if next == nil || current.Key > key {
+				break
 			}
 		}
 	}
